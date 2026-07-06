@@ -1,0 +1,76 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+  font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+}
+
+:root.dark {
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+@layer components {
+  .neo-panel {
+    @apply rounded-[28px] border border-white/70 bg-slate-100/80 shadow-neo transition-all duration-500 dark:border-slate-700/50 dark:bg-slate-900/90 dark:shadow-dark-neo;
+  }
+
+  .neo-inset {
+    @apply rounded-[22px] bg-slate-100 shadow-neo-inset transition-all duration-500 dark:bg-slate-900 dark:shadow-dark-inset;
+  }
+
+  .soft-button {
+    @apply inline-flex items-center justify-center gap-2 rounded-2xl border border-white/70 bg-slate-100 px-4 py-2.5 text-sm font-semibold text-slate-700 shadow-neo transition duration-300 hover:-translate-y-0.5 hover:text-blue-600 active:translate-y-0 dark:border-slate-700/60 dark:bg-slate-900 dark:text-slate-200 dark:shadow-dark-neo dark:hover:text-cyan-300;
+  }
+
+  .primary-button {
+    @apply inline-flex items-center justify-center gap-2 rounded-2xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-blue-600/25 transition duration-300 hover:-translate-y-0.5 hover:bg-blue-500 active:translate-y-0 dark:bg-cyan-500 dark:text-slate-950 dark:shadow-cyan-500/20 dark:hover:bg-cyan-300;
+  }
+
+  .muted-label {
+    @apply text-xs font-bold uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400;
+  }
+}
+
+.syntax-line {
+  display: block;
+  border-left: 3px solid transparent;
+  min-height: 1.5rem;
+  padding-left: 0.8rem;
+  transition: all 220ms ease;
+}
+
+.syntax-line-active {
+  background: rgba(37, 99, 235, 0.14);
+  border-left-color: rgb(37, 99, 235);
+}
+
+.dark .syntax-line-active {
+  background: rgba(34, 211, 238, 0.14);
+  border-left-color: rgb(34, 211, 238);
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(100, 116, 139, 0.45);
+  border-radius: 999px;
+}

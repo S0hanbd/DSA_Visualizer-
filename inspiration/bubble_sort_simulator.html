@@ -1,0 +1,452 @@
+
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: var(--font-sans); }
+  .root { padding: 1rem 0; display: flex; flex-direction: column; gap: 16px; }
+
+  .top-panels { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+  .panel {
+    background: var(--color-background-primary);
+    border: 0.5px solid var(--color-border-tertiary);
+    border-radius: var(--border-radius-lg);
+    overflow: hidden;
+  }
+  .panel-header {
+    padding: 10px 14px;
+    border-bottom: 0.5px solid var(--color-border-tertiary);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--color-text-secondary);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .panel-body { padding: 14px; }
+
+  .code-block {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    line-height: 1.9;
+    color: var(--color-text-primary);
+  }
+  .code-line { padding: 0 4px; border-radius: 4px; transition: background 0.2s; white-space: pre; }
+  .code-line.active { background: #FAC77540; }
+  .code-kw { color: #8B5CF6; }
+  .code-fn { color: #0891B2; }
+  .code-num { color: #D97706; }
+  .code-cm { color: var(--color-text-tertiary); }
+
+  .algo-steps { display: flex; flex-direction: column; gap: 6px; }
+  .algo-step {
+    display: flex; align-items: flex-start; gap: 8px;
+    padding: 8px 10px;
+    border-radius: var(--border-radius-md);
+    border: 0.5px solid var(--color-border-tertiary);
+    font-size: 12px;
+    line-height: 1.5;
+    color: var(--color-text-secondary);
+    transition: all 0.25s;
+  }
+  .algo-step.active {
+    background: var(--color-background-info);
+    border-color: var(--color-border-info);
+    color: var(--color-text-info);
+  }
+  .algo-step.done {
+    background: var(--color-background-success);
+    border-color: var(--color-border-success);
+    color: var(--color-text-success);
+  }
+  .step-dot {
+    width: 20px; height: 20px; border-radius: 50%;
+    background: var(--color-border-secondary);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px; font-weight: 500; flex-shrink: 0;
+    color: var(--color-text-secondary);
+    transition: all 0.25s;
+  }
+  .algo-step.active .step-dot { background: var(--color-text-info); color: #fff; }
+  .algo-step.done .step-dot { background: var(--color-text-success); color: #fff; }
+
+  .viz-panel { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); overflow: hidden; }
+  .viz-body { padding: 16px 14px 20px; }
+
+  .bars-area {
+    height: 180px;
+    display: flex;
+    align-items: flex-end;
+    gap: 4px;
+    padding: 0 4px;
+    position: relative;
+  }
+  .bar-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    flex: 1;
+    height: 100%;
+    justify-content: flex-end;
+  }
+  .bar {
+    width: 100%;
+    border-radius: 4px 4px 0 0;
+    transition: height 0.25s ease, background-color 0.2s;
+    position: relative;
+  }
+  .bar-label {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--color-text-secondary);
+    user-select: none;
+  }
+
+  .status-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 14px;
+    border-top: 0.5px solid var(--color-border-tertiary);
+    font-size: 12px;
+    color: var(--color-text-secondary);
+    gap: 8px;
+  }
+  .status-badge {
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 500;
+  }
+
+  .controls-row {
+    display: flex; gap: 8px; align-items: center; padding: 10px 14px;
+    border-top: 0.5px solid var(--color-border-tertiary);
+    flex-wrap: wrap;
+  }
+  .controls-row button { font-size: 12px; padding: 5px 14px; cursor: pointer; }
+  .controls-row button:disabled { opacity: 0.4; cursor: default; }
+
+  .input-row {
+    display: flex; gap: 8px; align-items: center; padding: 10px 14px;
+    flex-wrap: wrap;
+  }
+  .input-row input {
+    flex: 1;
+    font-size: 12px;
+    padding: 5px 10px;
+    min-width: 120px;
+  }
+  .input-row button { font-size: 12px; padding: 5px 12px; cursor: pointer; }
+  .speed-label { font-size: 12px; color: var(--color-text-secondary); white-space: nowrap; }
+
+  .legend { display: flex; gap: 14px; padding: 4px 14px 10px; flex-wrap: wrap; }
+  .legend-item { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--color-text-secondary); }
+  .legend-dot { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
+</style>
+
+<div class="root">
+  <h2 class="sr-only">Bubble sort simulator with code, algorithm steps, and bar chart visualization</h2>
+
+  <div class="top-panels">
+    <!-- Code panel -->
+    <div class="panel">
+      <div class="panel-header"><i class="ti ti-code" aria-hidden="true"></i> Code</div>
+      <div class="panel-body">
+        <div class="code-block" id="code-block">
+          <div class="code-line" id="cl-0"><span class="code-kw">function</span> <span class="code-fn">bubbleSort</span>(arr) {</div>
+          <div class="code-line" id="cl-1">  <span class="code-kw">let</span> n = arr.length;</div>
+          <div class="code-line" id="cl-2">  <span class="code-kw">for</span> (<span class="code-kw">let</span> i = <span class="code-num">0</span>; i &lt; n; i++) {</div>
+          <div class="code-line" id="cl-3">    <span class="code-kw">for</span> (<span class="code-kw">let</span> j = <span class="code-num">0</span>; j &lt; n-i-<span class="code-num">1</span>; j++) {</div>
+          <div class="code-line" id="cl-4">      <span class="code-kw">if</span> (arr[j] &gt; arr[j+<span class="code-num">1</span>]) {</div>
+          <div class="code-line" id="cl-5">        <span class="code-cm">// swap</span></div>
+          <div class="code-line" id="cl-6">        [arr[j], arr[j+<span class="code-num">1</span>]] = [arr[j+<span class="code-num">1</span>], arr[j]];</div>
+          <div class="code-line" id="cl-7">      }</div>
+          <div class="code-line" id="cl-8">    }</div>
+          <div class="code-line" id="cl-9">  }</div>
+          <div class="code-line" id="cl-10">  <span class="code-kw">return</span> arr;</div>
+          <div class="code-line" id="cl-11">}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Algorithm steps panel -->
+    <div class="panel">
+      <div class="panel-header"><i class="ti ti-list-check" aria-hidden="true"></i> Algorithm</div>
+      <div class="panel-body">
+        <div class="algo-steps" id="algo-steps">
+          <div class="algo-step" id="as-0"><div class="step-dot">1</div><div>Start outer pass <span id="as-0-detail" style="font-weight:500"></span></div></div>
+          <div class="algo-step" id="as-1"><div class="step-dot">2</div><div>Compare adjacent pair <span id="as-1-detail" style="font-weight:500"></span></div></div>
+          <div class="algo-step" id="as-2"><div class="step-dot">3</div><div>Swap if left &gt; right <span id="as-2-detail" style="font-weight:500"></span></div></div>
+          <div class="algo-step" id="as-3"><div class="step-dot">4</div><div>Advance pointer <span id="as-3-detail" style="font-weight:500"></span></div></div>
+          <div class="algo-step" id="as-4"><div class="step-dot">5</div><div>Largest bubbles to end of unsorted region</div></div>
+          <div class="algo-step done" id="as-5"><div class="step-dot" style="background:var(--color-text-success);color:#fff">✓</div><div>Array sorted!</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Visualization panel -->
+  <div class="viz-panel">
+    <div class="panel-header" style="padding:10px 14px">
+      <i class="ti ti-chart-bar" aria-hidden="true"></i> Visualization
+      <span style="margin-left:auto;font-size:11px" id="pass-label"></span>
+    </div>
+    <div class="viz-body">
+      <div class="bars-area" id="bars-area"></div>
+    </div>
+    <div class="legend">
+      <div class="legend-item"><div class="legend-dot" style="background:#378ADD"></div>Unsorted</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#EF9F27"></div>Comparing</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#E24B4A"></div>Swapping</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#639922"></div>Sorted</div>
+    </div>
+    <div class="status-row">
+      <span id="status-text" style="color:var(--color-text-secondary);font-size:12px">Enter numbers and press Set to begin</span>
+      <span class="status-badge" id="stats-badge" style="background:var(--color-background-secondary);color:var(--color-text-secondary)">
+        <span id="comp-count">0</span> comparisons · <span id="swap-count">0</span> swaps
+      </span>
+    </div>
+    <div class="input-row">
+      <input type="text" id="arr-input" placeholder="e.g. 8, 3, 1, 6, 4, 9, 2, 7, 5" value="8, 3, 1, 6, 4, 9, 2, 7, 5" />
+      <button onclick="setArray()">Set</button>
+      <button onclick="randomize()"><i class="ti ti-dice" aria-hidden="true"></i> Random</button>
+    </div>
+    <div class="controls-row">
+      <button id="btn-prev" onclick="stepBack()" disabled><i class="ti ti-player-skip-back" aria-hidden="true"></i> Prev</button>
+      <button id="btn-next" onclick="stepForward()">Next <i class="ti ti-player-skip-forward" aria-hidden="true"></i></button>
+      <button id="btn-play" onclick="togglePlay()"><i class="ti ti-player-play" aria-hidden="true"></i> Play</button>
+      <button onclick="resetSort()"><i class="ti ti-refresh" aria-hidden="true"></i> Reset</button>
+      <span class="speed-label">Speed</span>
+      <input type="range" id="speed-slider" min="1" max="5" value="3" step="1" style="width:80px" oninput="updateSpeed(this.value)">
+      <span id="speed-val" style="font-size:12px;color:var(--color-text-secondary)">×3</span>
+    </div>
+  </div>
+</div>
+
+<script>
+let arr = [], origArr = [];
+let steps = [], stepIdx = 0;
+let playTimer = null;
+let comparisons = 0, swaps = 0;
+const DELAYS = [900, 600, 380, 220, 100];
+let speedIdx = 2;
+
+function parseInput() {
+  const raw = document.getElementById('arr-input').value;
+  return raw.split(/[,\s]+/).map(s => parseInt(s)).filter(n => !isNaN(n) && n > 0 && n <= 999).slice(0, 20);
+}
+
+function setArray() {
+  stopPlay();
+  const parsed = parseInput();
+  if (parsed.length < 2) { document.getElementById('status-text').textContent = 'Enter at least 2 numbers (1–999)'; return; }
+  origArr = [...parsed];
+  arr = [...parsed];
+  buildSteps();
+  stepIdx = 0;
+  comparisons = 0; swaps = 0;
+  renderBars(arr, -1, -1, []);
+  updateStats();
+  updateButtons();
+  document.getElementById('pass-label').textContent = '';
+  document.getElementById('status-text').textContent = 'Press Next or Play to start';
+  resetAlgoSteps();
+  resetCodeLines();
+}
+
+function randomize() {
+  const n = 8 + Math.floor(Math.random() * 5);
+  const vals = Array.from({length: n}, () => 5 + Math.floor(Math.random() * 95));
+  document.getElementById('arr-input').value = vals.join(', ');
+  setArray();
+}
+
+function buildSteps() {
+  steps = [];
+  const a = [...arr];
+  const n = a.length;
+  steps.push({type:'init', arr:[...a], i:0, j:-1, sorted:[]});
+  for (let i = 0; i < n - 1; i++) {
+    steps.push({type:'outer', arr:[...a], i, j:-1, sorted: Array.from({length:n-i}, (_,k)=>n-1-k+i > n-1 ? n-1-k : -1).filter(x=>x>=0)});
+    for (let j = 0; j < n - i - 1; j++) {
+      steps.push({type:'compare', arr:[...a], i, j, sorted: Array.from({length:i},(_,k)=>n-1-k)});
+      if (a[j] > a[j+1]) {
+        [a[j], a[j+1]] = [a[j+1], a[j]];
+        steps.push({type:'swap', arr:[...a], i, j, sorted: Array.from({length:i},(_,k)=>n-1-k)});
+      }
+    }
+    const sorted = Array.from({length:i+1}, (_,k)=>n-1-k);
+    steps.push({type:'pass_end', arr:[...a], i, j:n-i-2, sorted});
+  }
+  steps.push({type:'done', arr:[...a], i:-1, j:-1, sorted: a.map((_,k)=>k)});
+}
+
+function applyStep(s) {
+  const n = arr.length;
+  if (!s) return;
+
+  if (s.type === 'compare') {
+    comparisons++;
+    renderBars(s.arr, s.j, s.j+1, s.sorted, 'compare');
+    setCodeLine(4); setAlgoStep(1, `arr[${s.j}]=${s.arr[s.j]} vs arr[${s.j+1}]=${s.arr[s.j+1]}`);
+    document.getElementById('status-text').textContent = `Pass ${s.i+1} — comparing index ${s.j} (${s.arr[s.j]}) and ${s.j+1} (${s.arr[s.j+1]})`;
+    document.getElementById('pass-label').textContent = `Pass ${s.i+1} of ${n-1}`;
+  } else if (s.type === 'swap') {
+    swaps++;
+    renderBars(s.arr, s.j, s.j+1, s.sorted, 'swap');
+    setCodeLine(6); setAlgoStep(2, `${s.arr[s.j+1]} ↔ ${s.arr[s.j]}`);
+    document.getElementById('status-text').textContent = `Swapped! ${s.arr[s.j+1]} and ${s.arr[s.j]} exchanged`;
+  } else if (s.type === 'outer') {
+    renderBars(s.arr, -1, -1, s.sorted);
+    setCodeLine(2); setAlgoStep(0, `i=${s.i}`);
+    document.getElementById('status-text').textContent = `Starting pass ${s.i+1} of ${n-1}`;
+    document.getElementById('pass-label').textContent = `Pass ${s.i+1} of ${n-1}`;
+  } else if (s.type === 'pass_end') {
+    renderBars(s.arr, -1, -1, s.sorted);
+    setCodeLine(8); setAlgoStep(4);
+    document.getElementById('status-text').textContent = `Pass ${s.i+1} complete — ${s.i+1} element${s.i>0?'s':''} sorted`;
+  } else if (s.type === 'done') {
+    renderBars(s.arr, -1, -1, s.sorted, 'done');
+    setCodeLine(10); setAlgoDone();
+    document.getElementById('status-text').textContent = `Sorted! ${comparisons} comparisons, ${swaps} swaps`;
+    document.getElementById('pass-label').textContent = 'Complete';
+    stopPlay();
+  } else if (s.type === 'init') {
+    renderBars(s.arr, -1, -1, []);
+    resetCodeLines(); resetAlgoSteps();
+  }
+  updateStats();
+}
+
+function getMaxVal() { return Math.max(...arr); }
+
+function renderBars(a, ci, cj, sorted, mode) {
+  const area = document.getElementById('bars-area');
+  area.innerHTML = '';
+  const maxV = Math.max(...a);
+  a.forEach((v, idx) => {
+    const col = document.createElement('div');
+    col.className = 'bar-col';
+    const bar = document.createElement('div');
+    bar.className = 'bar';
+    const pct = Math.max(8, (v / maxV) * 160);
+    bar.style.height = pct + 'px';
+    let bg = '#378ADD';
+    if (sorted.includes(idx) || mode === 'done') bg = '#639922';
+    if ((idx === ci || idx === cj) && mode === 'compare') bg = '#EF9F27';
+    if ((idx === ci || idx === cj) && mode === 'swap') bg = '#E24B4A';
+    bar.style.background = bg;
+    bar.style.opacity = (sorted.includes(idx) || mode === 'done') ? '0.85' : '1';
+    const lbl = document.createElement('div');
+    lbl.className = 'bar-label';
+    lbl.textContent = v;
+    col.appendChild(bar);
+    col.appendChild(lbl);
+    area.appendChild(col);
+  });
+}
+
+function setCodeLine(lineNum) {
+  document.querySelectorAll('.code-line').forEach(el => el.classList.remove('active'));
+  const el = document.getElementById('cl-' + lineNum);
+  if (el) el.classList.add('active');
+}
+function resetCodeLines() {
+  document.querySelectorAll('.code-line').forEach(el => el.classList.remove('active'));
+}
+
+function setAlgoStep(idx, detail) {
+  document.querySelectorAll('.algo-step').forEach((el, i) => {
+    if (i < idx) { el.classList.add('done'); el.classList.remove('active'); }
+    else if (i === idx) { el.classList.add('active'); el.classList.remove('done'); }
+    else { el.classList.remove('done','active'); }
+  });
+  for (let i = 0; i <= 5; i++) {
+    const d = document.getElementById('as-'+i+'-detail');
+    if (d) d.textContent = i === idx && detail ? `(${detail})` : '';
+  }
+}
+function setAlgoDone() {
+  document.querySelectorAll('.algo-step').forEach((el,i) => {
+    el.classList.remove('active');
+    el.classList.add('done');
+  });
+}
+function resetAlgoSteps() {
+  document.querySelectorAll('.algo-step').forEach((el,i) => {
+    el.classList.remove('active','done');
+    if (i === 5) el.classList.add('done');
+    const d = document.getElementById('as-'+i+'-detail');
+    if (d) d.textContent = '';
+  });
+}
+
+function stepForward() {
+  if (stepIdx >= steps.length - 1) return;
+  stepIdx++;
+  applyStep(steps[stepIdx]);
+  updateButtons();
+}
+
+function stepBack() {
+  if (stepIdx <= 0) return;
+  stopPlay();
+  stepIdx--;
+  comparisons = 0; swaps = 0;
+  for (let k = 1; k <= stepIdx; k++) {
+    if (steps[k].type === 'compare') comparisons++;
+    if (steps[k].type === 'swap') swaps++;
+  }
+  applyStep(steps[stepIdx]);
+  updateButtons();
+}
+
+function togglePlay() {
+  if (playTimer) { stopPlay(); return; }
+  if (stepIdx >= steps.length - 1) { resetSort(); }
+  const btn = document.getElementById('btn-play');
+  btn.innerHTML = '<i class="ti ti-player-pause" aria-hidden="true"></i> Pause';
+  playTimer = setInterval(() => {
+    if (stepIdx >= steps.length - 1) { stopPlay(); return; }
+    stepForward();
+  }, DELAYS[speedIdx]);
+}
+
+function stopPlay() {
+  if (playTimer) { clearInterval(playTimer); playTimer = null; }
+  const btn = document.getElementById('btn-play');
+  btn.innerHTML = '<i class="ti ti-player-play" aria-hidden="true"></i> Play';
+}
+
+function resetSort() {
+  stopPlay();
+  arr = [...origArr];
+  buildSteps();
+  stepIdx = 0;
+  comparisons = 0; swaps = 0;
+  applyStep(steps[0]);
+  updateStats();
+  updateButtons();
+  document.getElementById('pass-label').textContent = '';
+  document.getElementById('status-text').textContent = 'Press Next or Play to start';
+}
+
+function updateStats() {
+  document.getElementById('comp-count').textContent = comparisons;
+  document.getElementById('swap-count').textContent = swaps;
+}
+
+function updateButtons() {
+  document.getElementById('btn-prev').disabled = stepIdx <= 0;
+  document.getElementById('btn-next').disabled = stepIdx >= steps.length - 1;
+}
+
+function updateSpeed(val) {
+  speedIdx = parseInt(val) - 1;
+  document.getElementById('speed-val').textContent = '×' + val;
+  if (playTimer) { stopPlay(); togglePlay(); }
+}
+
+setArray();
+</script>
