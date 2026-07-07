@@ -161,48 +161,339 @@ export function buildInsertionSortSteps(input) {
   return steps;
 }
 
-export function buildLinearSearchSteps(input, target) {
-  const steps = [makeStep({ array: [...input], line: 1, explanation: `Search for ${target} from left to right.`, status: "Ready" })];
+export function buildLinearSearchSteps(inputArray, target) {
+  const steps = [];
+  const arr = [...inputArray];
+  const n = arr.length;
   let comparisons = 0;
 
-  for (let i = 0; i < input.length; i++) {
-    comparisons += 1;
-    const found = input[i] === target;
-    steps.push(makeStep({ array: [...input], line: 3, pass: 1, index: i, comparisons, comparing: [i], sorted: found ? [i] : [], explanation: found ? `${target} found at index ${i}.` : `${input[i]} is not ${target}. Continue searching.`, status: found ? "Found" : "Checking" }));
-    if (found) break;
+  // Helper to build a consistent step object, minimizing repetition
+  // and guaranteeing every field in the schema is always present.
+  const makeStep = ({
+    line,
+    pass = 0,
+    index = -1,
+    explanation = "",
+    status = "",
+    comparing = [],
+    swapping = [],
+    sorted = [],
+    markers = {},
+  }) => ({
+    array: [...arr],
+    line,
+    pass,
+    index,
+    comparisons,
+    explanation,
+    status,
+    comparing,
+    swapping,
+    sorted,
+    structure: "array",
+    markers,
+  });
+
+  // 1. Initial step (Line 1)
+  steps.push(
+    makeStep({
+      line: 1,
+      pass: 0,
+      index: -1,
+      explanation: `Initialize linear search for target ${target}.`,
+      status: "Ready",
+      comparing: [],
+      swapping: [],
+      sorted: [],
+      markers: {},
+    })
+  );
+
+  let foundIndex = -1;
+
+  for (let i = 0; i < n; i++) {
+    // 2. Loop iteration step (Line 2)
+    steps.push(
+      makeStep({
+        line: 2,
+        pass: i + 1,
+        index: i,
+        explanation: `Start pass ${i + 1}: check index ${i} (loop condition i < ${n} holds).`,
+        status: "Start Pass",
+        comparing: [],
+        swapping: [],
+        sorted: [],
+        markers: { i },
+      })
+    );
+
+    // 3. Comparison step (Line 3)
+    comparisons++;
+    steps.push(
+      makeStep({
+        line: 3,
+        pass: i + 1,
+        index: i,
+        explanation: `Compare arr[${i}] (${arr[i]}) with target (${target}).`,
+        status: "Comparing",
+        comparing: [i],
+        swapping: [],
+        sorted: [],
+        markers: { i },
+      })
+    );
+
+    if (arr[i] === target) {
+      // 4. Found step (Line 5)
+      foundIndex = i;
+      steps.push(
+        makeStep({
+          line: 5,
+          pass: i + 1,
+          index: i,
+          explanation: `Target found at index ${i}!`,
+          status: "Found",
+          comparing: [],
+          swapping: [],
+          sorted: [i],
+          markers: { i },
+        })
+      );
+      break;
+    }
   }
 
-  if (!steps.some((step) => step.status === "Found")) {
-    steps.push(makeStep({ array: [...input], line: 7, pass: 1, index: input.length - 1, comparisons, explanation: `${target} is not in the input array.`, status: "Not Found" }));
+  // 5. Not found step (Line 8) - only if the loop completed without a match
+  if (foundIndex === -1) {
+    steps.push(
+      makeStep({
+        line: 8,
+        pass: n,
+        index: -1,
+        explanation: "Loop completed. Target not found in the array.",
+        status: "Not Found",
+        comparing: [],
+        swapping: [],
+        sorted: [],
+        markers: {},
+      })
+    );
   }
+
   return steps;
 }
 
-export function buildBinarySearchSteps(input, target) {
-  const arr = [...input].sort((a, b) => a - b);
-  const steps = [makeStep({ array: [...arr], line: 1, explanation: `Binary Search uses the sorted input and searches for ${target}.`, status: "Ready" })];
-  let left = 0;
-  let right = arr.length - 1;
+export function buildBinarySearchSteps(inputArray, target) {
+  const steps = [];
+
+  // Binary Search requires a sorted array — sort a copy, never mutate the caller's array.
+  const sortedArray = [...inputArray].sort((a, b) => a - b);
+
   let comparisons = 0;
+  let pass = 0;
+
+  // Helper to keep step objects consistent and reduce repetition.
+  const makeStep = ({
+    line,
+    index,
+    explanation,
+    status,
+    comparing = [],
+    swapping = [],
+    sorted = [],
+    markers = {},
+  }) => ({
+    array: [...sortedArray],
+    line,
+    pass,
+    index,
+    comparisons,
+    explanation,
+    status,
+    comparing,
+    swapping,
+    sorted,
+    structure: "array",
+    markers,
+  });
+
+  // --- Step 1: Initialization (Line 1) ---
+  steps.push(
+    makeStep({
+      line: 1,
+      index: -1,
+      explanation: `Starting Binary Search on the sorted array for target ${target}.`,
+      status: "Ready",
+      comparing: [],
+      swapping: [],
+      sorted: [],
+      markers: {},
+    })
+  );
+
+  let left = 0;
+  let right = sortedArray.length - 1;
+
+  // --- Step 2: Set left/right bounds (Line 2 & 3) ---
+  steps.push(
+    makeStep({
+      line: 2,
+      index: -1,
+      explanation: `Initializing left boundary to index ${left}.`,
+      status: "Init Left",
+      comparing: [left],
+      swapping: [],
+      sorted: [],
+      markers: { left, right },
+    })
+  );
+
+  steps.push(
+    makeStep({
+      line: 3,
+      index: -1,
+      explanation: `Initializing right boundary to index ${right}.`,
+      status: "Init Right",
+      comparing: [right],
+      swapping: [],
+      sorted: [],
+      markers: { left, right },
+    })
+  );
+
+  let found = false;
 
   while (left <= right) {
-    const mid = Math.floor((left + right) / 2);
+    pass += 1;
+
+    // --- Loop condition check (Line 4) ---
+    steps.push(
+      makeStep({
+        line: 4,
+        index: -1,
+        explanation: `Checking loop condition: left (${left}) <= right (${right}).`,
+        status: "Checking Bounds",
+        comparing: [left, right],
+        swapping: [],
+        sorted: [],
+        markers: { left, right },
+      })
+    );
+
+    const mid = left + Math.floor((right - left) / 2);
     comparisons += 1;
-    steps.push(makeStep({ array: [...arr], line: 5, pass: comparisons, index: mid, comparisons, comparing: [left, mid, right], explanation: `Check middle index ${mid}, value ${arr[mid]}.`, status: "Checking Middle", markers: { left, mid, right } }));
-    if (arr[mid] === target) {
-      steps.push(makeStep({ array: [...arr], line: 7, pass: comparisons, index: mid, comparisons, sorted: [mid], explanation: `${target} found at index ${mid} in the sorted array.`, status: "Found", markers: { left, mid, right } }));
-      return steps;
+
+    // --- Step: Calculate mid (Line 5) ---
+    steps.push(
+      makeStep({
+        line: 5,
+        index: mid,
+        explanation: `Calculating mid index: left (${left}) + (right (${right}) - left (${left})) / 2 = ${mid}. Comparing arr[${mid}] = ${sortedArray[mid]} against target ${target}.`,
+        status: "Checking Mid",
+        comparing: [left, mid, right],
+        swapping: [],
+        sorted: [],
+        markers: { left, mid, right },
+      })
+    );
+
+    // --- Step: Equality check (Line 6) ---
+    steps.push(
+      makeStep({
+        line: 6,
+        index: mid,
+        explanation: `Is arr[${mid}] (${sortedArray[mid]}) equal to target (${target})?`,
+        status: "Comparing",
+        comparing: [left, mid, right],
+        swapping: [],
+        sorted: [],
+        markers: { left, mid, right },
+      })
+    );
+
+    if (sortedArray[mid] === target) {
+      // --- Step: Found (Line 7) ---
+      steps.push(
+        makeStep({
+          line: 7,
+          index: mid,
+          explanation: `Target found! arr[${mid}] equals ${target}. Returning index ${mid}.`,
+          status: "Found",
+          comparing: [],
+          swapping: [],
+          sorted: [mid],
+          markers: { left, mid, right },
+        })
+      );
+      found = true;
+      break;
     }
-    if (arr[mid] < target) {
+
+    // --- Step: Less-than check (Line 9) ---
+    steps.push(
+      makeStep({
+        line: 9,
+        index: mid,
+        explanation: `Is arr[${mid}] (${sortedArray[mid]}) less than target (${target})?`,
+        status: "Comparing",
+        comparing: [left, mid, right],
+        swapping: [],
+        sorted: [],
+        markers: { left, mid, right },
+      })
+    );
+
+    if (sortedArray[mid] < target) {
       left = mid + 1;
-      steps.push(makeStep({ array: [...arr], line: 10, pass: comparisons, index: left, comparisons, explanation: `${arr[mid]} is smaller than ${target}, so search the right half.`, status: "Move Right", markers: { left, right } }));
+
+      // --- Step: Move left bound (Line 10) ---
+      steps.push(
+        makeStep({
+          line: 10,
+          index: mid,
+          explanation: `arr[${mid}] (${sortedArray[mid]}) is less than target (${target}). Search range moves right: left = ${left}.`,
+          status: "Search Right",
+          comparing: [left, right],
+          swapping: [],
+          sorted: [],
+          markers: { left, mid, right },
+        })
+      );
     } else {
       right = mid - 1;
-      steps.push(makeStep({ array: [...arr], line: 12, pass: comparisons, index: right, comparisons, explanation: `${arr[mid]} is larger than ${target}, so search the left half.`, status: "Move Left", markers: { left, right } }));
+
+      // --- Step: Move right bound (Line 12) ---
+      steps.push(
+        makeStep({
+          line: 12,
+          index: mid,
+          explanation: `arr[${mid}] (${sortedArray[mid]}) is greater than target (${target}). Search range moves left: right = ${right}.`,
+          status: "Search Left",
+          comparing: [left, right],
+          swapping: [],
+          sorted: [],
+          markers: { left, mid, right },
+        })
+      );
     }
   }
 
-  steps.push(makeStep({ array: [...arr], line: 15, pass: comparisons, index: 0, comparisons, explanation: `${target} is not in the input array.`, status: "Not Found" }));
+  if (!found) {
+    // --- Step: Not found (Line 15) ---
+    steps.push(
+      makeStep({
+        line: 15,
+        index: -1,
+        explanation: `Search range exhausted (left > right). Target ${target} not found, returning -1.`,
+        status: "Not Found",
+        comparing: [],
+        swapping: [],
+        sorted: [],
+        markers: { left, right },
+      })
+    );
+  }
+
   return steps;
 }
 
