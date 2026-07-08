@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { BookOpen, Gauge, Layers, PlayCircle, Search, Sparkles } from "lucide-react";
+import { BookOpen, ChevronDown, ChevronUp, Gauge, Layers, PlayCircle, Search, Sparkles } from "lucide-react";
 import { useMemo, useState } from "react";
 import AlgorithmCard from "../components/AlgorithmCard.jsx";
 import SearchBar from "../components/SearchBar.jsx";
@@ -14,11 +14,15 @@ const features = [
 
 export default function Home() {
   const [query, setQuery] = useState("");
+  const [showAll, setShowAll] = useState(false);
   const filtered = useMemo(
     () => algorithms.filter((algorithm) => `${algorithm.title} ${algorithm.category}`.toLowerCase().includes(query.toLowerCase())),
     [query]
   );
-  const popular = algorithms.filter((algorithm) => ["bubble-sort", "binary-search", "bfs", "bst"].includes(algorithm.slug));
+  const visibleAlgorithms = useMemo(() => {
+    if (query) return filtered;
+    return showAll ? algorithms : algorithms.slice(0, 12);
+  }, [query, filtered, showAll]);
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
@@ -68,15 +72,33 @@ export default function Home() {
       <section className="mt-12">
         <div className="flex items-end justify-between gap-4">
           <div>
-            <p className="muted-label">{query ? "Search Algorithm" : "Popular Algorithms"}</p>
+            <p className="muted-label">{query ? "Search Algorithm" : "Explore Algorithms"}</p>
             <h2 className="mt-2 text-3xl font-black">{query ? "Matching Results" : "Start with these"}</h2>
           </div>
         </div>
         <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-          {(query ? filtered : popular).slice(0, 8).map((algorithm) => (
+          {visibleAlgorithms.map((algorithm) => (
             <AlgorithmCard key={algorithm.slug} algorithm={algorithm} />
           ))}
         </div>
+        {!query && algorithms.length > 12 && (
+          <div className="mt-8 flex justify-center">
+            <button
+              onClick={() => setShowAll((prev) => !prev)}
+              className="soft-button"
+            >
+              {showAll ? (
+                <>
+                  Show Less <ChevronUp size={16} />
+                </>
+              ) : (
+                <>
+                  Show More <ChevronDown size={16} />
+                </>
+              )}
+            </button>
+          </div>
+        )}
       </section>
 
       <section className="mt-12 grid gap-5 lg:grid-cols-[.9fr_1.1fr]">

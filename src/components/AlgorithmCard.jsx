@@ -15,7 +15,6 @@ export default function AlgorithmCard({ algorithm }) {
             <ArrowRight size={18} />
           </span>
         </div>
-        <p className="text-sm leading-6 text-slate-600 dark:text-slate-300">{algorithm.description}</p>
         <div className="mt-auto flex flex-wrap gap-2 text-xs font-bold">
           <span className="rounded-full bg-blue-100 px-3 py-1 text-blue-700 dark:bg-cyan-400/10 dark:text-cyan-200">Best {algorithm.complexities.best}</span>
           <span className="rounded-full bg-emerald-100 px-3 py-1 text-emerald-700 dark:bg-emerald-400/10 dark:text-emerald-200">Space {algorithm.complexities.space}</span>
