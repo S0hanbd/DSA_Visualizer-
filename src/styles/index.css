@@ -30,6 +30,10 @@ input {
     @apply rounded-[28px] border border-white/70 bg-slate-100/80 shadow-neo transition-all duration-500 dark:border-slate-700/50 dark:bg-slate-900/90 dark:shadow-dark-neo;
   }
 
+  .neo-card {
+    @apply rounded-[28px] border border-white bg-white shadow-[12px_12px_28px_rgba(148,163,184,0.45),-12px_-12px_28px_rgba(255,255,255,0.95)] transition-all duration-500 hover:shadow-[16px_16px_36px_rgba(148,163,184,0.55),-16px_-16px_36px_rgba(255,255,255,1)] dark:border-slate-800 dark:bg-slate-900/90 dark:shadow-[12px_12px_28px_rgba(2,6,23,0.85),-8px_-8px_20px_rgba(51,65,85,0.35)];
+  }
+
   .neo-inset {
     @apply rounded-[22px] bg-slate-100 shadow-neo-inset transition-all duration-500 dark:bg-slate-900 dark:shadow-dark-inset;
   }
