@@ -1,9 +1,10 @@
 import { motion } from "framer-motion";
 import { BookOpen, ChevronDown, ChevronUp, Gauge, Layers, PlayCircle, Search, Sparkles } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import AlgorithmCard from "../components/AlgorithmCard.jsx";
 import SearchBar from "../components/SearchBar.jsx";
 import { algorithms, categories } from "../data/algorithms.js";
+import { buildBubbleSortSteps } from "../logic/bubbleSortSimulation.js";
 
 const features = [
   ["Synchronized C++", "Line highlighting follows the active simulation step.", BookOpen],
@@ -23,6 +24,37 @@ export default function Home() {
     if (query) return filtered;
     return showAll ? algorithms : algorithms.slice(0, 12);
   }, [query, filtered, showAll]);
+
+  const generateRandomPreview = useCallback(() => {
+    const uniqueSet = new Set();
+    while (uniqueSet.size < 7) {
+      uniqueSet.add(Math.floor(Math.random() * 80) + 15);
+    }
+    return Array.from(uniqueSet);
+  }, []);
+
+  const [loopId, setLoopId] = useState(0);
+  const [previewArray, setPreviewArray] = useState(() => generateRandomPreview());
+  const previewSteps = useMemo(() => buildBubbleSortSteps(previewArray), [previewArray]);
+  const [previewStepIdx, setPreviewStepIdx] = useState(0);
+
+  useEffect(() => {
+    const isLastStep = previewStepIdx >= previewSteps.length - 1;
+    const delay = isLastStep ? 2400 : 800;
+    const timer = setTimeout(() => {
+      setPreviewStepIdx((prev) => {
+        if (prev >= previewSteps.length - 1) {
+          setPreviewArray(generateRandomPreview());
+          setLoopId((id) => id + 1);
+          return 0;
+        }
+        return prev + 1;
+      });
+    }, delay);
+    return () => clearTimeout(timer);
+  }, [previewStepIdx, previewSteps, generateRandomPreview]);
+
+  const currentPreviewStep = previewSteps[previewStepIdx] || previewSteps[0];
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
@@ -44,26 +76,35 @@ export default function Home() {
           <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.55, delay: 0.1 }} className="neo-panel mx-2 p-5 sm:mx-8">
             <div className="flex items-center justify-between">
               <div>
-                <p className="muted-label">Live Preview</p>
-                <h2 className="mt-1 text-2xl font-black">Bubble Sort</h2>
+                <h2 className="text-2xl font-black">Live Preview</h2>
               </div>
               <Search className="text-blue-600 dark:text-cyan-300" />
             </div>
             <div className="neo-inset mt-6 flex h-72 items-end justify-center gap-3 p-5">
-              {[38, 72, 28, 86, 54, 96, 44].map((value, index) => (
-                <motion.div
-                  key={value}
-                  animate={{ height: `${value}%` }}
-                  transition={{ duration: 0.7, repeat: Infinity, repeatType: "reverse", delay: index * 0.07 }}
-                  className={`w-full max-w-12 rounded-t-2xl ${
-                    index === 2 || index === 3
-                      ? "bg-orange-400"
-                      : index > 4
-                        ? "bg-emerald-500"
-                        : "bg-blue-500 dark:bg-cyan-400"
-                  }`}
-                />
-              ))}
+              {currentPreviewStep.array.map((value, index) => {
+                const isComparing = currentPreviewStep.comparing?.includes(index);
+                const isSwapping = currentPreviewStep.swapping?.includes(index);
+                const isSorted = currentPreviewStep.sorted?.includes(index);
+
+                let colorClass = "bg-blue-500 dark:bg-cyan-400";
+                if (isSwapping) {
+                  colorClass = "bg-red-500";
+                } else if (isComparing) {
+                  colorClass = "bg-orange-400";
+                } else if (isSorted) {
+                  colorClass = "bg-emerald-500";
+                }
+
+                return (
+                  <motion.div
+                    key={`${loopId}-${value}`}
+                    layout
+                    animate={{ height: `${value}%` }}
+                    transition={{ type: "spring", stiffness: 160, damping: 20 }}
+                    className={`w-full max-w-12 rounded-t-2xl shadow-md ${colorClass}`}
+                  />
+                );
+              })}
             </div>
           </motion.div>
         </div>

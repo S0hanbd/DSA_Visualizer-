@@ -36,18 +36,29 @@ export default function VisualizationBars({ step, algorithm }) {
         <span className="rounded-full bg-slate-200 px-3 py-1 text-xs font-black text-slate-600 dark:bg-slate-800 dark:text-slate-300">{step.status}</span>
       </div>
       <div className="neo-inset flex h-80 items-end justify-center gap-2 overflow-hidden p-4 sm:gap-3">
-        {values.map((value, index) => (
-          <div key={`${index}-${value}`} className="flex h-full min-w-0 flex-1 flex-col items-center justify-end gap-2">
-            <motion.div
-              layout
-              initial={{ height: 20, opacity: 0.75 }}
-              animate={{ height: `${Math.max(14, (value / max) * 100)}%`, opacity: 1 }}
-              transition={{ type: "spring", stiffness: 160, damping: 20 }}
-              className={`w-full max-w-12 rounded-t-2xl bg-gradient-to-t ${colorFor(index)} shadow-lg`}
-            />
-            <span className="text-xs font-black text-slate-600 dark:text-slate-300">{value}</span>
-          </div>
-        ))}
+        {(() => {
+          const occurrences = {};
+          return values.map((value, index) => {
+            occurrences[value] = (occurrences[value] || 0) + 1;
+            const itemKey = `${value}-${occurrences[value] - 1}`;
+            return (
+              <motion.div
+                key={itemKey}
+                layout
+                transition={{ type: "spring", stiffness: 160, damping: 20 }}
+                className="flex h-full min-w-0 flex-1 flex-col items-center justify-end gap-2"
+              >
+                <motion.div
+                  initial={{ height: 20, opacity: 0.75 }}
+                  animate={{ height: `${Math.max(14, (value / max) * 100)}%`, opacity: 1 }}
+                  transition={{ type: "spring", stiffness: 160, damping: 20 }}
+                  className={`w-full max-w-12 rounded-t-2xl bg-gradient-to-t ${colorFor(index)} shadow-lg`}
+                />
+                <span className="text-xs font-black text-slate-600 dark:text-slate-300">{value}</span>
+              </motion.div>
+            );
+          });
+        })()}
       </div>
       <div className="mt-4 flex flex-wrap gap-3 text-xs font-bold">
         {algorithm?.slug === "selection-sort" ? (
