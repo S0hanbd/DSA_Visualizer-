@@ -48,7 +48,7 @@ export default function AlgorithmCard({ algorithm }) {
 
   return (
     <motion.div whileHover={{ y: -5 }} transition={{ type: "spring", stiffness: 260, damping: 22 }}>
-      <Link to={`/algorithm/${algorithm.slug}`} className="neo-card flex h-full flex-col gap-4 p-5">
+      <Link to={`/algorithm/${algorithm.slug}`} className={`neo-card flex h-full flex-col gap-4 p-5 ${style.border}`}>
         <div className="flex flex-col items-start gap-2">
           <span className={`inline-block rounded-xl border px-3 py-0.5 text-[10px] font-bold uppercase tracking-wider ${style.bg} ${style.text} ${style.border}`}>
             {algorithm.category}
