@@ -92,7 +92,7 @@ export default function AlgorithmPage() {
         </section>
 
         <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-          <ComplexityCard label="Best Case" value={algorithm.complexities.best} tone="green" />
+          <ComplexityCard label="Base Case" value={algorithm.complexities.best} tone="green" />
           <ComplexityCard label="Average Case" value={algorithm.complexities.average} tone="blue" />
           <ComplexityCard label="Worst Case" value={algorithm.complexities.worst} tone="red" />
           <ComplexityCard label="Space Complexity" value={algorithm.complexities.space} tone="orange" />

@@ -56,8 +56,8 @@ export default function AlgorithmCard({ algorithm }) {
           <h3 className="mt-1 text-xl font-black">{algorithm.title}</h3>
         </div>
         <div className="mt-auto flex flex-wrap gap-2 text-xs font-bold">
-          <span className="rounded-full bg-blue-100 px-3 py-1 text-blue-700 dark:bg-cyan-400/10 dark:text-cyan-200">Best {algorithm.complexities.best}</span>
-          <span className="rounded-full bg-emerald-100 px-3 py-1 text-emerald-700 dark:bg-emerald-400/10 dark:text-emerald-200">Space {algorithm.complexities.space}</span>
+          <span className="rounded-full bg-slate-100 px-3 py-1 text-slate-600 dark:bg-slate-800/40 dark:text-slate-400">Base {algorithm.complexities.best}</span>
+          <span className="rounded-full bg-slate-100 px-3 py-1 text-slate-600 dark:bg-slate-800/40 dark:text-slate-400">Space {algorithm.complexities.space}</span>
         </div>
       </Link>
     </motion.div>
