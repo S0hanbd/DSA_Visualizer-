@@ -9,9 +9,12 @@ import Sidebar from "../components/Sidebar.jsx";
 import StatsPanel from "../components/StatsPanel.jsx";
 import StepExplanation from "../components/StepExplanation.jsx";
 import VisualizationBars from "../components/VisualizationBars.jsx";
+import LinkedListVisualization from "../components/LinkedListVisualization.jsx";
 import { algorithmMap } from "../data/algorithms.js";
 import { createRandomArray } from "../logic/bubbleSortSimulation.js";
 import { buildSimulationSteps } from "../logic/simulations.js";
+
+const LINKED_LIST_SLUGS = new Set(["singly-linked-list", "doubly-linked-list", "circular-linked-list"]);
 
 const defaultArray = [42, 18, 73, 29, 64, 11, 90, 37, 56];
 
@@ -98,7 +101,9 @@ export default function AlgorithmPage() {
           <ComplexityCard label="Space Complexity" value={algorithm.complexities.space} tone="orange" />
         </section>
 
-        <VisualizationBars step={step} algorithm={algorithm} />
+        {LINKED_LIST_SLUGS.has(activeSlug)
+          ? <LinkedListVisualization step={step} algorithm={algorithm} />
+          : <VisualizationBars step={step} algorithm={algorithm} />}
         <StatsPanel step={step} totalSteps={steps.length} currentStep={currentStep} />
         <StepExplanation step={step} />
         <Controls

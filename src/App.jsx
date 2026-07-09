@@ -4,6 +4,7 @@ import Navbar from "./components/Navbar.jsx";
 import Footer from "./components/Footer.jsx";
 import Home from "./pages/Home.jsx";
 import AlgorithmPage from "./pages/AlgorithmPage.jsx";
+import LinkedListPage from "./pages/LinkedListPage.jsx";
 import { ThemeProvider } from "./hooks/useTheme.jsx";
 
 function AnimatedRoutes() {
@@ -21,6 +22,9 @@ function AnimatedRoutes() {
       >
         <Routes location={location}>
           <Route path="/" element={<Home />} />
+          <Route path="/algorithm/singly-linked-list" element={<LinkedListPage />} />
+          <Route path="/algorithm/doubly-linked-list" element={<LinkedListPage />} />
+          <Route path="/algorithm/circular-linked-list" element={<LinkedListPage />} />
           <Route path="/algorithm/:slug" element={<AlgorithmPage />} />
           <Route path="/sorting" element={<Navigate to="/algorithm/bubble-sort" replace />} />
           <Route path="/searching" element={<Navigate to="/algorithm/linear-search" replace />} />
