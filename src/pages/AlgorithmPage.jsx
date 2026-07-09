@@ -44,7 +44,7 @@ export default function AlgorithmPage() {
   useEffect(() => {
     setCurrentStep(0);
     setIsPlaying(false);
-  }, [location.pathname, array, target, isPresent]);
+  }, [location.pathname, array, target]);
 
   useEffect(() => {
     if (!isPlaying || !isPresent) return undefined;
