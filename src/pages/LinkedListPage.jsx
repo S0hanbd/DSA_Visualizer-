@@ -8,6 +8,7 @@ import { algorithmMap } from "../data/algorithms.js";
 import {
   buildInsertHeadSteps,
   buildInsertTailSteps,
+  buildInsertAtSteps,
   buildDeleteSteps,
   buildSearchSteps,
   buildInitialStep,
@@ -139,6 +140,7 @@ export default function LinkedListPage() {
 
   // ── operation input ────────────────────────────────────────────────────────
   const [opValue, setOpValue] = useState("");
+  const [opIndex, setOpIndex] = useState("");
   const [opError, setOpError] = useState("");
 
   // ── animation state ────────────────────────────────────────────────────────
@@ -173,21 +175,37 @@ export default function LinkedListPage() {
   if (!algorithm) return <Navigate to="/" replace />;
 
   // ── run operation ──────────────────────────────────────────────────────────
-  const runOp = useCallback((builderFn) => {
-    const num = Number(opValue.trim());
-    if (!Number.isFinite(num) || opValue.trim() === "") {
-      setOpError("Enter a valid number.");
+  const runOp = useCallback((builderFn, isInsertAt = false) => {
+    if (isPlaying) return;
+    const val = parseInt(opValue.trim(), 10);
+    if (isNaN(val) || val < 0 || val > 9999) {
+      setOpError("Please enter a valid positive number.");
       return;
     }
+    
+    let newSteps;
+    if (isInsertAt) {
+      const idx = parseInt(opIndex.trim(), 10);
+      if (isNaN(idx) || idx < 0 || idx > liveList.length) {
+        setOpError(`Index must be between 0 and ${liveList.length}.`);
+        return;
+      }
+      newSteps = builderFn(liveList, val, idx, structure);
+    } else {
+      newSteps = builderFn(liveList, val, structure);
+    }
+
+    if (newSteps.length > 0) {
+      setSteps(newSteps);
+      setCurrentStep(0);
+      setIsPlaying(true);
+      const finalState = newSteps[newSteps.length - 1];
+      if (finalState.array) setLiveList(finalState.array);
+    }
+    setOpValue("");
+    setOpIndex("");
     setOpError("");
-    // Use the array from the last completed step as the base
-    const base = steps[steps.length - 1].array;
-    const newSteps = builderFn(base, num, structure);
-    setLiveList([...base]);
-    setSteps(newSteps);
-    setCurrentStep(0);
-    setIsPlaying(true); // ← auto-start immediately
-  }, [opValue, steps, structure]);
+  }, [isPlaying, opValue, opIndex, liveList, structure]);
 
   // ── set list ───────────────────────────────────────────────────────────────
   const handleSetList = () => {
@@ -325,7 +343,15 @@ export default function LinkedListPage() {
                   value={opValue}
                   onChange={(e) => { setOpValue(e.target.value); setOpError(""); }}
                   onKeyDown={(e) => e.key === "Enter" && runOp(buildInsertHeadSteps)}
-                  className="neo-inset w-full bg-transparent px-4 py-3 text-sm font-semibold outline-none placeholder:text-slate-400 sm:max-w-64"
+                  className="neo-inset flex-1 bg-transparent px-4 py-3 text-sm font-semibold outline-none placeholder:text-slate-400 sm:max-w-48"
+                />
+                <input
+                  type="number"
+                  placeholder="Index (Optional)"
+                  value={opIndex}
+                  onChange={(e) => { setOpIndex(e.target.value); setOpError(""); }}
+                  onKeyDown={(e) => e.key === "Enter" && runOp(buildInsertAtSteps, true)}
+                  className="neo-inset flex-1 bg-transparent px-4 py-3 text-sm font-semibold outline-none placeholder:text-slate-400 sm:max-w-40"
                 />
                 {opError && (
                   <p className="text-xs font-bold text-red-500">{opError}</p>
@@ -343,6 +369,12 @@ export default function LinkedListPage() {
                   icon="⬇"
                   color="blue"
                   onClick={() => runOp(buildInsertTailSteps)}
+                />
+                <OpBtn
+                  label="Insert at Index"
+                  icon="➡"
+                  color="emerald"
+                  onClick={() => runOp(buildInsertAtSteps, true)}
                 />
                 <OpBtn
                   label="Search"

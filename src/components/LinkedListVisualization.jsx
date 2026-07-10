@@ -1,10 +1,19 @@
 import { motion, AnimatePresence } from "framer-motion";
+import { useMemo } from "react";
 
-// ─── colour palette per step state ──────────────────────────────────────────
-function nodeColors(index, step) {
+// ─── Constants ───────────────────────────────────────────────────────────────
+const NODE_HEIGHT = 80;
+const SPACING = 70;
+
+function getNodeWidth(isDoubly) {
+    return isDoubly ? 156 : 108;
+}
+
+// ─── Colors per step state ───────────────────────────────────────────────────
+function nodeColors(index, step, overrideIsNew = false) {
   const { comparing = [], swapping = [], sorted = [], markers = {} } = step;
-  const isNew      = markers.newNode   === index;
-  const isDeleting = markers.deleting  === index || swapping.includes(index);
+  const isNew      = markers.newNode === index || overrideIsNew;
+  const isDeleting = markers.deleting === index || swapping.includes(index);
   const isFound    = sorted.includes(index);
   const isActive   = comparing.includes(index);
 

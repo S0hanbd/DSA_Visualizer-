@@ -24,6 +24,9 @@ function makeStep(list, explanation, status, structure, opts = {}) {
       deleting: opts.deleting ?? null,
       highlightArrowFrom: opts.highlightArrowFrom ?? null,
       result: opts.result ?? null,
+      customEdges: opts.customEdges ?? [],
+      hiddenEdges: opts.hiddenEdges ?? [],
+      nodeLayouts: opts.nodeLayouts ?? {},
     },
   };
 }
@@ -123,6 +126,73 @@ export function buildInsertTailSteps(list, value, structure = "linked-list") {
     push(`curr.next = node(${value}). ${oldTail} → ${value}.`, "Link Tail", { newNode: L.length - 1, highlightArrowFrom: L.length - 2, line: 23 });
     push(`Tail inserted. List: [${L.join(sep)}]. ✅ Done.`, "Done");
   }
+
+  return steps;
+}
+
+// ─── Insert at Index ─────────────────────────────────────────────────────────
+export function buildInsertAtSteps(list, value, index, structure = "linked-list") {
+  const steps = [];
+  let L = [...list];
+  const isDoubly = structure === "doubly-list";
+  const sep = isDoubly ? " ↔ " : " → ";
+
+  const push = (expl, status, opts = {}) =>
+    steps.push(makeStep(L, expl, status, structure, { ...opts, operation: "Insert At" }));
+
+  push(`Insert ${value} at index ${index}.`, "Insert At");
+
+  if (index === 0) {
+      return buildInsertHeadSteps(list, value, structure);
+  }
+  if (index >= L.length) {
+      return buildInsertTailSteps(list, value, structure);
+  }
+
+  // Create new node floating above
+  L.splice(index, 0, value);
+  const prevIdx = index - 1;
+  const currIdx = index;
+  const nextIdx = index + 1;
+
+  // New node floats
+  const floatNode = { [currIdx]: { yOffset: -80, isNew: true } };
+
+  push(`Create new Node(${value})`, "Creating Node", {
+      nodeLayouts: floatNode,
+      hiddenEdges: [[prevIdx, currIdx], [currIdx, nextIdx]], // don't draw standard edges to it yet
+      customEdges: [{ from: prevIdx, to: nextIdx, status: "standard" }] // keep old edge drawn
+  });
+
+  push(`Traverse to index ${index - 1}`, "Traversing", {
+      comparing: [prevIdx],
+      nodeLayouts: floatNode,
+      hiddenEdges: [[prevIdx, currIdx], [currIdx, nextIdx]],
+      customEdges: [{ from: prevIdx, to: nextIdx, status: "standard" }]
+  });
+
+  push(`node.next = prev.next (node ${value} → ${L[nextIdx]})`, "Link Next", {
+      nodeLayouts: floatNode,
+      hiddenEdges: [[prevIdx, currIdx], [currIdx, nextIdx]],
+      customEdges: [
+          { from: prevIdx, to: nextIdx, status: "standard" },
+          { from: currIdx, to: nextIdx, status: "curved" }
+      ]
+  });
+
+  push(`prev.next = node (node ${L[prevIdx]} → ${value})`, "Link Prev", {
+      nodeLayouts: floatNode,
+      hiddenEdges: [[prevIdx, currIdx], [currIdx, nextIdx]],
+      customEdges: [
+          { from: prevIdx, to: nextIdx, status: "broken" },
+          { from: prevIdx, to: currIdx, status: "curved" },
+          { from: currIdx, to: nextIdx, status: "curved" }
+      ]
+  });
+
+  push(`Node snaps into position. List: [${L.join(sep)}]. ✅ Done.`, "Done", {
+      newNode: currIdx
+  });
 
   return steps;
 }

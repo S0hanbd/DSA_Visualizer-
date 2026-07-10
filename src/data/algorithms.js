@@ -18,9 +18,141 @@ export const categories = [
   { name: "Linked List", path: "/linked-list", algorithms: ["singly-linked-list", "doubly-linked-list", "circular-linked-list"] },
   { name: "Stack", path: "/stack", algorithms: ["stack-array"] },
   { name: "Queue", path: "/queue", algorithms: ["linear-queue", "circular-queue", "priority-queue"] },
-  { name: "Trees", path: "/trees", algorithms: ["binary-tree", "bst", "avl", "tree-traversal"] },
+  { name: "Trees", path: "/trees", algorithms: ["binary-tree", "bst", "avl", "tree-traversal", "max-heap"] },
   { name: "Graphs", path: "/graph", algorithms: ["bfs", "dfs", "dijkstra", "prim", "kruskal"] },
 ];
+
+const stackCode = `#include <iostream>
+using namespace std;
+
+#define MAX 1000
+
+class Stack {
+    int top;
+public:
+    int a[MAX]; 
+
+    Stack() { top = -1; }
+    
+    bool push(int x) {
+        if (top >= (MAX - 1)) {
+            cout << "Stack Overflow";
+            return false;
+        } else {
+            a[++top] = x;
+            return true;
+        }
+    }
+
+    int pop() {
+        if (top < 0) {
+            cout << "Stack Underflow";
+            return 0;
+        } else {
+            int x = a[top--];
+            return x;
+        }
+    }
+    
+    int peek() {
+        if (top < 0) {
+            cout << "Stack is Empty";
+            return 0;
+        } else {
+            int x = a[top];
+            return x;
+        }
+    }
+
+    bool isEmpty() {
+        return (top < 0);
+    }
+};`;
+
+const maxHeapCode = `class MaxHeap {
+    int arr[100];
+    int size;
+public:
+    MaxHeap() : size(0) {}
+
+    void insert(int val) {
+        arr[size] = val;
+        int i = size;
+        size++;
+        
+        while (i != 0 && arr[(i - 1) / 2] < arr[i]) {
+            int temp = arr[i];
+            arr[i] = arr[(i - 1) / 2];
+            arr[(i - 1) / 2] = temp;
+            i = (i - 1) / 2;
+        }
+    }
+};`;
+
+const bstCode = `struct Node {
+    int data;
+    Node* left;
+    Node* right;
+    Node(int val) : data(val), left(nullptr), right(nullptr) {}
+};
+
+class BST {
+    Node* root;
+    
+    Node* insert(Node* node, int data) {
+        if (!node) return new Node(data);
+        if (data < node->data)
+            node->left = insert(node->left, data);
+        else if (data > node->data)
+            node->right = insert(node->right, data);
+        return node;
+    }
+public:
+    BST() : root(nullptr) {}
+    void insert(int data) { root = insert(root, data); }
+};`;
+
+const avlCode = `struct Node {
+    int data, height;
+    Node *left, *right;
+    Node(int d) : data(d), height(1), left(nullptr), right(nullptr) {}
+};
+
+class AVL {
+    int height(Node* n) { return n ? n->height : 0; }
+    
+    Node* rightRotate(Node* y) {
+        Node* x = y->left;
+        Node* T2 = x->right;
+        x->right = y;
+        y->left = T2;
+        y->height = max(height(y->left), height(y->right)) + 1;
+        x->height = max(height(x->left), height(x->right)) + 1;
+        return x;
+    }
+    // Left rotate and insert similar...
+};`;
+
+const treeTraversalCode = `void inorder(Node* root) {
+    if (!root) return;
+    inorder(root->left);
+    cout << root->data << " ";
+    inorder(root->right);
+}
+
+void preorder(Node* root) {
+    if (!root) return;
+    cout << root->data << " ";
+    preorder(root->left);
+    preorder(root->right);
+}
+
+void postorder(Node* root) {
+    if (!root) return;
+    postorder(root->left);
+    postorder(root->right);
+    cout << root->data << " ";
+}`;
 
 const bubbleCode = `void bubbleSort(int arr[], int n) {
     for (int i = 0; i < n; i++) {
@@ -536,14 +668,15 @@ export const algorithms = [
   makeAlgorithm({ slug: "singly-linked-list", title: "Singly Linked List", category: "Linked List", description: "A chain of nodes where each node stores data and a pointer to the next node. Supports insert, delete, search, and traverse.", worst: "O(n)", space: "O(n)", code: singlyCode, type: "concept", language: "cpp" }),
   makeAlgorithm({ slug: "doubly-linked-list", title: "Doubly Linked List", category: "Linked List", description: "Nodes connect forward and backward for two-way traversal. HEAD and TAIL pointers enable O(1) head and tail operations.", worst: "O(n)", space: "O(n)", code: doublyCode, type: "concept", language: "cpp" }),
   makeAlgorithm({ slug: "circular-linked-list", title: "Circular Linked List", category: "Linked List", description: "The final node's NEXT points back to HEAD, forming a ring. Enables seamless circular traversal without a null check.", worst: "O(n)", space: "O(n)", code: circularCode, type: "concept", language: "cpp" }),
-  makeAlgorithm({ slug: "stack-array", title: "Stack Array Implementation", category: "Stack", description: "Uses last-in, first-out operations with an array and a top pointer.", best: "O(1)", average: "O(1)", worst: "O(1)", space: "O(n)" }),
+  makeAlgorithm({ slug: "stack-array", title: "Stack Array Implementation", category: "Stack", description: "Uses last-in, first-out operations with an array and a top pointer.", best: "O(1)", average: "O(1)", worst: "O(1)", space: "O(n)", code: stackCode, type: "concept", language: "cpp" }),
   makeAlgorithm({ slug: "linear-queue", title: "Linear Queue", category: "Queue", description: "Processes items in first-in, first-out order using front and rear pointers.", best: "O(1)", average: "O(1)", worst: "O(1)", space: "O(n)" }),
   makeAlgorithm({ slug: "circular-queue", title: "Circular Queue", category: "Queue", description: "Reuses array positions by wrapping front and rear around the array.", best: "O(1)", average: "O(1)", worst: "O(1)", space: "O(n)" }),
   makeAlgorithm({ slug: "priority-queue", title: "Priority Queue", category: "Queue", description: "Removes elements based on priority rather than arrival order.", best: "O(1)", average: "O(log n)", worst: "O(log n)", space: "O(n)" }),
-  makeAlgorithm({ slug: "binary-tree", title: "Binary Tree", category: "Trees", description: "A hierarchical structure where each node has at most two children.", average: "O(n)", worst: "O(n)", space: "O(n)" }),
-  makeAlgorithm({ slug: "bst", title: "Binary Search Tree", category: "Trees", description: "A binary tree that keeps smaller values left and larger values right.", best: "O(log n)", average: "O(log n)", worst: "O(n)", space: "O(n)" }),
-  makeAlgorithm({ slug: "avl", title: "AVL Tree", category: "Trees", description: "A self-balancing BST that rotates nodes to maintain logarithmic height.", best: "O(log n)", average: "O(log n)", worst: "O(log n)", space: "O(n)" }),
-  makeAlgorithm({ slug: "tree-traversal", title: "Tree Traversal", category: "Trees", description: "Visits tree nodes in preorder, inorder, postorder, or level order.", best: "O(n)", average: "O(n)", worst: "O(n)", space: "O(n)" }),
+  makeAlgorithm({ slug: "binary-tree", title: "Binary Tree", category: "Trees", description: "A hierarchical structure where each node has at most two children.", average: "O(n)", worst: "O(n)", space: "O(n)", code: bstCode, type: "concept", language: "cpp" }),
+  makeAlgorithm({ slug: "bst", title: "Binary Search Tree", category: "Trees", description: "A binary tree that keeps smaller values left and larger values right.", best: "O(log n)", average: "O(log n)", worst: "O(n)", space: "O(n)", code: bstCode, type: "concept", language: "cpp" }),
+  makeAlgorithm({ slug: "avl", title: "AVL Tree", category: "Trees", description: "A self-balancing BST that rotates nodes to maintain logarithmic height.", best: "O(log n)", average: "O(log n)", worst: "O(log n)", space: "O(n)", code: avlCode, type: "concept", language: "cpp" }),
+  makeAlgorithm({ slug: "tree-traversal", title: "Tree Traversal", category: "Trees", description: "Visits tree nodes in preorder, inorder, postorder, or level order.", best: "O(n)", average: "O(n)", worst: "O(n)", space: "O(n)", code: treeTraversalCode, type: "concept", language: "cpp" }),
+  makeAlgorithm({ slug: "max-heap", title: "Max Heap", category: "Trees", description: "A complete binary tree where each parent node is greater than its children.", best: "O(log n)", average: "O(log n)", worst: "O(log n)", space: "O(n)", code: maxHeapCode, type: "concept", language: "cpp" }),
   makeAlgorithm({ slug: "bfs", title: "Breadth First Search", category: "Graphs", description: "Explores graph nodes level by level using a queue.", best: "O(V + E)", average: "O(V + E)", worst: "O(V + E)", space: "O(V)" }),
   makeAlgorithm({ slug: "dfs", title: "Depth First Search", category: "Graphs", description: "Explores as far as possible along each branch before backtracking.", best: "O(V + E)", average: "O(V + E)", worst: "O(V + E)", space: "O(V)" }),
   makeAlgorithm({ slug: "dijkstra", title: "Dijkstra Algorithm", category: "Graphs", description: "Finds shortest paths from a source in a graph with non-negative weights.", best: "O(E log V)", average: "O(E log V)", worst: "O(E log V)", space: "O(V)" }),
