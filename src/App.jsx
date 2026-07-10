@@ -8,6 +8,7 @@ import LinkedListPage from "./pages/LinkedListPage.jsx";
 import TreePage from "./pages/TreePage.jsx";
 import StackPage from "./pages/StackPage.jsx";
 import QueuePage from "./pages/QueuePage.jsx";
+import CircularQueuePage from "./pages/CircularQueuePage.jsx";
 import PriorityQueuePage from "./pages/PriorityQueuePage.jsx";
 import GraphPage from "./pages/GraphPage.jsx";
 import { ThemeProvider } from "./hooks/useTheme.jsx";
@@ -39,6 +40,7 @@ function AnimatedRoutes() {
           
           <Route path="/algorithm/stack-array" element={<StackPage />} />
           <Route path="/algorithm/linear-queue" element={<QueuePage />} />
+          <Route path="/algorithm/circular-queue" element={<CircularQueuePage />} />
           <Route path="/algorithm/priority-queue" element={<PriorityQueuePage />} />
           
           <Route path="/algorithm/dijkstra" element={<GraphPage />} />

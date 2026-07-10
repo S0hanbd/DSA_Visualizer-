@@ -426,6 +426,65 @@ public:
     }
 };`;
 
+const circularQueueCode = `#include <iostream>
+#define MAX 10
+
+class CircularQueue {
+    int front, rear;
+    int arr[MAX];
+
+public:
+    CircularQueue() {
+        front = -1;
+        rear = -1;
+    }
+
+    bool isFull() {
+        return (front == 0 && rear == MAX - 1) || (front == rear + 1);
+    }
+
+    bool isEmpty() {
+        return (front == -1);
+    }
+
+    void enqueue(int item) {
+        if (isFull())
+            return;
+            
+        if (front == -1) 
+            front = 0;
+            
+        rear = (rear + 1) % MAX;
+        arr[rear] = item;
+    }
+
+    int dequeue() {
+        if (isEmpty())
+            return -1;
+            
+        int item = arr[front];
+        
+        if (front == rear) {
+            front = -1;
+            rear = -1;
+        } else {
+            front = (front + 1) % MAX;
+        }
+        
+        return item;
+    }
+
+    int getFront() {
+        if (isEmpty()) return -1;
+        return arr[front];
+    }
+    
+    int getRear() {
+        if (isEmpty()) return -1;
+        return arr[rear];
+    }
+};`;
+
 const priorityQueueCode = `#include <iostream>
 #include <vector>
 using namespace std;
@@ -991,7 +1050,7 @@ export const algorithms = [
   makeAlgorithm({ slug: "circular-linked-list", title: "Circular Linked List", category: "Linked List", description: "The final node's NEXT points back to HEAD, forming a ring. Enables seamless circular traversal without a null check.", worst: "O(n)", space: "O(n)", code: circularCode, type: "concept", language: "cpp" }),
   makeAlgorithm({ slug: "stack-array", title: "Stack Array Implementation", category: "Stack", description: "Uses last-in, first-out operations with an array and a top pointer.", best: "O(1)", average: "O(1)", worst: "O(1)", space: "O(n)", code: stackCode, type: "concept", language: "cpp" }),
   makeAlgorithm({ slug: "linear-queue", title: "Linear Queue", category: "Queue", description: "Processes items in first-in, first-out order using front and rear pointers.", best: "O(1)", average: "O(1)", worst: "O(1)", space: "O(n)", code: queueCode, type: "concept", language: "cpp" }),
-  makeAlgorithm({ slug: "circular-queue", title: "Circular Queue", category: "Queue", description: "Reuses array positions by wrapping front and rear around the array.", best: "O(1)", average: "O(1)", worst: "O(1)", space: "O(n)" }),
+  makeAlgorithm({ slug: "circular-queue", title: "Circular Queue", category: "Queue", description: "Reuses array positions by wrapping front and rear around the array.", best: "O(1)", average: "O(1)", worst: "O(1)", space: "O(n)", code: circularQueueCode, type: "concept", language: "cpp" }),
   makeAlgorithm({ slug: "priority-queue", title: "Priority Queue", category: "Queue", description: "Removes elements based on priority rather than arrival order.", best: "O(1)", average: "O(log n)", worst: "O(log n)", space: "O(n)", code: priorityQueueCode, type: "concept", language: "cpp" }),
   makeAlgorithm({ slug: "binary-tree", title: "Binary Tree", category: "Trees", description: "A hierarchical structure where each node has at most two children.", average: "O(n)", worst: "O(n)", space: "O(n)", code: bstCode, type: "concept", language: "cpp" }),
   makeAlgorithm({ slug: "bst", title: "Binary Search Tree", category: "Trees", description: "A binary tree that keeps smaller values left and larger values right.", best: "O(log n)", average: "O(log n)", worst: "O(n)", space: "O(n)", code: bstCode, type: "concept", language: "cpp" }),

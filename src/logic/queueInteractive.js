@@ -4,9 +4,13 @@
 // animation steps for that single operation.
 // ─────────────────────────────────────────────────────────────────────────────
 
-function makeStep(array, explanation, status, opts = {}) {
+const MAX = 10;
+
+function makeStep(state, explanation, status, opts = {}) {
   return {
-    array: [...array],
+    array: [...state.array],
+    front: state.front,
+    rear: state.rear,
     line: opts.line ?? 1,
     status,
     explanation,
@@ -20,53 +24,69 @@ function makeStep(array, explanation, status, opts = {}) {
 }
 
 // ─── Enqueue ─────────────────────────────────────────────────────────────────
-export function buildEnqueueSteps(queue, value) {
+export function buildEnqueueSteps(queueState, value) {
   const steps = [];
-  let Q = [...queue];
-  const MAX = 10; // Let's pretend max is 10 for visualizer limits
+  let state = {
+      array: [...queueState.array],
+      front: queueState.front,
+      rear: queueState.rear
+  };
 
   const push = (expl, status, opts = {}) =>
-    steps.push(makeStep(Q, expl, status, { ...opts, operation: "Enqueue" }));
+    steps.push(makeStep(state, expl, status, { ...opts, operation: "Enqueue" }));
 
   push(`Enqueue ${value} into queue. Checking for overflow.`, "Enqueue", { line: 26 });
 
-  if (Q.length >= MAX) {
-    push(`Queue Overflow: Max capacity reached. Cannot enqueue ${value}.`, "Error", { line: 27, success: false });
+  if (state.rear >= MAX - 1) {
+    push(`Queue Overflow: rear pointer reached MAX capacity (${MAX}). Cannot enqueue.`, "Error", { line: 27, success: false });
     return steps;
   }
 
   push(`Space available. Preparing to enqueue ${value}.`, "Processing", { line: 29 });
-  Q.push(value);
+  
+  if (state.front === -1) {
+      state.front = 0; // First element inserted
+  }
+  state.rear++;
+  state.array[state.rear] = value;
+  
   push(`arr[++rear] = ${value}. Enqueued to rear. `, "Done", { line: 30, enqueuing: true });
 
   return steps;
 }
 
 // ─── Dequeue ─────────────────────────────────────────────────────────────────
-export function buildDequeueSteps(queue) {
+export function buildDequeueSteps(queueState) {
   const steps = [];
-  let Q = [...queue];
+  let state = {
+      array: [...queueState.array],
+      front: queueState.front,
+      rear: queueState.rear
+  };
 
   const push = (expl, status, opts = {}) =>
-    steps.push(makeStep(Q, expl, status, { ...opts, operation: "Dequeue" }));
+    steps.push(makeStep(state, expl, status, { ...opts, operation: "Dequeue" }));
 
   push(`Dequeue value from queue. Checking for underflow.`, "Dequeue", { line: 34 });
 
-  if (Q.length === 0) {
-    push(`Queue Underflow: Queue is empty. Cannot dequeue.`, "Error", { line: 35, success: false });
+  if (state.front === -1 || state.front > state.rear) {
+    push(`Queue Underflow: front pointer passed rear (Queue is empty). Cannot dequeue.`, "Error", { line: 35, success: false });
     return steps;
   }
 
-  const dequeuedValue = Q[0];
+  const dequeuedValue = state.array[state.front];
   push(`Queue not empty. Dequeuing front element (${dequeuedValue}).`, "Processing", { line: 37, dequeuing: true });
   
-  Q.shift();
+  state.array[state.front] = null; // Clear the visually dequeued spot
+  state.front++;
+  
   push(`Removed ${dequeuedValue} from front (front++). `, "Done", { line: 38 });
 
   return steps;
 }
 
 // ─── Initial Step ────────────────────────────────────────────────────────────
-export function buildInitialQueueStep(queue = []) {
-  return [makeStep(queue, "Queue initialized.", "Ready")];
+export function buildInitialQueueStep() {
+  const initialState = { array: Array(MAX).fill(null), front: -1, rear: -1 };
+  return [makeStep(initialState, "Queue initialized.", "Ready")];
 }

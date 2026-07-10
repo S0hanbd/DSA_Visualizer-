@@ -76,13 +76,13 @@ export default function QueuePage() {
   const algorithm = algorithmMap[rawSlug];
 
   // ── state ──────────────────────────────────────────────────────────────────
-  const [liveQueue, setLiveQueue] = useState([]);
+  const [liveQueue, setLiveQueue] = useState(() => buildInitialQueueStep()[0]);
   const [history, setHistory] = useState([]); // array of { id, text, type }
   
   const [opValue, setOpValue] = useState("");
   const [opError, setOpError] = useState("");
 
-  const [steps, setSteps] = useState(() => buildInitialQueueStep([]));
+  const [steps, setSteps] = useState(() => buildInitialQueueStep());
   const [currentStep, setCurrentStep] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const [speed, setSpeed] = useState(480);
@@ -116,10 +116,8 @@ export default function QueuePage() {
       setOpError("Enter a valid number.");
       return;
     }
-    if (liveQueue.length >= QUEUE_MAX) {
-      setOpError(`Queue Overflow! Max capacity (${QUEUE_MAX}) reached.`);
-      return;
-    }
+    // Let the builder handle overflow logic
+
     
     const newSteps = buildEnqueueSteps(liveQueue, val);
     setSteps(newSteps);
@@ -128,7 +126,7 @@ export default function QueuePage() {
     
     const finalState = newSteps[newSteps.length - 1];
     if (finalState.markers.success) {
-        setLiveQueue(finalState.array);
+        setLiveQueue({ array: finalState.array, front: finalState.front, rear: finalState.rear });
         addHistory(`Enqueue: ${val}`, "enqueue");
     } else {
         addHistory(`Enqueue ${val} Failed (Overflow)`, "error");
@@ -147,7 +145,7 @@ export default function QueuePage() {
     
     const finalState = newSteps[newSteps.length - 1];
     if (finalState.markers.success) {
-        setLiveQueue(finalState.array);
+        setLiveQueue({ array: finalState.array, front: finalState.front, rear: finalState.rear });
         addHistory(`Dequeue`, "dequeue");
     } else {
         addHistory(`Dequeue Failed (Underflow)`, "error");
@@ -156,8 +154,8 @@ export default function QueuePage() {
   };
 
   const handleClear = () => {
-    setLiveQueue([]);
-    setSteps(buildInitialQueueStep([]));
+    setLiveQueue(buildInitialQueueStep()[0]);
+    setSteps(buildInitialQueueStep());
     setCurrentStep(0);
     setIsPlaying(false);
     setHistory([]);
@@ -221,13 +219,13 @@ export default function QueuePage() {
                         <OpBtn 
                             label="Dequeue" 
                             onClick={handleDequeue} 
-                            disabled={isPlaying || liveQueue.length === 0} 
+                            disabled={isPlaying || liveQueue.front === -1 || liveQueue.front > liveQueue.rear} 
                             className="w-full bg-slate-100 text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
                         />
                         <OpBtn 
                             label="Clear" 
                             onClick={handleClear} 
-                            disabled={isPlaying || liveQueue.length === 0} 
+                            disabled={isPlaying || (liveQueue.front === -1 && liveQueue.rear === -1)} 
                             className="w-full bg-red-500 text-white hover:bg-red-600"
                         />
                     </div>
