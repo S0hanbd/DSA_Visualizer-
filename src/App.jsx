@@ -7,6 +7,9 @@ import AlgorithmPage from "./pages/AlgorithmPage.jsx";
 import LinkedListPage from "./pages/LinkedListPage.jsx";
 import TreePage from "./pages/TreePage.jsx";
 import StackPage from "./pages/StackPage.jsx";
+import QueuePage from "./pages/QueuePage.jsx";
+import PriorityQueuePage from "./pages/PriorityQueuePage.jsx";
+import GraphPage from "./pages/GraphPage.jsx";
 import { ThemeProvider } from "./hooks/useTheme.jsx";
 
 function AnimatedRoutes() {
@@ -35,6 +38,14 @@ function AnimatedRoutes() {
           <Route path="/algorithm/max-heap" element={<TreePage />} />
           
           <Route path="/algorithm/stack-array" element={<StackPage />} />
+          <Route path="/algorithm/linear-queue" element={<QueuePage />} />
+          <Route path="/algorithm/priority-queue" element={<PriorityQueuePage />} />
+          
+          <Route path="/algorithm/dijkstra" element={<GraphPage />} />
+          <Route path="/algorithm/bfs" element={<GraphPage />} />
+          <Route path="/algorithm/dfs" element={<GraphPage />} />
+          <Route path="/algorithm/prim" element={<GraphPage />} />
+          <Route path="/algorithm/kruskal" element={<GraphPage />} />
           
           <Route path="/algorithm/:slug" element={<AlgorithmPage />} />
           <Route path="/sorting" element={<Navigate to="/algorithm/bubble-sort" replace />} />

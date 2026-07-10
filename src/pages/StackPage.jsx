@@ -4,6 +4,7 @@ import { useIsPresent, motion, AnimatePresence } from "framer-motion";
 import CodeViewer from "../components/CodeViewer.jsx";
 import ExecutionSteps from "../components/ExecutionSteps.jsx";
 import StackVisualization from "../components/StackVisualization.jsx";
+import Sidebar from "../components/Sidebar.jsx";
 import { algorithmMap } from "../data/algorithms.js";
 import {
   buildPushSteps,
@@ -11,6 +12,8 @@ import {
   buildPeekSteps,
   buildInitialStep
 } from "../logic/stackInteractive.js";
+
+const STACK_MAX = 10;
 
 // ─── Playback Component ──────────────────────────────────────────────────────
 function Playback({ isPlaying, onPlay, onPause, onPrev, onNext, onReset, speed, setSpeed, current, total }) {
@@ -53,11 +56,12 @@ function Playback({ isPlaying, onPlay, onPause, onPrev, onNext, onReset, speed, 
 }
 
 // ─── Button Component ────────────────────────────────────────────────────────
-function OpBtn({ label, onClick, className = "" }) {
+function OpBtn({ label, onClick, disabled = false, className = "" }) {
   return (
     <button
       onClick={onClick}
-      className={`rounded-lg px-4 py-2 text-sm font-bold shadow-md transition-all active:scale-95 ${className}`}
+      disabled={disabled}
+      className={`rounded-lg px-4 py-2 text-sm font-bold shadow-md transition-all active:scale-95 disabled:opacity-50 disabled:pointer-events-none ${className}`}
     >
       {label}
     </button>
@@ -103,7 +107,7 @@ export default function StackPage() {
 
   // ── operations ─────────────────────────────────────────────────────────────
   const addHistory = (text, type) => {
-    setHistory(prev => [{ id: Date.now() + Math.random(), text, type }, ...prev].slice(0, 50));
+    setHistory(prev => [{ id: Date.now() + Math.random(), text, type }, ...prev].slice(0, 15));
   };
 
   const handlePush = () => {
@@ -111,6 +115,10 @@ export default function StackPage() {
     const val = parseInt(opValue.trim(), 10);
     if (isNaN(val)) {
       setOpError("Enter a valid number.");
+      return;
+    }
+    if (liveStack.length >= STACK_MAX) {
+      setOpError(`Stack Overflow! Max capacity (${STACK_MAX}) reached.`);
       return;
     }
     
@@ -124,7 +132,7 @@ export default function StackPage() {
         setLiveStack(finalState.array);
         addHistory(`Push: ${val}`, "push");
     } else {
-        addHistory(`Push ${val} Failed`, "error");
+        addHistory(`Push ${val} Failed (Overflow)`, "error");
     }
     setOpValue("");
     setOpError("");
@@ -181,8 +189,10 @@ export default function StackPage() {
 
   // ── render ─────────────────────────────────────────────────────────────────
   return (
-    <div className="mx-auto max-w-7xl px-4 py-8">
-      {/* Header */}
+    <div className="mx-auto flex w-full gap-6 px-4 py-8">
+      <Sidebar />
+      <div className="min-w-0 flex-1">
+        {/* Header */}
       <div className="mb-8">
         <p className="font-bold tracking-widest text-emerald-500 uppercase">{algorithm.category}</p>
         <h1 className="text-4xl font-black text-slate-900 dark:text-white mt-2">{algorithm.title}</h1>
@@ -212,6 +222,7 @@ export default function StackPage() {
               <OpBtn 
                 label="Push" 
                 onClick={handlePush} 
+                disabled={liveStack.length >= STACK_MAX}
                 className="bg-slate-500 hover:bg-slate-600 text-white" 
               />
             </div>
@@ -278,11 +289,13 @@ export default function StackPage() {
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: 10 }}
-                    className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-md px-5 py-3 rounded-lg border border-slate-200 dark:border-slate-700 shadow-sm flex items-center gap-4"
+                    className="bg-white/95 dark:bg-slate-800/95 backdrop-blur-md px-5 py-3 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm flex items-center gap-4"
                   >
-                    <span className="text-xl">
-                      {step.markers?.success === false ? "❌" : step.status === "Done" ? "✅" : "⚙️"}
-                    </span>
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+                      <span className="text-sm font-black text-slate-500 dark:text-slate-400">
+                        {currentStep + 1}/{steps.length}
+                      </span>
+                    </div>
                     <div>
                       <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">{step.status}</p>
                       <p className="text-sm font-bold text-slate-800 dark:text-slate-200">{step.explanation}</p>
@@ -319,6 +332,7 @@ export default function StackPage() {
         <ExecutionSteps steps={steps} currentStep={currentStep} />
       </section>
 
+      </div>
     </div>
   );
 }

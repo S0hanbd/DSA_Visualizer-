@@ -133,6 +133,224 @@ class AVL {
     // Left rotate and insert similar...
 };`;
 
+const dijkstraCode = `#include <iostream>
+#include <vector>
+#include <queue>
+#include <climits>
+using namespace std;
+
+typedef pair<int, int> iPair;
+
+class Graph {
+    int V; // No. of vertices
+    vector<pair<int, int>>* adj;
+
+public:
+    Graph(int V) {
+        this->V = V;
+        adj = new vector<pair<int, int>>[V];
+    }
+
+    void addEdge(int u, int v, int w) {
+        adj[u].push_back(make_pair(v, w));
+        adj[v].push_back(make_pair(u, w));
+    }
+
+    void shortestPath(int src) {
+        priority_queue<iPair, vector<iPair>, greater<iPair>> pq;
+        vector<int> dist(V, INT_MAX);
+
+        pq.push(make_pair(0, src));
+        dist[src] = 0;
+
+        while (!pq.empty()) {
+            int u = pq.top().second;
+            pq.pop();
+
+            for (auto x : adj[u]) {
+                int v = x.first;
+                int weight = x.second;
+
+                if (dist[v] > dist[u] + weight) {
+                    dist[v] = dist[u] + weight;
+                    pq.push(make_pair(dist[v], v));
+                }
+            }
+        }
+    }
+};`;
+
+const bfsCode = `#include <iostream>
+#include <vector>
+#include <queue>
+using namespace std;
+
+class Graph {
+    int V;
+    vector<vector<int>> adj;
+public:
+    Graph(int V) {
+        this->V = V;
+        adj.resize(V);
+    }
+    void addEdge(int v, int w) {
+        adj[v].push_back(w);
+    }
+    void BFS(int s) {
+        vector<bool> visited(V, false);
+        queue<int> queue;
+        visited[s] = true;
+        queue.push(s);
+        while(!queue.empty()) {
+            s = queue.front();
+            cout << s << " ";
+            queue.pop();
+            for (auto i = adj[s].begin(); i != adj[s].end(); ++i) {
+                if (!visited[*i]) {
+                    visited[*i] = true;
+                    queue.push(*i);
+                }
+            }
+        }
+    }
+};`;
+
+const dfsCode = `#include <iostream>
+#include <vector>
+using namespace std;
+
+class Graph {
+    int V;
+    vector<vector<int>> adj;
+    void DFSUtil(int v, vector<bool>& visited) {
+        visited[v] = true;
+        cout << v << " ";
+        for (auto i = adj[v].begin(); i != adj[v].end(); ++i)
+            if (!visited[*i])
+                DFSUtil(*i, visited);
+    }
+public:
+    Graph(int V) {
+        this->V = V;
+        adj.resize(V);
+    }
+    void addEdge(int v, int w) {
+        adj[v].push_back(w);
+    }
+    void DFS(int v) {
+        vector<bool> visited(V, false);
+        DFSUtil(v, visited);
+    }
+};`;
+
+const primCode = `#include <iostream>
+#include <vector>
+#include <queue>
+#include <climits>
+using namespace std;
+
+typedef pair<int, int> iPair;
+
+class Graph {
+    int V;
+    vector<pair<int, int>>* adj;
+public:
+    Graph(int V) {
+        this->V = V;
+        adj = new vector<pair<int, int>>[V];
+    }
+    void addEdge(int u, int v, int w) {
+        adj[u].push_back(make_pair(v, w));
+        adj[v].push_back(make_pair(u, w));
+    }
+    void primMST() {
+        priority_queue<iPair, vector<iPair>, greater<iPair>> pq;
+        int src = 0;
+        vector<int> key(V, INT_MAX);
+        vector<int> parent(V, -1);
+        vector<bool> inMST(V, false);
+        pq.push(make_pair(0, src));
+        key[src] = 0;
+        while (!pq.empty()) {
+            int u = pq.top().second;
+            pq.pop();
+            if(inMST[u]) continue;
+            inMST[u] = true;
+            for (auto x : adj[u]) {
+                int v = x.first;
+                int weight = x.second;
+                if (!inMST[v] && key[v] > weight) {
+                    key[v] = weight;
+                    pq.push(make_pair(key[v], v));
+                    parent[v] = u;
+                }
+            }
+        }
+    }
+};`;
+
+const kruskalCode = `#include <iostream>
+#include <vector>
+#include <algorithm>
+using namespace std;
+
+class DSU {
+    int* parent;
+    int* rank;
+public:
+    DSU(int n) {
+        parent = new int[n];
+        rank = new int[n];
+        for (int i = 0; i < n; i++) {
+            parent[i] = -1;
+            rank[i] = 1;
+        }
+    }
+    int find(int i) {
+        if (parent[i] == -1)
+            return i;
+        return parent[i] = find(parent[i]);
+    }
+    void unite(int i, int j) {
+        int s1 = find(i);
+        int s2 = find(j);
+        if (s1 != s2) {
+            if (rank[s1] < rank[s2]) {
+                parent[s1] = s2;
+            } else if (rank[s1] > rank[s2]) {
+                parent[s2] = s1;
+            } else {
+                parent[s2] = s1;
+                rank[s1] += 1;
+            }
+        }
+    }
+};
+
+class Graph {
+    vector<vector<int>> edgelist;
+    int V;
+public:
+    Graph(int V) { this->V = V; }
+    void addEdge(int x, int y, int w) {
+        edgelist.push_back({w, x, y});
+    }
+    void kruskals_mst() {
+        sort(edgelist.begin(), edgelist.end());
+        DSU s(V);
+        int ans = 0;
+        for (auto edge : edgelist) {
+            int w = edge[0];
+            int x = edge[1];
+            int y = edge[2];
+            if (s.find(x) != s.find(y)) {
+                s.unite(x, y);
+                ans += w;
+            }
+        }
+    }
+};`;
+
 const treeTraversalCode = `void inorder(Node* root) {
     if (!root) return;
     inorder(root->left);
@@ -153,6 +371,109 @@ void postorder(Node* root) {
     postorder(root->right);
     cout << root->data << " ";
 }`;
+
+const queueCode = `#include <iostream>
+using namespace std;
+
+#define MAX 1000
+
+class Queue {
+    int front, rear, size;
+    int arr[MAX];
+
+public:
+    Queue() {
+        front = 0;
+        rear = -1;
+        size = 0;
+    }
+
+    bool isFull() {
+        return (size == MAX);
+    }
+
+    bool isEmpty() {
+        return (size == 0);
+    }
+
+    void enqueue(int item) {
+        if (isFull())
+            return;
+        rear = (rear + 1) % MAX;
+        arr[rear] = item;
+        size = size + 1;
+    }
+
+    int dequeue() {
+        if (isEmpty())
+            return -1;
+        int item = arr[front];
+        front = (front + 1) % MAX;
+        size = size - 1;
+        return item;
+    }
+
+    int getFront() {
+        if (isEmpty())
+            return -1;
+        return arr[front];
+    }
+    
+    int getRear() {
+        if (isEmpty())
+            return -1;
+        return arr[rear];
+    }
+};`;
+
+const priorityQueueCode = `#include <iostream>
+#include <vector>
+using namespace std;
+
+class PriorityQueue {
+private:
+    vector<int> heap;
+
+    int parent(int i) { return (i - 1) / 2; }
+    int leftChild(int i) { return (2 * i) + 1; }
+    int rightChild(int i) { return (2 * i) + 2; }
+
+    void heapifyUp(int i) {
+        while (i > 0 && heap[parent(i)] < heap[i]) {
+            swap(heap[parent(i)], heap[i]);
+            i = parent(i);
+        }
+    }
+
+    void heapifyDown(int i) {
+        int maxIndex = i;
+        int l = leftChild(i);
+        if (l < heap.size() && heap[l] > heap[maxIndex])
+            maxIndex = l;
+        int r = rightChild(i);
+        if (r < heap.size() && heap[r] > heap[maxIndex])
+            maxIndex = r;
+        if (i != maxIndex) {
+            swap(heap[i], heap[maxIndex]);
+            heapifyDown(maxIndex);
+        }
+    }
+
+public:
+    void enqueue(int p) {
+        heap.push_back(p);
+        heapifyUp(heap.size() - 1);
+    }
+
+    int extractMax() {
+        if (heap.empty()) return -1;
+        int result = heap[0];
+        heap[0] = heap.back();
+        heap.pop_back();
+        heapifyDown(0);
+        return result;
+    }
+};`;
 
 const bubbleCode = `void bubbleSort(int arr[], int n) {
     for (int i = 0; i < n; i++) {
@@ -669,19 +990,19 @@ export const algorithms = [
   makeAlgorithm({ slug: "doubly-linked-list", title: "Doubly Linked List", category: "Linked List", description: "Nodes connect forward and backward for two-way traversal. HEAD and TAIL pointers enable O(1) head and tail operations.", worst: "O(n)", space: "O(n)", code: doublyCode, type: "concept", language: "cpp" }),
   makeAlgorithm({ slug: "circular-linked-list", title: "Circular Linked List", category: "Linked List", description: "The final node's NEXT points back to HEAD, forming a ring. Enables seamless circular traversal without a null check.", worst: "O(n)", space: "O(n)", code: circularCode, type: "concept", language: "cpp" }),
   makeAlgorithm({ slug: "stack-array", title: "Stack Array Implementation", category: "Stack", description: "Uses last-in, first-out operations with an array and a top pointer.", best: "O(1)", average: "O(1)", worst: "O(1)", space: "O(n)", code: stackCode, type: "concept", language: "cpp" }),
-  makeAlgorithm({ slug: "linear-queue", title: "Linear Queue", category: "Queue", description: "Processes items in first-in, first-out order using front and rear pointers.", best: "O(1)", average: "O(1)", worst: "O(1)", space: "O(n)" }),
+  makeAlgorithm({ slug: "linear-queue", title: "Linear Queue", category: "Queue", description: "Processes items in first-in, first-out order using front and rear pointers.", best: "O(1)", average: "O(1)", worst: "O(1)", space: "O(n)", code: queueCode, type: "concept", language: "cpp" }),
   makeAlgorithm({ slug: "circular-queue", title: "Circular Queue", category: "Queue", description: "Reuses array positions by wrapping front and rear around the array.", best: "O(1)", average: "O(1)", worst: "O(1)", space: "O(n)" }),
-  makeAlgorithm({ slug: "priority-queue", title: "Priority Queue", category: "Queue", description: "Removes elements based on priority rather than arrival order.", best: "O(1)", average: "O(log n)", worst: "O(log n)", space: "O(n)" }),
+  makeAlgorithm({ slug: "priority-queue", title: "Priority Queue", category: "Queue", description: "Removes elements based on priority rather than arrival order.", best: "O(1)", average: "O(log n)", worst: "O(log n)", space: "O(n)", code: priorityQueueCode, type: "concept", language: "cpp" }),
   makeAlgorithm({ slug: "binary-tree", title: "Binary Tree", category: "Trees", description: "A hierarchical structure where each node has at most two children.", average: "O(n)", worst: "O(n)", space: "O(n)", code: bstCode, type: "concept", language: "cpp" }),
   makeAlgorithm({ slug: "bst", title: "Binary Search Tree", category: "Trees", description: "A binary tree that keeps smaller values left and larger values right.", best: "O(log n)", average: "O(log n)", worst: "O(n)", space: "O(n)", code: bstCode, type: "concept", language: "cpp" }),
   makeAlgorithm({ slug: "avl", title: "AVL Tree", category: "Trees", description: "A self-balancing BST that rotates nodes to maintain logarithmic height.", best: "O(log n)", average: "O(log n)", worst: "O(log n)", space: "O(n)", code: avlCode, type: "concept", language: "cpp" }),
   makeAlgorithm({ slug: "tree-traversal", title: "Tree Traversal", category: "Trees", description: "Visits tree nodes in preorder, inorder, postorder, or level order.", best: "O(n)", average: "O(n)", worst: "O(n)", space: "O(n)", code: treeTraversalCode, type: "concept", language: "cpp" }),
   makeAlgorithm({ slug: "max-heap", title: "Max Heap", category: "Trees", description: "A complete binary tree where each parent node is greater than its children.", best: "O(log n)", average: "O(log n)", worst: "O(log n)", space: "O(n)", code: maxHeapCode, type: "concept", language: "cpp" }),
-  makeAlgorithm({ slug: "bfs", title: "Breadth First Search", category: "Graphs", description: "Explores graph nodes level by level using a queue.", best: "O(V + E)", average: "O(V + E)", worst: "O(V + E)", space: "O(V)" }),
-  makeAlgorithm({ slug: "dfs", title: "Depth First Search", category: "Graphs", description: "Explores as far as possible along each branch before backtracking.", best: "O(V + E)", average: "O(V + E)", worst: "O(V + E)", space: "O(V)" }),
-  makeAlgorithm({ slug: "dijkstra", title: "Dijkstra Algorithm", category: "Graphs", description: "Finds shortest paths from a source in a graph with non-negative weights.", best: "O(E log V)", average: "O(E log V)", worst: "O(E log V)", space: "O(V)" }),
-  makeAlgorithm({ slug: "prim", title: "Prim Algorithm", category: "Graphs", description: "Builds a minimum spanning tree by growing from the cheapest connected edge.", best: "O(E log V)", average: "O(E log V)", worst: "O(E log V)", space: "O(V)" }),
-  makeAlgorithm({ slug: "kruskal", title: "Kruskal Algorithm", category: "Graphs", description: "Builds a minimum spanning tree by adding safe edges in sorted order.", best: "O(E log E)", average: "O(E log E)", worst: "O(E log E)", space: "O(V)" }),
+  makeAlgorithm({ slug: "bfs", title: "Breadth First Search", category: "Graphs", description: "Explores graph nodes level by level using a queue.", best: "O(V + E)", average: "O(V + E)", worst: "O(V + E)", space: "O(V)", code: bfsCode, type: "concept", language: "cpp" }),
+  makeAlgorithm({ slug: "dfs", title: "Depth First Search", category: "Graphs", description: "Explores as far as possible along each branch before backtracking.", best: "O(V + E)", average: "O(V + E)", worst: "O(V + E)", space: "O(V)", code: dfsCode, type: "concept", language: "cpp" }),
+  makeAlgorithm({ slug: "dijkstra", title: "Dijkstra Algorithm", category: "Graphs", description: "Finds shortest paths from a source in a graph with non-negative weights.", best: "O(E log V)", average: "O(E log V)", worst: "O(E log V)", space: "O(V)", code: dijkstraCode, type: "concept", language: "cpp" }),
+  makeAlgorithm({ slug: "prim", title: "Prim Algorithm", category: "Graphs", description: "Builds a minimum spanning tree by growing from the cheapest connected edge.", best: "O(E log V)", average: "O(E log V)", worst: "O(E log V)", space: "O(V)", code: primCode, type: "concept", language: "cpp" }),
+  makeAlgorithm({ slug: "kruskal", title: "Kruskal Algorithm", category: "Graphs", description: "Builds a minimum spanning tree by adding safe edges in sorted order.", best: "O(E log E)", average: "O(E log E)", worst: "O(E log E)", space: "O(V)", code: kruskalCode, type: "concept", language: "cpp" }),
 ];
 
 export const algorithmMap = Object.fromEntries(algorithms.map((algorithm) => [algorithm.slug, algorithm]));

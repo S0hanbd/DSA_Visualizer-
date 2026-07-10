@@ -38,7 +38,7 @@ export function buildPushSteps(stack, value) {
 
   push(`Space available. Preparing to push ${value}.`, "Processing", { line: 18 });
   S.push(value);
-  push(`a[++top] = ${value}. Pushed onto stack. ✅`, "Done", { line: 18 });
+  push(`a[++top] = ${value}. Pushed onto stack. `, "Done", { line: 18 });
 
   return steps;
 }
@@ -62,7 +62,7 @@ export function buildPopSteps(stack) {
   push(`Stack not empty. Popping top element (${poppedValue}).`, "Processing", { line: 28, popping: true });
   
   S.pop();
-  push(`Removed ${poppedValue} (top--). ✅`, "Done", { line: 29 });
+  push(`Removed ${poppedValue} (top--). `, "Done", { line: 29 });
 
   return steps;
 }
@@ -84,7 +84,7 @@ export function buildPeekSteps(stack) {
 
   const topValue = S[S.length - 1];
   push(`Stack not empty. Retrieving a[top].`, "Processing", { line: 38, peeking: true });
-  push(`Top element is ${topValue}. ✅`, "Done", { line: 39, peeking: true });
+  push(`Top element is ${topValue}. `, "Done", { line: 39, peeking: true });
 
   return steps;
 }

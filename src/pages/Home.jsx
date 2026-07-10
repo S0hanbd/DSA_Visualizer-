@@ -57,7 +57,7 @@ export default function Home() {
   const currentPreviewStep = previewSteps[previewStepIdx] || previewSteps[0];
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
+    <div className="mx-auto w-full px-4 py-10">
       <section className="flex min-h-[70vh] flex-col justify-center gap-10 overflow-hidden rounded-[36px] bg-[radial-gradient(circle_at_18%_20%,rgba(37,99,235,.16),transparent_30%),radial-gradient(circle_at_85%_10%,rgba(16,185,129,.13),transparent_28%)] py-10 dark:bg-[radial-gradient(circle_at_18%_20%,rgba(34,211,238,.15),transparent_30%),radial-gradient(circle_at_85%_10%,rgba(16,185,129,.12),transparent_28%)]">
         <div className="grid items-center gap-10 lg:grid-cols-[1.05fr_.95fr]">
           <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="px-2 sm:px-8">
