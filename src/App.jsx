@@ -13,6 +13,7 @@ import PriorityQueuePage from "./pages/PriorityQueuePage.jsx";
 import QueueUsingStacksPage from "./pages/QueueUsingStacksPage.jsx";
 import GraphPage from "./pages/GraphPage.jsx";
 import NQueensPage from "./pages/NQueensPage.jsx";
+import GraphColoringPage from "./pages/GraphColoringPage.jsx";
 import DesignPage from "./pages/DesignPage.jsx";
 import { ThemeProvider } from "./hooks/useTheme.jsx";
 
@@ -54,6 +55,7 @@ function AnimatedRoutes() {
           <Route path="/algorithm/kruskal" element={<GraphPage />} />
           
           <Route path="/algorithm/n-queens" element={<NQueensPage />} />
+          <Route path="/algorithm/graph-coloring" element={<GraphColoringPage />} />
           <Route path="/algorithm/:slug" element={<AlgorithmPage />} />
           <Route path="/sorting" element={<Navigate to="/algorithm/bubble-sort" replace />} />
           <Route path="/searching" element={<Navigate to="/algorithm/linear-search" replace />} />

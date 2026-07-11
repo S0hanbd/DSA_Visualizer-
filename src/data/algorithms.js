@@ -665,29 +665,55 @@ void quickSort(int arr[], int low, int high) {
     }
 }`;
 
-const nQueensCode = `bool isSafe(int board[][10], int row, int col, int N) {
-    for (int i = 0; i < row; i++)
-        if (board[i][col]) return false;
-    for (int i = row, j = col; i >= 0 && j >= 0; i--, j--)
+const nQueensCode = `bool isSafe(int board[N][N], int row, int col) {
+    int i, j;
+    for (i = 0; i < col; i++)
+        if (board[row][i]) return false;
+    for (i = row, j = col; i >= 0 && j >= 0; i--, j--)
         if (board[i][j]) return false;
-    for (int i = row, j = col; i >= 0 && j < N; i--, j++)
+    for (i = row, j = col; j >= 0 && i < N; i++, j--)
         if (board[i][j]) return false;
     return true;
 }
 
-void solveNQueens(int board[][10], int row, int N, int& solutionsCount) {
-    if (row >= N) {
-        solutionsCount++;
+bool solveNQUtil(int board[N][N], int col) {
+    if (col >= N) return true;
+    for (int i = 0; i < N; i++) {
+        if (isSafe(board, i, col)) {
+            board[i][col] = 1;
+            if (solveNQUtil(board, col + 1)) return true;
+            board[i][col] = 0;
+        }
+    }
+    return false;
+}`;
+
+const graphColoringCode = `void printSolution(int color[]) {
+    // print colors
+}
+
+bool isSafe(int v, bool graph[V][V], int color[], int c) {
+    for (int i = 0; i < V; i++)
+        if (graph[v][i] && c == color[i])
+            return false;
+    return true;
+}
+
+void graphColoring(bool graph[V][V], int m, int color[], int v) {
+    if (v == V) {
+        printSolution(color);
         return;
     }
-    for (int col = 0; col < N; col++) {
-        if (isSafe(board, row, col, N)) {
-            board[row][col] = 1;
-            solveNQueens(board, row + 1, N, solutionsCount);
-            board[row][col] = 0;
+    for (int c = 1; c <= m; c++) {
+        if (isSafe(v, graph, color, c)) {
+            color[v] = c;
+            graphColoring(graph, m, color, v + 1);
+            color[v] = 0;
         }
     }
 }`;
+
+
 
 const heapCode = `void heapify(int arr[], int n, int i) {
     int largest = i;
@@ -1129,12 +1155,11 @@ export const algorithms = [
   makeAlgorithm({ slug: "fractional-knapsack", title: "Fractional Knapsack Problem", category: "Greedy", description: "Fills a knapsack with fractional items to maximize total value.", comingSoon: true }),
   makeAlgorithm({ slug: "job-scheduling", title: "Job Scheduling Problem", category: "Greedy", description: "Schedules jobs to maximize profit considering deadlines.", comingSoon: true }),
   makeAlgorithm({ slug: "n-queens", title: "N-Queens Problem", category: "Backtracking", description: "Places N queens on an NxN chessboard so that no two attack each other.", best: "O(N!)", average: "O(N!)", worst: "O(N!)", space: "O(N)", code: nQueensCode, type: "concept", language: "cpp" }),
+  makeAlgorithm({ slug: "graph-coloring", title: "Graph Coloring Problem", category: "Backtracking", description: "Assigns colors to vertices of a graph so that no two adjacent vertices share the same color. It finds all valid colorings using a specified number of colors.", best: "O(m^V)", average: "O(m^V)", worst: "O(m^V)", space: "O(V)", code: graphColoringCode, type: "concept", language: "cpp" }),
   makeAlgorithm({ slug: "bellman-ford", title: "Bellman-Ford Algorithm", category: "Graphs", description: "Computes shortest paths from a single source vertex to all other vertices.", comingSoon: true }),
   makeAlgorithm({ slug: "floyd-warshall", title: "Floyd-Warshall Algorithm", category: "Dynamic Programming", description: "Finds shortest paths in a directed weighted graph with positive or negative edge weights.", comingSoon: true }),
-  makeAlgorithm({ slug: "graph-coloring", title: "Graph Coloring Problem", category: "Backtracking", description: "Assigns colors to vertices of a graph so that no two adjacent vertices share the same color.", comingSoon: true }),
   makeAlgorithm({ slug: "string-matching", title: "String Matching Algorithms", category: "String Matching", description: "Finds one or all occurrences of a string within another string.", comingSoon: true }),
   makeAlgorithm({ slug: "rabin-karp", title: "Rabin-Karp Algorithm", category: "String Matching", description: "Uses hashing to find any one of a set of pattern strings in a text.", comingSoon: true }),
 ];
 
 export const algorithmMap = Object.fromEntries(algorithms.map((algorithm) => [algorithm.slug, algorithm]));
-
