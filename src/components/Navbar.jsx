@@ -13,6 +13,7 @@ const navItems = [
   ["Queue", "/algorithm/linear-queue"],
   ["Trees", "/algorithm/binary-tree"],
   ["Graph", "/algorithm/bfs"],
+  ["Design", "/design"],
 ];
 
 function NavItems({ onClick }) {

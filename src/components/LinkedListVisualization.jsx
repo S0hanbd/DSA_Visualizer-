@@ -17,11 +17,11 @@ function nodeColors(index, step, overrideIsNew = false) {
   const isFound    = sorted.includes(index);
   const isActive   = comparing.includes(index);
 
-  if (isNew)      return { ring: "ring-2 ring-emerald-400", bg: "bg-emerald-950/70 dark:bg-emerald-950/80", glow: "shadow-[0_0_18px_rgba(52,211,153,0.5)]", label: "text-emerald-300" };
-  if (isDeleting) return { ring: "ring-2 ring-red-400",     bg: "bg-red-950/70",     glow: "shadow-[0_0_18px_rgba(248,113,113,0.5)]", label: "text-red-300" };
-  if (isFound)    return { ring: "ring-2 ring-emerald-300", bg: "bg-emerald-900/60", glow: "shadow-[0_0_14px_rgba(110,231,183,0.45)]", label: "text-emerald-200" };
-  if (isActive)   return { ring: "ring-2 ring-orange-400",  bg: "bg-orange-950/70",  glow: "shadow-[0_0_14px_rgba(251,146,60,0.45)]",  label: "text-orange-200" };
-  return           { ring: "ring-1 ring-slate-600/60",      bg: "bg-slate-800/80 dark:bg-slate-800/90", glow: "", label: "text-slate-100" };
+  if (isNew)      return { ring: "ring-2 ring-emerald-500", bg: "bg-emerald-50 dark:bg-emerald-950/80", glow: "shadow-[0_0_15px_rgba(16,185,129,0.3)]", label: "text-emerald-700 dark:text-emerald-300" };
+  if (isDeleting) return { ring: "ring-2 ring-red-500",     bg: "bg-red-50 dark:bg-red-950/70",     glow: "shadow-[0_0_15px_rgba(239,68,68,0.3)]", label: "text-red-700 dark:text-red-300" };
+  if (isFound)    return { ring: "ring-2 ring-emerald-400", bg: "bg-emerald-50 dark:bg-emerald-900/60", glow: "shadow-[0_0_15px_rgba(52,211,153,0.3)]", label: "text-emerald-600 dark:text-emerald-200" };
+  if (isActive)   return { ring: "ring-2 ring-orange-400",  bg: "bg-orange-50 dark:bg-orange-950/70",  glow: "shadow-[0_0_15px_rgba(251,146,60,0.3)]",  label: "text-orange-700 dark:text-orange-200" };
+  return           { ring: "ring-1 ring-slate-300 dark:ring-slate-700", bg: "bg-white dark:bg-slate-800/90", glow: "shadow-sm", label: "text-slate-800 dark:text-slate-100" };
 }
 
 // ─── single node box ─────────────────────────────────────────────────────────
@@ -33,15 +33,7 @@ function NodeBox({ value, index, isDoubly, isHead, isTail, step }) {
   const isNew = markers.newNode === index;
 
   return (
-    <motion.div
-      layout
-      key={`node-${index}`}
-      initial={{ scale: 0.5, opacity: 0, y: -28 }}
-      animate={{ scale: 1, opacity: 1, y: 0 }}
-      exit={{ scale: 0.4, opacity: 0, x: -40 }}
-      transition={{ type: "spring", stiffness: 220, damping: 22, delay: isNew ? 0.08 : 0 }}
-      className="flex flex-col items-center gap-1.5"
-    >
+    <div className="flex flex-col items-center gap-1.5">
       {/* HEAD / TAIL badge */}
       <div className="flex h-6 items-center gap-1.5">
         {isHead && (
@@ -69,9 +61,9 @@ function NodeBox({ value, index, isDoubly, isHead, isTail, step }) {
 
         {/* PREV slot (doubly only) */}
         {isDoubly && (
-          <div className="flex min-w-[2.8rem] flex-col items-center justify-center border-r border-slate-600/60 bg-cyan-950/50 px-2 py-2.5">
-            <span className="text-[8px] font-black uppercase tracking-widest text-cyan-500">Prev</span>
-            <span className="mt-1 text-xs font-black text-cyan-300">
+          <div className="flex min-w-[2.8rem] flex-col items-center justify-center border-r border-slate-200 dark:border-slate-700 bg-cyan-50 dark:bg-cyan-950/50 px-2 py-2.5">
+            <span className="text-[8px] font-black uppercase tracking-widest text-cyan-600 dark:text-cyan-500">Prev</span>
+            <span className="mt-1 text-xs font-black text-cyan-500 dark:text-cyan-300">
               {isHead ? "∅" : "●"}
             </span>
           </div>
@@ -84,9 +76,9 @@ function NodeBox({ value, index, isDoubly, isHead, isTail, step }) {
         </div>
 
         {/* NEXT slot */}
-        <div className="flex min-w-[2.8rem] flex-col items-center justify-center border-l border-slate-600/60 bg-blue-950/50 px-2 py-2.5">
-          <span className="text-[8px] font-black uppercase tracking-widest text-blue-500">Next</span>
-          <span className="mt-1 text-xs font-black text-blue-300">
+        <div className="flex min-w-[2.8rem] flex-col items-center justify-center border-l border-slate-200 dark:border-slate-700 bg-blue-50 dark:bg-blue-950/50 px-2 py-2.5">
+          <span className="text-[8px] font-black uppercase tracking-widest text-blue-600 dark:text-blue-500">Next</span>
+          <span className="mt-1 text-xs font-black text-blue-400 dark:text-blue-300">
             {isLast && !isCircular ? "∅" : "●"}
           </span>
         </div>
@@ -94,7 +86,7 @@ function NodeBox({ value, index, isDoubly, isHead, isTail, step }) {
 
       {/* Index label */}
       <span className="text-[10px] font-bold text-slate-500">[{index}]</span>
-    </motion.div>
+    </div>
   );
 }
 
@@ -106,7 +98,7 @@ function Arrow({ highlighted, isDoubly }) {
         <motion.span
           animate={{ opacity: highlighted ? 1 : 0.3, scale: highlighted ? 1.15 : 1 }}
           transition={{ duration: 0.2 }}
-          className={`text-base font-black transition-colors ${highlighted ? "text-cyan-400" : "text-slate-600"}`}
+          className={`text-base font-black transition-colors ${highlighted ? "text-cyan-500" : "text-slate-400 dark:text-slate-600"}`}
         >
           ←
         </motion.span>
@@ -114,7 +106,7 @@ function Arrow({ highlighted, isDoubly }) {
       <motion.span
         animate={{ opacity: highlighted ? 1 : 0.35, scale: highlighted ? 1.15 : 1 }}
         transition={{ duration: 0.2 }}
-        className={`text-2xl font-black transition-colors ${highlighted ? "text-blue-400" : "text-slate-600"}`}
+        className={`text-2xl font-black transition-colors ${highlighted ? "text-blue-500" : "text-slate-400 dark:text-slate-600"}`}
       >
         →
       </motion.span>
@@ -126,8 +118,8 @@ function Arrow({ highlighted, isDoubly }) {
 function NullTerminal() {
   return (
     <div className="mb-8 flex items-center gap-1.5">
-      <span className="text-lg font-black text-slate-600">→</span>
-      <span className="rounded-xl border border-slate-600/50 bg-slate-900/60 px-2.5 py-1.5 text-xs font-black text-slate-400">
+      <span className="text-lg font-black text-slate-400 dark:text-slate-600">→</span>
+      <span className="rounded-xl border border-slate-200 dark:border-slate-600/50 bg-slate-100 dark:bg-slate-900/60 px-2.5 py-1.5 text-xs font-black text-slate-500 dark:text-slate-400">
         NULL
       </span>
     </div>
@@ -209,37 +201,52 @@ export default function LinkedListVisualization({ step, algorithm }) {
             {/* Node chain */}
             <div className="flex flex-wrap items-center gap-1">
               <AnimatePresence>
-                {values.map((value, index) => {
-                  const isHead     = index === 0;
-                  const isTail     = index === values.length - 1;
-                  const arrowHighlight = markers.highlightArrowFrom === index;
-                  return (
-                    <div key={`wrapper-${index}-${value}`} className="flex items-center">
-                      <NodeBox
-                        value={value}
-                        index={index}
-                        isDoubly={isDoubly}
-                        isHead={isHead}
-                        isTail={isTail}
-                        step={step}
-                      />
-                      {/* Arrow or NULL */}
-                      {!isTail ? (
-                        <Arrow highlighted={arrowHighlight} isDoubly={isDoubly} />
-                      ) : isCircular ? (
-                        /* Circular back arrow */
-                        <div className="mb-8 flex items-center gap-1.5 text-violet-400">
-                          <span className="text-xl font-black">→</span>
-                          <span className="rounded-xl border border-slate-300 bg-slate-200 px-2 py-1 text-[10px] font-black text-slate-900">
-                            → HEAD
-                          </span>
-                        </div>
-                      ) : (
-                        <NullTerminal />
-                      )}
-                    </div>
-                  );
-                })}
+                {(() => {
+                  const occurrences = {};
+                  return values.map((value, index) => {
+                    occurrences[value] = (occurrences[value] || 0) + 1;
+                    const itemKey = `${value}-${occurrences[value] - 1}`;
+                    const isHead     = index === 0;
+                    const isTail     = index === values.length - 1;
+                    const arrowHighlight = markers.highlightArrowFrom === index;
+                    const isNew = markers.newNode === index;
+                    
+                    return (
+                      <motion.div 
+                        layout 
+                        key={itemKey} 
+                        className="flex items-center"
+                        initial={{ scale: 0.5, opacity: 0, y: -28 }}
+                        animate={{ scale: 1, opacity: 1, y: 0 }}
+                        exit={{ scale: 0.4, opacity: 0, x: -40 }}
+                        transition={{ type: "spring", stiffness: 220, damping: 22, delay: isNew ? 0.08 : 0 }}
+                      >
+                        <NodeBox
+                          value={value}
+                          index={index}
+                          isDoubly={isDoubly}
+                          isHead={isHead}
+                          isTail={isTail}
+                          step={step}
+                        />
+                        {/* Arrow or NULL */}
+                        {!isTail ? (
+                          <Arrow highlighted={arrowHighlight} isDoubly={isDoubly} />
+                        ) : isCircular ? (
+                          /* Circular back arrow */
+                          <div className="mb-8 flex items-center gap-1.5 text-violet-400">
+                            <span className="text-xl font-black">→</span>
+                            <span className="rounded-xl border border-slate-300 bg-slate-200 px-2 py-1 text-[10px] font-black text-slate-900">
+                              → HEAD
+                            </span>
+                          </div>
+                        ) : (
+                          <NullTerminal />
+                        )}
+                      </motion.div>
+                    );
+                  });
+                })()}
               </AnimatePresence>
             </div>
 

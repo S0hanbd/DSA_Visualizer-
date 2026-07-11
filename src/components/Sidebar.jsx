@@ -6,7 +6,7 @@ import { algorithmMap, categories } from "../data/algorithms.js";
 export default function Sidebar() {
   const { slug } = useParams();
   const [collapsed, setCollapsed] = useState(false);
-  const [expanded, setExpanded] = useState(() => new Set(["Sorting", "Searching"]));
+  const [expanded, setExpanded] = useState(() => new Set());
 
   useEffect(() => {
     if (!slug) return;
@@ -41,7 +41,7 @@ export default function Sidebar() {
             <button
               type="button"
               onClick={() => toggle(category.name)}
-              className="flex w-full items-center justify-between rounded-2xl px-3 py-3 text-left text-sm font-black text-slate-700 transition hover:bg-white/70 dark:text-slate-100 dark:hover:bg-slate-800"
+              className="flex w-full items-center justify-between rounded-2xl px-3 py-3 text-left text-sm font-semibold text-slate-700 transition hover:bg-white/70 dark:text-slate-100 dark:hover:bg-slate-800"
             >
               <span>{collapsed ? category.name.slice(0, 2) : category.name}</span>
               {!collapsed && <ChevronDown size={16} className={`transition ${expanded.has(category.name) ? "rotate-180" : ""}`} />}
@@ -53,7 +53,7 @@ export default function Sidebar() {
                     key={slug}
                     to={`/algorithm/${slug}`}
                     className={({ isActive }) =>
-                      `block rounded-xl px-3 py-2 text-sm font-semibold transition ${
+                      `block rounded-xl px-3 py-2 text-sm font-medium transition ${
                         isActive ? "bg-blue-600 text-white dark:bg-cyan-400 dark:text-slate-950" : "text-slate-500 hover:bg-white/70 hover:text-blue-600 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-cyan-300"
                       }`
                     }

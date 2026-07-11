@@ -11,6 +11,7 @@ import QueuePage from "./pages/QueuePage.jsx";
 import CircularQueuePage from "./pages/CircularQueuePage.jsx";
 import PriorityQueuePage from "./pages/PriorityQueuePage.jsx";
 import GraphPage from "./pages/GraphPage.jsx";
+import DesignPage from "./pages/DesignPage.jsx";
 import { ThemeProvider } from "./hooks/useTheme.jsx";
 
 function AnimatedRoutes() {
@@ -57,6 +58,7 @@ function AnimatedRoutes() {
           <Route path="/queue" element={<Navigate to="/algorithm/linear-queue" replace />} />
           <Route path="/trees" element={<Navigate to="/algorithm/binary-tree" replace />} />
           <Route path="/graph" element={<Navigate to="/algorithm/bfs" replace />} />
+          <Route path="/design" element={<DesignPage />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </motion.main>

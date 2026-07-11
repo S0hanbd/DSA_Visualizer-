@@ -58,6 +58,31 @@ export default function AlgorithmPage() {
 
   if (!algorithm) return <Navigate to="/" replace />;
 
+  if (algorithm.comingSoon) {
+    return (
+      <div className="mx-auto flex w-full gap-6 px-4 py-8">
+        <Sidebar />
+        <div className="min-w-0 flex-1 space-y-7">
+          <section className="neo-panel p-6">
+            <p className="muted-label">{algorithm.category}</p>
+            <div className="mt-3">
+              <h1 className="text-4xl font-black sm:text-5xl">{algorithm.title}</h1>
+              <p className="mt-4 max-w-3xl text-base leading-7 text-slate-600 dark:text-slate-300">{algorithm.description}</p>
+            </div>
+          </section>
+          
+          <div className="neo-panel flex flex-col items-center justify-center py-24 text-center">
+            <span className="text-5xl mb-4">🚧</span>
+            <h2 className="text-2xl font-black text-slate-800 dark:text-slate-200">Coming Soon</h2>
+            <p className="text-slate-600 dark:text-slate-400 mt-2 font-semibold">
+              The algorithm will be added soon!
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   const setCustomArray = () => {
     const parsed = input
       .split(/[,\s]+/)

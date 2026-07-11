@@ -37,21 +37,13 @@ function parseList(str) {
 }
 
 // ─── operation button ─────────────────────────────────────────────────────────
-function OpBtn({ label, icon, onClick, color = "blue", disabled }) {
-  const palette = {
-    blue:   "bg-blue-600 hover:bg-blue-500 dark:bg-cyan-500 dark:hover:bg-cyan-400 dark:text-slate-950",
-    green:  "bg-emerald-600 hover:bg-emerald-500",
-    violet: "bg-violet-600 hover:bg-violet-500",
-    red:    "bg-red-600 hover:bg-red-500",
-    amber:  "bg-amber-600 hover:bg-amber-500",
-  };
+function OpBtn({ label, icon, onClick, disabled }) {
   return (
     <motion.button
       whileTap={{ scale: 0.94 }}
       onClick={onClick}
       disabled={disabled}
-      className={`flex items-center gap-2 rounded-2xl px-4 py-2.5 text-sm font-black text-white shadow transition-all duration-150
-        ${palette[color]} disabled:cursor-not-allowed disabled:opacity-40`}
+      className="flex items-center gap-2 rounded-2xl bg-slate-800 px-4 py-2.5 text-sm font-black text-white shadow transition hover:bg-slate-700 disabled:cursor-not-allowed disabled:opacity-40 dark:bg-slate-200 dark:text-slate-900 dark:hover:bg-slate-100"
     >
       <span>{icon}</span>
       {label}
@@ -272,9 +264,6 @@ export default function LinkedListPage() {
           </div>
         </section>
 
-        {/* ── Visualization ─────────────────────────────────────────────── */}
-        <LinkedListVisualization step={step} algorithm={algorithm} />
-
         {/* ── Step explanation strip ────────────────────────────────────── */}
         <AnimatePresence mode="wait">
           <motion.div
@@ -310,6 +299,9 @@ export default function LinkedListPage() {
           current={currentStep}
           total={steps.length}
         />
+
+        {/* ── Visualization ─────────────────────────────────────────────── */}
+        <LinkedListVisualization step={step} algorithm={algorithm} />
 
         {/* ── Controls ──────────────────────────────────────────────────── */}
         <section className="neo-panel space-y-5 p-5">

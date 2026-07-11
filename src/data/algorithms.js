@@ -19,7 +19,11 @@ export const categories = [
   { name: "Stack", path: "/stack", algorithms: ["stack-array"] },
   { name: "Queue", path: "/queue", algorithms: ["linear-queue", "circular-queue", "priority-queue"] },
   { name: "Trees", path: "/trees", algorithms: ["binary-tree", "bst", "avl", "tree-traversal", "max-heap"] },
-  { name: "Graphs", path: "/graph", algorithms: ["bfs", "dfs", "dijkstra", "prim", "kruskal"] },
+  { name: "Graphs", path: "/graph", algorithms: ["bfs", "dfs", "dijkstra", "prim", "kruskal", "bellman-ford"] },
+  { name: "Greedy", path: "/greedy", algorithms: ["fractional-knapsack", "job-scheduling"] },
+  { name: "Dynamic Programming", path: "/dp", algorithms: ["floyd-warshall"] },
+  { name: "Backtracking", path: "/backtracking", algorithms: ["n-queens", "graph-coloring"] },
+  { name: "String Matching", path: "/string-matching", algorithms: ["string-matching", "rabin-karp"] }
 ];
 
 const stackCode = `#include <iostream>
@@ -1007,12 +1011,14 @@ const makeAlgorithm = ({
   code,
   type = "concept",
   language,
+  comingSoon = false,
 }) => ({
   slug,
   title,
   category,
   description,
   type,
+  comingSoon,
   complexities: { best, average, worst, space },
   code: code || genericCode(title),
   language: language || "cpp",
@@ -1062,6 +1068,16 @@ export const algorithms = [
   makeAlgorithm({ slug: "dijkstra", title: "Dijkstra Algorithm", category: "Graphs", description: "Finds shortest paths from a source in a graph with non-negative weights.", best: "O(E log V)", average: "O(E log V)", worst: "O(E log V)", space: "O(V)", code: dijkstraCode, type: "concept", language: "cpp" }),
   makeAlgorithm({ slug: "prim", title: "Prim Algorithm", category: "Graphs", description: "Builds a minimum spanning tree by growing from the cheapest connected edge.", best: "O(E log V)", average: "O(E log V)", worst: "O(E log V)", space: "O(V)", code: primCode, type: "concept", language: "cpp" }),
   makeAlgorithm({ slug: "kruskal", title: "Kruskal Algorithm", category: "Graphs", description: "Builds a minimum spanning tree by adding safe edges in sorted order.", best: "O(E log E)", average: "O(E log E)", worst: "O(E log E)", space: "O(V)", code: kruskalCode, type: "concept", language: "cpp" }),
+  
+  // New Algorithms (Coming Soon)
+  makeAlgorithm({ slug: "fractional-knapsack", title: "Fractional Knapsack Problem", category: "Greedy", description: "Fills a knapsack with fractional items to maximize total value.", comingSoon: true }),
+  makeAlgorithm({ slug: "job-scheduling", title: "Job Scheduling Problem", category: "Greedy", description: "Schedules jobs to maximize profit considering deadlines.", comingSoon: true }),
+  makeAlgorithm({ slug: "n-queens", title: "N-Queens Problem", category: "Backtracking", description: "Places N queens on an NxN chessboard so that no two attack each other.", comingSoon: true }),
+  makeAlgorithm({ slug: "bellman-ford", title: "Bellman-Ford Algorithm", category: "Graphs", description: "Computes shortest paths from a single source vertex to all other vertices.", comingSoon: true }),
+  makeAlgorithm({ slug: "floyd-warshall", title: "Floyd-Warshall Algorithm", category: "Dynamic Programming", description: "Finds shortest paths in a directed weighted graph with positive or negative edge weights.", comingSoon: true }),
+  makeAlgorithm({ slug: "graph-coloring", title: "Graph Coloring Problem", category: "Backtracking", description: "Assigns colors to vertices of a graph so that no two adjacent vertices share the same color.", comingSoon: true }),
+  makeAlgorithm({ slug: "string-matching", title: "String Matching Algorithms", category: "String Matching", description: "Finds one or all occurrences of a string within another string.", comingSoon: true }),
+  makeAlgorithm({ slug: "rabin-karp", title: "Rabin-Karp Algorithm", category: "String Matching", description: "Uses hashing to find any one of a set of pattern strings in a text.", comingSoon: true }),
 ];
 
 export const algorithmMap = Object.fromEntries(algorithms.map((algorithm) => [algorithm.slug, algorithm]));
