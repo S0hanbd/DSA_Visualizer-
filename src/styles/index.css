@@ -78,3 +78,77 @@ input {
   background: rgba(100, 116, 139, 0.45);
   border-radius: 999px;
 }
+
+/* Custom Algorithm Card Dock Animation based on Uiverse.io */
+.algo-dock-container {
+  transform-style: preserve-3d;
+  transform: perspective(1000px);
+}
+
+.algo-dock-item {
+  position: relative;
+  transition: 500ms cubic-bezier(0.175, 0.885, 0.32, 1.1);
+}
+
+.algo-dock-item:hover {
+  transform: scale(1.15) !important;
+  z-index: 9999;
+}
+
+.algo-dock-item:hover + * {
+  transform: scale(1.08) !important;
+  z-index: 999;
+}
+
+.algo-dock-item:hover + * + * {
+  transform: scale(1.03) !important;
+  z-index: 99;
+}
+
+.algo-dock-item:has(+ *:hover) {
+  transform: scale(1.08) !important;
+  z-index: 999;
+}
+
+.algo-dock-item:has(+ * + *:hover) {
+  transform: scale(1.03) !important;
+  z-index: 99;
+}
+
+/* Uiverse.io Input Styles */
+input[type="text"],
+input[type="number"] {
+  border: none !important;
+  padding: 0.6rem 1rem !important;
+  border-radius: 1rem !important;
+  background: #e8e8e8 !important;
+  box-shadow: 5px 5px 15px #c5c5c5,
+             -5px -5px 15px #ffffff !important;
+  transition: 0.3s !important;
+  color: #333 !important;
+}
+
+input[type="text"]:focus,
+input[type="number"]:focus {
+  outline: none !important;
+  background: #e8e8e8 !important;
+  box-shadow: inset 5px 5px 15px #c5c5c5,
+             inset -5px -5px 15px #ffffff !important;
+  transition: 0.3s !important;
+}
+
+/* Dark Mode support for the neumorphic input */
+.dark input[type="text"],
+.dark input[type="number"] {
+  background: #1e293b !important;
+  box-shadow: 5px 5px 15px #0f172a, 
+             -5px -5px 15px #334155 !important;
+  color: #f1f5f9 !important;
+}
+
+.dark input[type="text"]:focus,
+.dark input[type="number"]:focus {
+  background: #1e293b !important;
+  box-shadow: inset 5px 5px 15px #0f172a, 
+             inset -5px -5px 15px #334155 !important;
+}

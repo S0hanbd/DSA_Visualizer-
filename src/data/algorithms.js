@@ -17,7 +17,7 @@ export const categories = [
   { name: "Searching", path: "/searching", algorithms: ["linear-search", "binary-search"] },
   { name: "Linked List", path: "/linked-list", algorithms: ["singly-linked-list", "doubly-linked-list", "circular-linked-list"] },
   { name: "Stack", path: "/stack", algorithms: ["stack-array"] },
-  { name: "Queue", path: "/queue", algorithms: ["linear-queue", "circular-queue", "priority-queue"] },
+  { name: "Queue", path: "/queue", algorithms: ["linear-queue", "circular-queue", "priority-queue", "queue-using-stacks"] },
   { name: "Trees", path: "/trees", algorithms: ["binary-tree", "bst", "avl", "tree-traversal", "max-heap"] },
   { name: "Graphs", path: "/graph", algorithms: ["bfs", "dfs", "dijkstra", "prim", "kruskal", "bellman-ford"] },
   { name: "Greedy", path: "/greedy", algorithms: ["fractional-knapsack", "job-scheduling"] },
@@ -430,6 +430,37 @@ public:
     }
 };`;
 
+const queueUsingStacksCode = `#include <iostream>
+#include <stack>
+using namespace std;
+
+class Queue {
+    stack<int> s1, s2;
+
+public:
+    void enqueue(int x) {
+        s1.push(x);
+    }
+
+    int dequeue() {
+        if (s1.empty() && s2.empty()) {
+            cout << "Queue is empty\\n";
+            return -1;
+        }
+
+        if (s2.empty()) {
+            while (!s1.empty()) {
+                s2.push(s1.top());
+                s1.pop();
+            }
+        }
+
+        int x = s2.top();
+        s2.pop();
+        return x;
+    }
+};`;
+
 const circularQueueCode = `#include <iostream>
 #define MAX 10
 
@@ -631,6 +662,30 @@ void quickSort(int arr[], int low, int high) {
         int pi = partition(arr, low, high);
         quickSort(arr, low, pi - 1);
         quickSort(arr, pi + 1, high);
+    }
+}`;
+
+const nQueensCode = `bool isSafe(int board[][10], int row, int col, int N) {
+    for (int i = 0; i < row; i++)
+        if (board[i][col]) return false;
+    for (int i = row, j = col; i >= 0 && j >= 0; i--, j--)
+        if (board[i][j]) return false;
+    for (int i = row, j = col; i >= 0 && j < N; i--, j++)
+        if (board[i][j]) return false;
+    return true;
+}
+
+void solveNQueens(int board[][10], int row, int N, int& solutionsCount) {
+    if (row >= N) {
+        solutionsCount++;
+        return;
+    }
+    for (int col = 0; col < N; col++) {
+        if (isSafe(board, row, col, N)) {
+            board[row][col] = 1;
+            solveNQueens(board, row + 1, N, solutionsCount);
+            board[row][col] = 0;
+        }
     }
 }`;
 
@@ -1058,6 +1113,7 @@ export const algorithms = [
   makeAlgorithm({ slug: "linear-queue", title: "Linear Queue", category: "Queue", description: "Processes items in first-in, first-out order using front and rear pointers.", best: "O(1)", average: "O(1)", worst: "O(1)", space: "O(n)", code: queueCode, type: "concept", language: "cpp" }),
   makeAlgorithm({ slug: "circular-queue", title: "Circular Queue", category: "Queue", description: "Reuses array positions by wrapping front and rear around the array.", best: "O(1)", average: "O(1)", worst: "O(1)", space: "O(n)", code: circularQueueCode, type: "concept", language: "cpp" }),
   makeAlgorithm({ slug: "priority-queue", title: "Priority Queue", category: "Queue", description: "Removes elements based on priority rather than arrival order.", best: "O(1)", average: "O(log n)", worst: "O(log n)", space: "O(n)", code: priorityQueueCode, type: "concept", language: "cpp" }),
+  makeAlgorithm({ slug: "queue-using-stacks", title: "Queue using 2 Stacks", category: "Queue", description: "A queue can be implemented using two stacks. Stack 1 is used for enqueuing items, while Stack 2 is used for dequeuing.", best: "O(1)", average: "O(1)", worst: "O(N)", space: "O(N)", code: queueUsingStacksCode, type: "concept", language: "cpp" }),
   makeAlgorithm({ slug: "binary-tree", title: "Binary Tree", category: "Trees", description: "A hierarchical structure where each node has at most two children.", average: "O(n)", worst: "O(n)", space: "O(n)", code: bstCode, type: "concept", language: "cpp" }),
   makeAlgorithm({ slug: "bst", title: "Binary Search Tree", category: "Trees", description: "A binary tree that keeps smaller values left and larger values right.", best: "O(log n)", average: "O(log n)", worst: "O(n)", space: "O(n)", code: bstCode, type: "concept", language: "cpp" }),
   makeAlgorithm({ slug: "avl", title: "AVL Tree", category: "Trees", description: "A self-balancing BST that rotates nodes to maintain logarithmic height.", best: "O(log n)", average: "O(log n)", worst: "O(log n)", space: "O(n)", code: avlCode, type: "concept", language: "cpp" }),
@@ -1072,7 +1128,7 @@ export const algorithms = [
   // New Algorithms (Coming Soon)
   makeAlgorithm({ slug: "fractional-knapsack", title: "Fractional Knapsack Problem", category: "Greedy", description: "Fills a knapsack with fractional items to maximize total value.", comingSoon: true }),
   makeAlgorithm({ slug: "job-scheduling", title: "Job Scheduling Problem", category: "Greedy", description: "Schedules jobs to maximize profit considering deadlines.", comingSoon: true }),
-  makeAlgorithm({ slug: "n-queens", title: "N-Queens Problem", category: "Backtracking", description: "Places N queens on an NxN chessboard so that no two attack each other.", comingSoon: true }),
+  makeAlgorithm({ slug: "n-queens", title: "N-Queens Problem", category: "Backtracking", description: "Places N queens on an NxN chessboard so that no two attack each other.", best: "O(N!)", average: "O(N!)", worst: "O(N!)", space: "O(N)", code: nQueensCode, type: "concept", language: "cpp" }),
   makeAlgorithm({ slug: "bellman-ford", title: "Bellman-Ford Algorithm", category: "Graphs", description: "Computes shortest paths from a single source vertex to all other vertices.", comingSoon: true }),
   makeAlgorithm({ slug: "floyd-warshall", title: "Floyd-Warshall Algorithm", category: "Dynamic Programming", description: "Finds shortest paths in a directed weighted graph with positive or negative edge weights.", comingSoon: true }),
   makeAlgorithm({ slug: "graph-coloring", title: "Graph Coloring Problem", category: "Backtracking", description: "Assigns colors to vertices of a graph so that no two adjacent vertices share the same color.", comingSoon: true }),

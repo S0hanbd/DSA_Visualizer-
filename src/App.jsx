@@ -10,7 +10,9 @@ import StackPage from "./pages/StackPage.jsx";
 import QueuePage from "./pages/QueuePage.jsx";
 import CircularQueuePage from "./pages/CircularQueuePage.jsx";
 import PriorityQueuePage from "./pages/PriorityQueuePage.jsx";
+import QueueUsingStacksPage from "./pages/QueueUsingStacksPage.jsx";
 import GraphPage from "./pages/GraphPage.jsx";
+import NQueensPage from "./pages/NQueensPage.jsx";
 import DesignPage from "./pages/DesignPage.jsx";
 import { ThemeProvider } from "./hooks/useTheme.jsx";
 
@@ -43,6 +45,7 @@ function AnimatedRoutes() {
           <Route path="/algorithm/linear-queue" element={<QueuePage />} />
           <Route path="/algorithm/circular-queue" element={<CircularQueuePage />} />
           <Route path="/algorithm/priority-queue" element={<PriorityQueuePage />} />
+          <Route path="/algorithm/queue-using-stacks" element={<QueueUsingStacksPage />} />
           
           <Route path="/algorithm/dijkstra" element={<GraphPage />} />
           <Route path="/algorithm/bfs" element={<GraphPage />} />
@@ -50,6 +53,7 @@ function AnimatedRoutes() {
           <Route path="/algorithm/prim" element={<GraphPage />} />
           <Route path="/algorithm/kruskal" element={<GraphPage />} />
           
+          <Route path="/algorithm/n-queens" element={<NQueensPage />} />
           <Route path="/algorithm/:slug" element={<AlgorithmPage />} />
           <Route path="/sorting" element={<Navigate to="/algorithm/bubble-sort" replace />} />
           <Route path="/searching" element={<Navigate to="/algorithm/linear-search" replace />} />
