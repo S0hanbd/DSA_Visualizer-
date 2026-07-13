@@ -1,12 +1,76 @@
 import { useRef, useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
-export default function GraphColoringVisualization({ nodes, edges, step }) {
+export default function GraphColoringVisualization({ nodes, edges, step, onCanvasClick, onNodePositionChange }) {
   const containerRef = useRef(null);
   
-  // Pan and Zoom State (reuse from GraphVisualization if needed, but we can simplify here)
+  // Pan and Zoom State
   const [scale, setScale] = useState(1);
   const [pan, setPan] = useState({ x: 0, y: 0 });
+  const [isDragging, setIsDragging] = useState(false);
+  const [draggingNodeId, setDraggingNodeId] = useState(null);
+  const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
+  const [hasMoved, setHasMoved] = useState(false);
+
+  const handleWheel = (e) => {
+    e.preventDefault();
+    const zoomSensitivity = 0.001;
+    const delta = -e.deltaY * zoomSensitivity;
+    setScale((prevScale) => Math.min(Math.max(0.2, prevScale + delta), 3));
+  };
+
+  const handlePointerDown = (e) => {
+    if (e.target.tagName !== "svg" && e.target.tagName !== "rect") return;
+    setIsDragging(true);
+    setHasMoved(false);
+    setDragStart({ x: e.clientX, y: e.clientY });
+  };
+
+  const handlePointerMove = (e) => {
+    if (!isDragging && !draggingNodeId) return;
+    const dx = e.clientX - dragStart.x;
+    const dy = e.clientY - dragStart.y;
+    
+    if (draggingNodeId) {
+      if (onNodePositionChange) {
+        onNodePositionChange(draggingNodeId, dx / scale, dy / scale);
+      }
+    } else {
+      setPan(prev => ({ x: prev.x + dx, y: prev.y + dy }));
+      if (Math.abs(dx) > 2 || Math.abs(dy) > 2) {
+        setHasMoved(true);
+      }
+    }
+    setDragStart({ x: e.clientX, y: e.clientY });
+  };
+
+  const handlePointerUp = (e) => {
+    if (draggingNodeId) {
+      setDraggingNodeId(null);
+      return;
+    }
+    if (isDragging && !hasMoved && onCanvasClick && containerRef.current) {
+        const rect = containerRef.current.getBoundingClientRect();
+        const svgX = (e.clientX - rect.left - pan.x) / scale;
+        const svgY = (e.clientY - rect.top - pan.y) / scale;
+        onCanvasClick({ x: svgX, y: svgY });
+    }
+    setIsDragging(false);
+  };
+
+  const handleNodePointerDown = (e, nodeId) => {
+    e.stopPropagation();
+    setDraggingNodeId(nodeId);
+    setDragStart({ x: e.clientX, y: e.clientY });
+  };
+
+  useEffect(() => {
+    const el = containerRef.current;
+    if (el) {
+      el.addEventListener("wheel", handleWheel, { passive: false });
+      return () => el.removeEventListener("wheel", handleWheel);
+    }
+  }, []);
 
   const COLOR_PALETTE = [
     "#94a3b8", // 0 = uncolored (slate)
@@ -20,7 +84,12 @@ export default function GraphColoringVisualization({ nodes, edges, step }) {
     <div className="flex flex-col gap-6">
       <div 
         ref={containerRef}
-        className="neo-panel relative h-[500px] w-full overflow-hidden cursor-grab active:cursor-grabbing bg-slate-50 dark:bg-slate-900/50"
+        className="neo-panel relative h-[500px] w-full overflow-hidden bg-slate-50 dark:bg-slate-900/50"
+        onPointerDown={handlePointerDown}
+        onPointerMove={handlePointerMove}
+        onPointerUp={handlePointerUp}
+        onPointerLeave={handlePointerUp}
+        style={{ cursor: isDragging ? "grabbing" : draggingNodeId ? "grabbing" : "grab" }}
       >
         <svg
           className="absolute inset-0 h-full w-full"
@@ -67,7 +136,7 @@ export default function GraphColoringVisualization({ nodes, edges, step }) {
         </svg>
 
         {/* Nodes (HTML for framer-motion layout) */}
-        <div style={{ transform: `translate(${pan.x}px, ${pan.y}px) scale(${scale})`, transformOrigin: "0 0", position: 'absolute', inset: 0 }}>
+        <div style={{ transform: `translate(${pan.x}px, ${pan.y}px) scale(${scale})`, transformOrigin: "0 0", position: 'absolute', inset: 0, pointerEvents: 'none' }}>
           {nodes.map((node, i) => {
             const colorCode = step?.color ? step.color[i] : 0;
             const nodeColor = COLOR_PALETTE[colorCode];
@@ -89,44 +158,29 @@ export default function GraphColoringVisualization({ nodes, edges, step }) {
                   borderColor: isChecking ? "#3b82f6" : isAttacking ? "#ef4444" : isColored ? "#10b981" : "#ffffff",
                   borderWidth: isChecking || isAttacking || isColored ? 4 : 2,
                 }}
-                className="absolute flex h-12 w-12 items-center justify-center rounded-full text-sm font-bold text-white shadow-lg transition-colors"
-                style={{ zIndex: isChecking ? 10 : 1 }}
+                onPointerDown={(e) => handleNodePointerDown(e, node.id)}
+                className="absolute flex h-12 w-12 items-center justify-center rounded-full text-sm font-bold text-white shadow-lg transition-colors cursor-grab active:cursor-grabbing"
+                style={{ zIndex: isChecking ? 10 : 1, pointerEvents: 'auto' }}
               >
                 {node.id}
               </motion.div>
             );
           })}
         </div>
-      </div>
-
-      {/* Solutions Snapshots */}
-      {step?.solutions?.length > 0 && (
-        <div className="neo-panel p-6">
-          <h3 className="text-xl font-bold text-slate-800 dark:text-white mb-4">
-            Solutions Found: {step.solutions.length}
-          </h3>
-          <div className="flex flex-wrap gap-6 max-h-[300px] overflow-y-auto pr-2">
-            {step.solutions.map((sol, solIdx) => (
-              <div key={solIdx} className="bg-slate-100 dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm flex flex-col items-center">
-                <span className="text-sm font-bold text-slate-500 mb-2">Solution {solIdx + 1}</span>
-                <div className="relative w-32 h-32">
-                   {/* Mini graph render */}
-                   <svg className="absolute inset-0 h-full w-full" viewBox="0 0 800 600">
-                      {edges.map((edge, idx) => {
-                        const s = nodes.find(n => n.id === edge.source);
-                        const t = nodes.find(n => n.id === edge.target);
-                        return s && t ? <line key={idx} x1={s.x} y1={s.y} x2={t.x} y2={t.y} stroke="#cbd5e1" strokeWidth={4} /> : null;
-                      })}
-                      {nodes.map((n, i) => (
-                        <circle key={i} cx={n.x} cy={n.y} r={30} fill={COLOR_PALETTE[sol[i]]} />
-                      ))}
-                   </svg>
-                </div>
-              </div>
-            ))}
-          </div>
+        
+        {/* Zoom Controls */}
+        <div className="absolute bottom-4 right-4 flex gap-2">
+          <button onClick={() => setScale(s => Math.min(s + 0.2, 3))} className="flex h-8 w-8 items-center justify-center rounded-lg bg-white font-bold text-slate-700 shadow-sm border border-slate-200 hover:bg-slate-50 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-700">
+            +
+          </button>
+          <button onClick={() => setScale(s => Math.max(s - 0.2, 0.2))} className="flex h-8 w-8 items-center justify-center rounded-lg bg-white font-bold text-slate-700 shadow-sm border border-slate-200 hover:bg-slate-50 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-700">
+            -
+          </button>
+          <button onClick={() => { setScale(1); setPan({ x: 0, y: 0 }); }} className="flex h-8 px-3 items-center justify-center rounded-lg bg-white text-xs font-bold text-slate-700 shadow-sm border border-slate-200 hover:bg-slate-50 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-700">
+            Reset
+          </button>
         </div>
-      )}
+      </div>
     </div>
   );
 }

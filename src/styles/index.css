@@ -49,6 +49,90 @@ input {
   .muted-label {
     @apply text-xs font-bold uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400;
   }
+
+  .text-3d-blueprint {
+    color: #ffffff;
+    text-shadow: 
+      -1px 1px 0px #e2e8f0,
+      -2px 2px 0px #cbd5e1,
+      -3px 3px 0px #cbd5e1,
+      -4px 4px 0px #cbd5e1,
+      -5px 5px 0px #cbd5e1,
+      -8px 8px 16px rgba(148, 163, 184, 0.4),
+      -15px 15px 25px rgba(148, 163, 184, 0.25);
+  }
+
+  .dark .text-3d-blueprint {
+    color: #ffffff;
+    text-shadow: 
+      -1px 1px 0px #1e293b,
+      -2px 2px 0px #0f172a,
+      -3px 3px 0px #0f172a,
+      -4px 4px 0px #0f172a,
+      -5px 5px 0px #0f172a,
+      -8px 8px 16px rgba(0, 0, 0, 0.8),
+      -15px 15px 25px rgba(0, 0, 0, 0.9);
+  }
+
+  .hero-blueprint-panel {
+    background-color: #ffffff;
+    border: 1px solid rgba(226, 232, 240, 0.8);
+    background-size:
+      100% 100%,
+      100% 100%,
+      128px 128px,
+      128px 128px,
+      32px 32px,
+      32px 32px;
+    background-image:
+      radial-gradient(circle at 18% 20%, rgba(37, 99, 235, 0.15), transparent 40%),
+      radial-gradient(circle at 85% 10%, rgba(16, 185, 129, 0.12), transparent 35%),
+      linear-gradient(to right, rgba(148, 163, 184, 0.15) 1.5px, transparent 1.5px),
+      linear-gradient(to bottom, rgba(148, 163, 184, 0.15) 1.5px, transparent 1.5px),
+      linear-gradient(to right, rgba(148, 163, 184, 0.05) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(148, 163, 184, 0.05) 1px, transparent 1px);
+  }
+
+  .dark .hero-blueprint-panel {
+    background-color: #0b0f19;
+    border: 1px solid rgba(30, 41, 59, 0.5);
+    background-image:
+      radial-gradient(circle at 18% 20%, rgba(34, 211, 238, 0.18), transparent 40%),
+      radial-gradient(circle at 85% 10%, rgba(16, 185, 129, 0.14), transparent 35%),
+      linear-gradient(to right, rgba(51, 65, 85, 0.28) 1.5px, transparent 1.5px),
+      linear-gradient(to bottom, rgba(51, 65, 85, 0.28) 1.5px, transparent 1.5px),
+      linear-gradient(to right, rgba(51, 65, 85, 0.08) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(51, 65, 85, 0.08) 1px, transparent 1px);
+  }
+
+  .global-blueprint-bg {
+    background-color: #f8fafc;
+    background-size:
+      100% 100%,
+      100% 100%,
+      128px 128px,
+      128px 128px,
+      32px 32px,
+      32px 32px;
+    background-image:
+      radial-gradient(circle at 18% 20%, rgba(37, 99, 235, 0.12), transparent 40%),
+      radial-gradient(circle at 85% 10%, rgba(16, 185, 129, 0.09), transparent 35%),
+      linear-gradient(to right, rgba(148, 163, 184, 0.12) 1.5px, transparent 1.5px),
+      linear-gradient(to bottom, rgba(148, 163, 184, 0.12) 1.5px, transparent 1.5px),
+      linear-gradient(to right, rgba(148, 163, 184, 0.04) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(148, 163, 184, 0.04) 1px, transparent 1px);
+  }
+
+  .dark .global-blueprint-bg {
+    background-color: #020617;
+    background-image:
+      radial-gradient(circle at 18% 20%, rgba(34, 211, 238, 0.12), transparent 40%),
+      radial-gradient(circle at 85% 10%, rgba(16, 185, 129, 0.1), transparent 35%),
+      linear-gradient(to right, rgba(51, 65, 85, 0.22) 1.5px, transparent 1.5px),
+      linear-gradient(to bottom, rgba(51, 65, 85, 0.22) 1.5px, transparent 1.5px),
+      linear-gradient(to right, rgba(51, 65, 85, 0.06) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(51, 65, 85, 0.06) 1px, transparent 1px);
+  }
 }
 
 .syntax-line {
