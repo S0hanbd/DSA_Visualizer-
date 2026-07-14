@@ -119,12 +119,7 @@ export default function AlgorithmPage() {
           </div>
         </section>
 
-        <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-          <ComplexityCard label="Base Case" value={algorithm.complexities.best} tone="green" />
-          <ComplexityCard label="Average Case" value={algorithm.complexities.average} tone="blue" />
-          <ComplexityCard label="Worst Case" value={algorithm.complexities.worst} tone="red" />
-          <ComplexityCard label="Space Complexity" value={algorithm.complexities.space} tone="orange" />
-        </section>
+
 
         {LINKED_LIST_SLUGS.has(activeSlug)
           ? <LinkedListVisualization step={step} algorithm={algorithm} />
@@ -172,6 +167,11 @@ export default function AlgorithmPage() {
         <section className="grid gap-6 lg:grid-cols-2">
           <CodeViewer code={algorithm.code} activeLine={step.line} language={algorithm.language} />
           <ExecutionSteps steps={steps} currentStep={currentStep} />
+        </section>
+
+        <section className="grid gap-4 sm:grid-cols-2">
+          <ComplexityCard label="Time Complexity" value={algorithm.complexities.worst} tone="red" />
+          <ComplexityCard label="Space Complexity" value={algorithm.complexities.space} tone="blue" />
         </section>
       </div>
     </div>

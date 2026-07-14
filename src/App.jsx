@@ -16,6 +16,7 @@ import NQueensPage from "./pages/NQueensPage.jsx";
 import GraphColoringPage from "./pages/GraphColoringPage.jsx";
 import DesignPage from "./pages/DesignPage.jsx";
 import { ThemeProvider } from "./hooks/useTheme.jsx";
+import { SearchFilterProvider } from "./hooks/useSearchFilter.jsx";
 
 function AnimatedRoutes() {
   const location = useLocation();
@@ -75,11 +76,13 @@ function AnimatedRoutes() {
 export default function App() {
   return (
     <ThemeProvider>
-      <div className="min-h-screen global-blueprint-bg text-slate-900 transition-colors duration-500 dark:text-slate-100">
-        <Navbar />
-        <AnimatedRoutes />
-        <Footer />
-      </div>
+      <SearchFilterProvider>
+        <div className="min-h-screen global-blueprint-bg text-slate-900 transition-colors duration-500 dark:text-slate-100">
+          <Navbar />
+          <AnimatedRoutes />
+          <Footer />
+        </div>
+      </SearchFilterProvider>
     </ThemeProvider>
   );
 }

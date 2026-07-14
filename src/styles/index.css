@@ -27,7 +27,7 @@ input {
 
 @layer components {
   .neo-panel {
-    @apply rounded-[28px] border border-white/70 bg-slate-100/80 shadow-neo transition-all duration-500 dark:border-slate-700/50 dark:bg-slate-900/90 dark:shadow-dark-neo;
+    @apply rounded-[28px] border border-slate-200/80 bg-white shadow-lg transition-all duration-500 dark:border-slate-800/80 dark:bg-slate-900/60 dark:shadow-dark-neo;
   }
 
   .neo-card {
@@ -235,4 +235,91 @@ input[type="number"]:focus {
   background: #1e293b !important;
   box-shadow: inset 5px 5px 15px #0f172a, 
              inset -5px -5px 15px #334155 !important;
+}
+
+/* Typography animations from Uiverse.io */
+.dash {
+  animation: dashArray 2s ease-in-out infinite,
+    dashOffset 2s linear infinite;
+}
+
+.spin {
+  animation: spinDashArray 2s ease-in-out infinite,
+    spin 8s ease-in-out infinite,
+    dashOffset 2s linear infinite;
+  transform-origin: center;
+}
+
+@keyframes dashArray {
+  0% {
+    stroke-dasharray: 0 1 359 0;
+  }
+
+  50% {
+    stroke-dasharray: 0 359 1 0;
+  }
+
+  100% {
+    stroke-dasharray: 359 1 0 0;
+  }
+}
+
+@keyframes spinDashArray {
+  0% {
+    stroke-dasharray: 270 90;
+  }
+
+  50% {
+    stroke-dasharray: 0 360;
+  }
+
+  100% {
+    stroke-dasharray: 270 90;
+  }
+}
+
+@keyframes dashOffset {
+  0% {
+    stroke-dashoffset: 365;
+  }
+
+  100% {
+    stroke-dashoffset: 5;
+  }
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  12.5%,
+  25% {
+    transform: rotate(270deg);
+  }
+
+  37.5%,
+  50% {
+    transform: rotate(540deg);
+  }
+
+  62.5%,
+  75% {
+    transform: rotate(810deg);
+  }
+
+  87.5%,
+  100% {
+    transform: rotate(1080deg);
+  }
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+/* Hide scrollbar for IE, Edge and Firefox */
+.no-scrollbar {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
 }
