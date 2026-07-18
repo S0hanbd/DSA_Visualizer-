@@ -7,7 +7,7 @@ import Controls from "../components/Controls.jsx";
 import ExecutionSteps from "../components/ExecutionSteps.jsx";
 import Sidebar from "../components/Sidebar.jsx";
 import StatsPanel from "../components/StatsPanel.jsx";
-import StepExplanation from "../components/StepExplanation.jsx";
+
 import VisualizationBars from "../components/VisualizationBars.jsx";
 import LinkedListVisualization from "../components/LinkedListVisualization.jsx";
 import { algorithmMap } from "../data/algorithms.js";
@@ -121,11 +121,10 @@ export default function AlgorithmPage() {
 
 
 
+        <StatsPanel step={step} totalSteps={steps.length} currentStep={currentStep} />
         {LINKED_LIST_SLUGS.has(activeSlug)
           ? <LinkedListVisualization step={step} algorithm={algorithm} />
           : <VisualizationBars step={step} algorithm={algorithm} />}
-        <StatsPanel step={step} totalSteps={steps.length} currentStep={currentStep} />
-        <StepExplanation step={step} />
         <Controls
           isPlaying={isPlaying}
           onPlay={() => setIsPlaying(true)}
@@ -155,7 +154,7 @@ export default function AlgorithmPage() {
                 max="999"
                 value={target}
                 onChange={(event) => setTarget(event.target.value)}
-                className="neo-inset w-full bg-transparent px-4 py-3 text-sm font-semibold outline-none sm:max-w-56"
+                className="capsule-input w-full sm:max-w-56"
               />
               <p className="text-sm font-semibold text-slate-500 dark:text-slate-400">
                 The searching simulation uses this value as the student-selected target.

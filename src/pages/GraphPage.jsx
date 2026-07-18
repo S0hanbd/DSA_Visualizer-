@@ -216,11 +216,11 @@ export default function GraphPage() {
                     />
                     
                     <div className="grid grid-cols-2 gap-2 mb-2">
-                      <input type="text" placeholder="Source node ID" value={sourceId} onChange={e => setSourceId(e.target.value.toUpperCase())} className="bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-sm font-semibold" />
-                      <input type="text" placeholder="Target node ID" value={targetId} onChange={e => setTargetId(e.target.value.toUpperCase())} className="bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-sm font-semibold" />
+                      <input type="text" placeholder="Source node ID" value={sourceId} onChange={e => setSourceId(e.target.value.toUpperCase())} className="capsule-input w-full" />
+                      <input type="text" placeholder="Target node ID" value={targetId} onChange={e => setTargetId(e.target.value.toUpperCase())} className="capsule-input w-full" />
                     </div>
                     <div className="flex gap-2">
-                      <input type="number" placeholder="Edge weight" value={weight} onChange={e => setWeight(e.target.value)} className="flex-1 bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-sm font-semibold" />
+                      <input type="number" placeholder="Edge weight" value={weight} onChange={e => setWeight(e.target.value)} className="flex-1 capsule-input" />
                       <ControlsButton label="Add Edge" onClick={handleAddEdge} className="bg-slate-800 hover:bg-slate-900 text-white dark:bg-slate-700 dark:hover:bg-slate-600" />
                     </div>
                   </div>
@@ -237,12 +237,12 @@ export default function GraphPage() {
                       <div className={`grid ${["prim"].includes(rawSlug) ? "grid-cols-1" : "grid-cols-2"} gap-4 mb-4`}>
                         <div>
                           <label className="text-xs font-bold text-slate-600 dark:text-slate-400 block mb-1">Start Node</label>
-                          <input type="text" value={startNode} onChange={e => setStartNode(e.target.value.toUpperCase())} className="w-full bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-sm font-semibold" />
+                          <input type="text" value={startNode} onChange={e => setStartNode(e.target.value.toUpperCase())} className="w-full capsule-input" />
                         </div>
                         {!["prim"].includes(rawSlug) && (
                           <div>
                             <label className="text-xs font-bold text-slate-600 dark:text-slate-400 block mb-1">End Node</label>
-                            <input type="text" value={endNode} onChange={e => setEndNode(e.target.value.toUpperCase())} className="w-full bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-sm font-semibold" />
+                            <input type="text" value={endNode} onChange={e => setEndNode(e.target.value.toUpperCase())} className="w-full capsule-input" />
                           </div>
                         )}
                       </div>

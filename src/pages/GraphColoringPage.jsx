@@ -267,8 +267,8 @@ export default function GraphColoringPage() {
                     />
                     
                     <div className="grid grid-cols-2 gap-2 mb-2">
-                      <input type="text" placeholder="Source ID" value={sourceId} onChange={e => setSourceId(e.target.value.toUpperCase())} className="bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-sm font-semibold" />
-                      <input type="text" placeholder="Target ID" value={targetId} onChange={e => setTargetId(e.target.value.toUpperCase())} className="bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-sm font-semibold" />
+                      <input type="text" placeholder="Source ID" value={sourceId} onChange={e => setSourceId(e.target.value.toUpperCase())} className="capsule-input w-full" />
+                      <input type="text" placeholder="Target ID" value={targetId} onChange={e => setTargetId(e.target.value.toUpperCase())} className="capsule-input w-full" />
                     </div>
                     <div className="flex gap-2">
                       <ControlsButton label="Add Edge" onClick={handleAddEdge} className="w-full bg-slate-800 hover:bg-slate-900 text-white dark:bg-slate-700 dark:hover:bg-slate-600" />

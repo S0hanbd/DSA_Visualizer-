@@ -17,7 +17,7 @@ export default function Navbar() {
     isSticky,
   } = useSearchFilter();
 
-  const showFilters = isHome && isSticky;
+  const showFilters = isHome;
 
   const categoryOptions = [
     { name: "All", label: "All", icon: Grid },

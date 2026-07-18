@@ -42,19 +42,19 @@ export default function Footer() {
             </h3>
             <ul className="mt-4 space-y-2.5 text-sm">
               <li>
-                <Link to="/sorting" className="hover:text-white transition duration-200">Sorting Algorithms</Link>
+                <Link to="/sorting" className="text-slate-300 hover:text-white transition duration-200">Sorting Algorithms</Link>
               </li>
               <li>
-                <Link to="/searching" className="hover:text-white transition duration-200">Searching Algorithms</Link>
+                <Link to="/searching" className="text-slate-300 hover:text-white transition duration-200">Searching Algorithms</Link>
               </li>
               <li>
-                <Link to="/linked-list" className="hover:text-white transition duration-200">Linked Lists</Link>
+                <Link to="/linked-list" className="text-slate-300 hover:text-white transition duration-200">Linked Lists</Link>
               </li>
               <li>
-                <Link to="/trees" className="hover:text-white transition duration-200">Trees & Heaps</Link>
+                <Link to="/trees" className="text-slate-300 hover:text-white transition duration-200">Trees & Heaps</Link>
               </li>
               <li>
-                <Link to="/graph" className="hover:text-white transition duration-200">Graphs & Networks</Link>
+                <Link to="/graph" className="text-slate-300 hover:text-white transition duration-200">Graphs & Networks</Link>
               </li>
             </ul>
           </div>
@@ -66,22 +66,22 @@ export default function Footer() {
             </h3>
             <ul className="mt-4 space-y-2.5 text-sm">
               <li>
-                <Link to="/design" className="flex items-center gap-1 hover:text-white transition duration-200">
-                  <Terminal size={14} />
-                  <span>UI Design System</span>
+                <Link to="/design" className="flex items-center gap-1.5 text-slate-300 hover:text-white transition duration-200">
+                  <BookOpen size={14} />
+                  <span>Documentation</span>
                 </Link>
               </li>
               <li>
-                <a href="#features" className="flex items-center gap-1 hover:text-white transition duration-200">
-                  <BookOpen size={14} />
-                  <span>Dashboard Features</span>
+                <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 text-slate-300 hover:text-white transition duration-200">
+                  <Github size={14} />
+                  <span>Contribute on GitHub</span>
                 </a>
               </li>
               <li>
-                <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 hover:text-white transition duration-200">
-                  <Cpu size={14} />
-                  <span>C++ Architectures</span>
-                </a>
+                <Link to="/algorithm/singly-linked-list" className="flex items-center gap-1.5 text-slate-300 hover:text-white transition duration-200">
+                  <Terminal size={14} />
+                  <span>Singly Linked List</span>
+                </Link>
               </li>
             </ul>
           </div>

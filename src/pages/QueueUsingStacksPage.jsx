@@ -228,7 +228,7 @@ export default function QueueUsingStacksPage() {
                 onChange={e => setOpValue(e.target.value)}
                 onKeyDown={e => e.key === "Enter" && handleEnqueue()}
                 placeholder="Enter value"
-                className="w-24 rounded-lg border-2 border-slate-200 bg-slate-50 px-2 py-2 text-sm font-bold text-slate-800 focus:border-blue-500 focus:outline-none dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
+                className="w-24 capsule-input"
               />
               <OpBtn 
                 label="Enqueue" 

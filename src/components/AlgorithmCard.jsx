@@ -1,62 +1,69 @@
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
+import { ArrowRight } from "lucide-react";
 
 const categoryStyles = {
   "Sorting": {
-    bg: "bg-pink-100/80 dark:bg-pink-950/30",
-    text: "text-pink-700 dark:text-pink-300",
-    border: "border-pink-200 dark:border-pink-900/20"
+    bg: "bg-pink-600 dark:bg-pink-700",
+    text: "text-white",
+    border: "border-pink-600 dark:border-pink-700"
   },
   "Searching": {
-    bg: "bg-purple-100/80 dark:bg-purple-950/30",
-    text: "text-purple-700 dark:text-purple-300",
-    border: "border-purple-200 dark:border-purple-900/20"
+    bg: "bg-purple-600 dark:bg-purple-700",
+    text: "text-white",
+    border: "border-purple-600 dark:border-purple-700"
   },
   "Linked List": {
-    bg: "bg-blue-100/80 dark:bg-blue-950/30",
-    text: "text-blue-700 dark:text-blue-300",
-    border: "border-blue-200 dark:border-blue-900/20"
+    bg: "bg-blue-600 dark:bg-blue-700",
+    text: "text-white",
+    border: "border-blue-600 dark:border-blue-700"
   },
   "Stack": {
-    bg: "bg-amber-100/80 dark:bg-amber-950/30",
-    text: "text-amber-700 dark:text-amber-300",
-    border: "border-amber-200 dark:border-amber-900/20"
+    bg: "bg-amber-600 dark:bg-amber-700",
+    text: "text-white",
+    border: "border-amber-600 dark:border-amber-700"
   },
   "Queue": {
-    bg: "bg-teal-100/80 dark:bg-teal-950/30",
-    text: "text-teal-700 dark:text-teal-300",
-    border: "border-teal-200 dark:border-teal-900/20"
+    bg: "bg-teal-600 dark:bg-teal-700",
+    text: "text-white",
+    border: "border-teal-600 dark:border-teal-700"
   },
   "Trees": {
-    bg: "bg-emerald-100/80 dark:bg-emerald-950/30",
-    text: "text-emerald-700 dark:text-emerald-300",
-    border: "border-emerald-200 dark:border-emerald-900/20"
+    bg: "bg-emerald-600 dark:bg-emerald-700",
+    text: "text-white",
+    border: "border-emerald-600 dark:border-emerald-700"
   },
   "Graphs": {
-    bg: "bg-indigo-100/80 dark:bg-indigo-950/30",
-    text: "text-indigo-700 dark:text-indigo-300",
-    border: "border-indigo-200 dark:border-indigo-900/20"
+    bg: "bg-indigo-600 dark:bg-indigo-700",
+    text: "text-white",
+    border: "border-indigo-600 dark:border-indigo-700"
   }
 };
 
 export default function AlgorithmCard({ algorithm }) {
   const style = categoryStyles[algorithm.category] || {
-    bg: "bg-slate-100/80 dark:bg-slate-800/30",
-    text: "text-slate-700 dark:text-slate-300",
-    border: "border-slate-200 dark:border-slate-700/20"
+    bg: "bg-slate-600 dark:bg-slate-700",
+    text: "text-white",
+    border: "border-slate-600 dark:border-slate-700"
   };
 
   return (
     <motion.div whileHover={{ y: -5 }} transition={{ type: "spring", stiffness: 260, damping: 22 }}>
-      <Link to={`/algorithm/${algorithm.slug}`} className={`neo-card flex h-full flex-col gap-4 p-5 ${style.border}`}>
+      <Link 
+        to={`/algorithm/${algorithm.slug}`} 
+        className="neo-card flex h-full flex-col gap-4 p-5 border-slate-200/80 dark:border-slate-800/80 hover:border-blue-600 dark:hover:border-cyan-400 group transition-all duration-300"
+      >
         <div className="flex flex-col items-start gap-2">
-          <span className={`inline-block rounded-xl border px-3 py-0.5 text-[10px] font-bold uppercase tracking-wider ${style.bg} ${style.text} ${style.border}`}>
-            {algorithm.category}
-          </span>
+          <div className="flex w-full items-center justify-between">
+            <span className={`inline-block rounded-xl border px-3 py-0.5 text-[10px] font-bold uppercase tracking-wider ${style.bg} ${style.text} ${style.border}`}>
+              {algorithm.category}
+            </span>
+            <ArrowRight className="h-4 w-4 text-slate-400 group-hover:text-blue-600 dark:group-hover:text-cyan-450 transition-all duration-300 transform group-hover:translate-x-1" />
+          </div>
           <h3 className="mt-1 text-xl font-black">{algorithm.title}</h3>
         </div>
         <div className="mt-auto flex flex-wrap gap-2 text-xs font-bold">
-          <span className="rounded-full bg-slate-100 px-3 py-1 text-slate-600 dark:bg-slate-800/40 dark:text-slate-400">Base {algorithm.complexities.best}</span>
+          <span className="rounded-full bg-slate-100 px-3 py-1 text-slate-600 dark:bg-slate-800/40 dark:text-slate-400">Best {algorithm.complexities.best}</span>
           <span className="rounded-full bg-slate-100 px-3 py-1 text-slate-600 dark:bg-slate-800/40 dark:text-slate-400">Space {algorithm.complexities.space}</span>
         </div>
       </Link>

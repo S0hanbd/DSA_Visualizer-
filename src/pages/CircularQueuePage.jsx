@@ -234,7 +234,7 @@ export default function CircularQueuePage() {
                         onChange={(e) => setOpValue(e.target.value)}
                         onKeyDown={(e) => e.key === "Enter" && handleEnqueue()}
                         placeholder="e.g. 42"
-                        className="flex-1 rounded-lg border-2 border-slate-200 px-4 py-2 font-mono focus:border-emerald-500 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+                        className="flex-1 capsule-input"
                         maxLength={4}
                         disabled={isPlaying}
                     />

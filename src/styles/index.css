@@ -202,39 +202,35 @@ input {
 /* Uiverse.io Input Styles */
 input[type="text"],
 input[type="number"] {
-  border: none !important;
-  padding: 0.6rem 1rem !important;
-  border-radius: 1rem !important;
-  background: #e8e8e8 !important;
-  box-shadow: 5px 5px 15px #c5c5c5,
-             -5px -5px 15px #ffffff !important;
-  transition: 0.3s !important;
-  color: #333 !important;
+  border: 1px solid #cbd5e1 !important;
+  padding: 0.625rem 1.25rem !important;
+  border-radius: 9999px !important;
+  background: #f8fafc !important;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05) !important;
+  transition: 0.2s !important;
+  color: #334155 !important;
 }
 
 input[type="text"]:focus,
 input[type="number"]:focus {
   outline: none !important;
-  background: #e8e8e8 !important;
-  box-shadow: inset 5px 5px 15px #c5c5c5,
-             inset -5px -5px 15px #ffffff !important;
-  transition: 0.3s !important;
+  border-color: #3b82f6 !important;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2) !important;
 }
 
 /* Dark Mode support for the neumorphic input */
 .dark input[type="text"],
 .dark input[type="number"] {
   background: #1e293b !important;
-  box-shadow: 5px 5px 15px #0f172a, 
-             -5px -5px 15px #334155 !important;
+  border-color: #334155 !important;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.3) !important;
   color: #f1f5f9 !important;
 }
 
 .dark input[type="text"]:focus,
 .dark input[type="number"]:focus {
-  background: #1e293b !important;
-  box-shadow: inset 5px 5px 15px #0f172a, 
-             inset -5px -5px 15px #334155 !important;
+  border-color: #22d3ee !important;
+  box-shadow: 0 0 0 2px rgba(34, 211, 238, 0.2) !important;
 }
 
 /* Typography animations from Uiverse.io */
@@ -322,4 +318,10 @@ input[type="number"]:focus {
 .no-scrollbar {
   -ms-overflow-style: none;  /* IE and Edge */
   scrollbar-width: none;  /* Firefox */
+}
+
+@layer components {
+  .capsule-input {
+    @apply rounded-full bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 px-5 py-2.5 text-sm font-semibold text-slate-700 dark:text-slate-200 outline-none placeholder:text-slate-400 dark:placeholder:text-slate-500 shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 dark:focus:border-cyan-400 dark:focus:ring-cyan-400 transition-all duration-200;
+  }
 }

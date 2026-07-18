@@ -217,7 +217,7 @@ export default function StackPage() {
                 value={opValue}
                 onChange={(e) => { setOpValue(e.target.value); setOpError(""); }}
                 onKeyDown={(e) => e.key === "Enter" && handlePush()}
-                className="flex-1 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-4 py-2.5 text-sm font-semibold outline-none focus:ring-2 focus:ring-slate-400 transition-all"
+                className="flex-1 capsule-input"
               />
               <OpBtn 
                 label="Push" 

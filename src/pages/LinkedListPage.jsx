@@ -315,7 +315,7 @@ export default function LinkedListPage() {
                 value={listInput}
                 onChange={(e) => setListInput(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && handleSetList()}
-                className="neo-inset min-w-0 flex-1 bg-transparent px-4 py-3 text-sm font-semibold outline-none placeholder:text-slate-400"
+                className="flex-1 capsule-input min-w-0"
               />
               <OpBtn label="Set List" icon="📋" onClick={handleSetList} color="blue" />
             </div>
@@ -335,7 +335,7 @@ export default function LinkedListPage() {
                   value={opValue}
                   onChange={(e) => { setOpValue(e.target.value); setOpError(""); }}
                   onKeyDown={(e) => e.key === "Enter" && runOp(buildInsertHeadSteps)}
-                  className="neo-inset flex-1 bg-transparent px-4 py-3 text-sm font-semibold outline-none placeholder:text-slate-400 sm:max-w-48"
+                  className="flex-1 capsule-input sm:max-w-48"
                 />
                 <input
                   type="number"
@@ -343,7 +343,7 @@ export default function LinkedListPage() {
                   value={opIndex}
                   onChange={(e) => { setOpIndex(e.target.value); setOpError(""); }}
                   onKeyDown={(e) => e.key === "Enter" && runOp(buildInsertAtSteps, true)}
-                  className="neo-inset flex-1 bg-transparent px-4 py-3 text-sm font-semibold outline-none placeholder:text-slate-400 sm:max-w-40"
+                  className="flex-1 capsule-input sm:max-w-40"
                 />
                 {opError && (
                   <p className="text-xs font-bold text-red-500">{opError}</p>

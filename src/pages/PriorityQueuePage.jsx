@@ -227,7 +227,7 @@ export default function PriorityQueuePage() {
                         <input
                             type="number"
                             placeholder="Value"
-                            className="w-full rounded-lg border-2 border-slate-200 bg-white px-3 py-2 text-sm outline-none transition focus:border-emerald-500 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
+                            className="w-full capsule-input"
                             value={opValue}
                             onChange={(e) => setOpValue(e.target.value)}
                             onKeyDown={(e) => e.key === "Enter" && handleInsert(false)}
@@ -246,7 +246,7 @@ export default function PriorityQueuePage() {
                         <input
                             type="text"
                             placeholder="e.g., 10, 5, 20"
-                            className="w-full rounded-lg border-2 border-slate-200 bg-white px-3 py-2 text-sm outline-none transition focus:border-emerald-500 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
+                            className="w-full capsule-input"
                             value={bulkValue}
                             onChange={(e) => setBulkValue(e.target.value)}
                             onKeyDown={(e) => e.key === "Enter" && handleInsert(true)}

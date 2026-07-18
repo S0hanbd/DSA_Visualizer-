@@ -194,7 +194,7 @@ export default function TreePage() {
                     onChange={(e) => setSingleValue(e.target.value)}
                     onKeyDown={(e) => { if (e.key === "Enter") runOp(getBuilderFn()); }}
                     placeholder="Enter value"
-                    className="flex-1 bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="flex-1 capsule-input"
                   />
                   <OpBtn label="Insert" onClick={() => runOp(getBuilderFn())} disabled={isPlaying} />
                 </div>
@@ -209,7 +209,7 @@ export default function TreePage() {
                     onChange={(e) => setBulkValue(e.target.value)}
                     onKeyDown={(e) => { if (e.key === "Enter") runOp(getBuilderFn(), true); }}
                     placeholder="e.g., 10, 5, 15, 2"
-                    className="flex-1 bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="flex-1 capsule-input"
                   />
                   <OpBtn label="Insert All" onClick={() => runOp(getBuilderFn(), true)} disabled={isPlaying} />
                 </div>

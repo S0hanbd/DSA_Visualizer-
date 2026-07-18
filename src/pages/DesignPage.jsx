@@ -233,7 +233,7 @@ export default function DesignPage() {
                   <input
                     type="text"
                     placeholder="Input field..."
-                    className="neo-inset w-full bg-transparent px-4 py-3 text-sm font-semibold outline-none placeholder:text-slate-400"
+                    className="capsule-input w-full"
                   />
                   <label className="neo-inset flex items-center gap-3 px-4 py-3">
                     <span className="text-sm font-black">Slider</span>

@@ -1,37 +1,15 @@
 import { motion, useReducedMotion } from "framer-motion";
 import {
-  ArrowUpDown,
   ChevronDown,
   ChevronUp,
-  GitFork,
-  Grid,
-  Layers,
-  Link,
-  MoreHorizontal,
-  Network,
   Plus,
-  RefreshCw,
-  Search,
   Sparkles,
 } from "lucide-react";
 import { useCallback, useEffect, useId, useMemo, useState } from "react";
 import { useSearchFilter } from "../hooks/useSearchFilter.jsx";
 import AlgorithmCard from "../components/AlgorithmCard.jsx";
-import SearchBar from "../components/SearchBar.jsx";
 import { algorithms } from "../data/algorithms.js";
 import { buildBubbleSortSteps } from "../logic/bubbleSortSimulation.js";
-
-const categoryOptions = [
-  { name: "All", label: "All", icon: Grid },
-  { name: "Sorting", label: "Sorting", icon: ArrowUpDown },
-  { name: "Searching", label: "Searching", icon: Search },
-  { name: "Linked List", label: "Linked List", icon: Link },
-  { name: "Stack", label: "Stack", icon: Layers },
-  { name: "Queue", label: "Queue", icon: RefreshCw },
-  { name: "Tree", label: "Tree", icon: GitFork },
-  { name: "Graph", label: "Graph", icon: Network },
-  { name: "Other", label: "Other", icon: MoreHorizontal },
-];
 
 export default function Home() {
   const {
@@ -44,28 +22,6 @@ export default function Home() {
     isSticky,
     setIsSticky,
   } = useSearchFilter();
-
-  useEffect(() => {
-    const handleScroll = () => {
-      const card = document.getElementById("explore-topics-card");
-      if (card) {
-        const rect = card.getBoundingClientRect();
-        if (rect.top <= 80) {
-          setIsSticky(true);
-        } else {
-          setIsSticky(false);
-        }
-      }
-    };
-
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    handleScroll();
-
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-      setIsSticky(false);
-    };
-  }, [setIsSticky]);
 
   const filtered = useMemo(() => {
     return algorithms.filter((algorithm) => {
@@ -143,9 +99,43 @@ export default function Home() {
     <div className="mx-auto w-full px-4 py-8 max-w-[1400px]">
       {/* Hero Bento Grid */}
       <section className="grid grid-cols-1 gap-4 md:grid-cols-6 lg:grid-cols-12">
-        {/* Card 1: Live Bubble Sort Preview */}
+        {/* Card 1: Headline Tile (Primary Value Proposition) */}
         <motion.div
           {...rise(0.05)}
+          className="relative overflow-hidden rounded-3xl bg-white dark:bg-slate-900/60 p-8 border border-slate-200/80 dark:border-slate-800/80 md:col-span-6 lg:col-span-7 lg:row-span-2 min-h-[320px] flex flex-col justify-between shadow-lg"
+        >
+          <div>
+            <span className="inline-flex items-center gap-2 rounded-full bg-slate-100 dark:bg-slate-800/80 px-3 py-1 font-mono text-[10px] uppercase tracking-widest text-slate-500 dark:text-slate-400">
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" /> Live simulations
+            </span>
+            <h1 className="mt-6 font-display text-[clamp(2.25rem,5.5vw,4.5rem)] font-black leading-[0.95] tracking-tight text-slate-900 dark:text-white">
+              <WordCycleLetterSwap /><br />ALGORITHMS<br />
+              <span className="block mt-2 text-slate-600 dark:text-slate-400">
+                <TypewriterText text="IN REAL TIME." />
+              </span>
+            </h1>
+          </div>
+          <div className="mt-6 flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+            <div className="flex items-center gap-4">
+              <RotatingBadge />
+              <p className="max-w-md text-xs leading-relaxed text-slate-500 dark:text-slate-400">
+                Interactive frontend lab for learning data structures & algorithms through beautiful step-by-step state animations.
+              </p>
+            </div>
+            <div className="shrink-0">
+              <a
+                href="#algorithms"
+                className="inline-flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-5 py-3 text-xs font-bold text-white transition hover:bg-blue-500 dark:bg-cyan-500 dark:text-slate-950 dark:hover:bg-cyan-400 shadow-md shadow-blue-600/20 dark:shadow-cyan-500/10"
+              >
+                <span>Start Visualizing Free</span>
+              </a>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* Card 2: Live Bubble Sort Preview */}
+        <motion.div
+          {...rise(0.1)}
           className="relative overflow-hidden rounded-3xl bg-slate-900 p-6 text-white md:col-span-3 lg:col-span-3 lg:row-span-2 min-h-[320px] flex flex-col justify-between shadow-lg border border-slate-800 dark:bg-slate-950"
         >
           <div className="flex items-start justify-between">
@@ -189,7 +179,7 @@ export default function Home() {
           </p>
         </motion.div>
 
-        {/* Card 2: Award / Graph Orb Tile */}
+        {/* Card 3: Award / Graph Orb Tile */}
         <motion.div
           {...rise(0.15)}
           className="relative overflow-hidden rounded-3xl bg-emerald-500 p-6 md:col-span-3 lg:col-span-2 lg:row-span-2 min-h-[320px] flex flex-col items-center justify-between text-center shadow-lg"
@@ -206,32 +196,6 @@ export default function Home() {
           <span className="text-[10px] font-mono uppercase tracking-widest text-slate-800/80 font-bold">
             /graphs
           </span>
-        </motion.div>
-
-        {/* Card 3: Headline Tile */}
-        <motion.div
-          {...rise(0.1)}
-          className="relative overflow-hidden rounded-3xl bg-white dark:bg-slate-900/60 p-8 border border-slate-200/80 dark:border-slate-800/80 md:col-span-6 lg:col-span-7 lg:row-span-2 min-h-[320px] flex flex-col justify-between shadow-lg"
-        >
-          <div>
-            <span className="inline-flex items-center gap-2 rounded-full bg-slate-100 dark:bg-slate-800/80 px-3 py-1 font-mono text-[10px] uppercase tracking-widest text-slate-500 dark:text-slate-400">
-              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" /> Live simulations
-            </span>
-            <h1 className="mt-6 font-display text-[clamp(2.25rem,5.5vw,4.5rem)] font-black leading-[0.95] tracking-tight text-slate-900 dark:text-white">
-              <WordCycleLetterSwap /><br />ALGORITHMS<br />
-              <span className="block mt-2 text-slate-600 dark:text-slate-400">
-                <TypewriterText text="IN REAL TIME." />
-              </span>
-            </h1>
-          </div>
-          <div className="mt-6 flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <RotatingBadge />
-              <p className="max-w-md text-xs leading-relaxed text-slate-500 dark:text-slate-400">
-                Interactive frontend lab for learning data structures & algorithms through beautiful step-by-step state animations.
-              </p>
-            </div>
-          </div>
         </motion.div>
 
         {/* Card 4: Wavy Pattern Card */}
@@ -270,49 +234,71 @@ export default function Home() {
           </div>
         </motion.div>
 
-        {/* Card 6: Topics / Category Console Card */}
+        {/* Card 6: Platform Features & Engagement Card */}
         <motion.div
           id="explore-topics-card"
           {...rise(0.3)}
-          className="rounded-3xl bg-white dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-800/80 p-6 md:col-span-6 lg:col-span-7 shadow-lg flex flex-col justify-between"
+          className="rounded-3xl bg-white dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-800/80 p-6 md:col-span-6 lg:col-span-7 shadow-lg flex flex-col justify-between min-h-[240px]"
         >
-          <div className={`flex flex-col h-full justify-between transition-opacity duration-300 ${isSticky ? "opacity-0 pointer-events-none" : "opacity-100"}`}>
+          <div className="flex flex-col h-full justify-between">
             <div className="mb-4 flex items-center justify-between">
               <h2 className="font-display text-xs font-bold uppercase tracking-[0.25em] text-slate-500 dark:text-slate-400">
-                Explore Topics
+                Interactive Lab Features
               </h2>
-              <span className="text-[10px] font-mono text-slate-450 dark:text-slate-500">
-                Select category to filter
+              <span className="text-[10px] font-mono text-emerald-500 font-bold uppercase tracking-wider flex items-center gap-1.5">
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" /> Fully Active
               </span>
             </div>
 
-            {/* Search Console Input */}
-            <div className="mb-4 w-full">
-              <SearchBar value={query} onChange={setQuery} placeholder="Search..." />
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 my-2">
+              <div className="flex gap-3 items-start">
+                <span className="p-2 rounded-xl bg-blue-50 dark:bg-slate-800/60 text-blue-600 dark:text-cyan-400">
+                  <Plus size={16} />
+                </span>
+                <div>
+                  <h3 className="text-xs font-bold text-slate-800 dark:text-slate-200">State Animations</h3>
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 leading-relaxed">
+                    Watch values swap, compare, and update in beautiful step-by-step visual transitions.
+                  </p>
+                </div>
+              </div>
+              <div className="flex gap-3 items-start">
+                <span className="p-2 rounded-xl bg-emerald-50 dark:bg-slate-800/60 text-emerald-600 dark:text-emerald-400">
+                  <Plus size={16} />
+                </span>
+                <div>
+                  <h3 className="text-xs font-bold text-slate-800 dark:text-slate-200">Execution Console</h3>
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 leading-relaxed">
+                    Inspect memory state changes, execution stack frames, and explanation logs.
+                  </p>
+                </div>
+              </div>
+              <div className="flex gap-3 items-start">
+                <span className="p-2 rounded-xl bg-indigo-50 dark:bg-slate-800/60 text-indigo-600 dark:text-indigo-400">
+                  <Plus size={16} />
+                </span>
+                <div>
+                  <h3 className="text-xs font-bold text-slate-800 dark:text-slate-200">Custom Datasets</h3>
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 leading-relaxed">
+                    Build custom graphs, edit array elements, or load complex input samples.
+                  </p>
+                </div>
+              </div>
+              <div className="flex gap-3 items-start">
+                <span className="p-2 rounded-xl bg-amber-50 dark:bg-slate-800/60 text-amber-600 dark:text-amber-400">
+                  <Plus size={16} />
+                </span>
+                <div>
+                  <h3 className="text-xs font-bold text-slate-800 dark:text-slate-200">Complexity Metrics</h3>
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 leading-relaxed">
+                    Compare theoretical asymptotic bounds with actual execution steps.
+                  </p>
+                </div>
+              </div>
             </div>
 
-            <div className="flex flex-wrap gap-2">
-              {categoryOptions.map((opt) => {
-                const isActive = selectedCategory === opt.name;
-                const Icon = opt.icon;
-                return (
-                  <button
-                    key={opt.name}
-                    onClick={() => {
-                      setSelectedCategory(opt.name);
-                      setShowAll(false);
-                    }}
-                    className={`flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-bold tracking-wide transition duration-200 ${
-                      isActive
-                        ? "bg-blue-600 text-white shadow-md shadow-blue-600/20 dark:bg-cyan-500 dark:text-slate-950"
-                        : "bg-slate-50 text-slate-600 border border-slate-200/50 hover:bg-slate-100 hover:text-blue-600 dark:bg-slate-800/40 dark:text-slate-350 dark:border-slate-800/30 dark:hover:bg-slate-800 dark:hover:text-cyan-300"
-                    }`}
-                  >
-                    <Icon size={13} className={isActive ? "text-white dark:text-slate-950" : "text-blue-600 dark:text-cyan-400"} />
-                    <span>{opt.label}</span>
-                  </button>
-                );
-              })}
+            <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-[10px] font-mono text-slate-400">
+              <span>Ready to start? Use the navigation bar to search or filter.</span>
             </div>
           </div>
         </motion.div>
