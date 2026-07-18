@@ -6,6 +6,7 @@ import ExecutionSteps from "../components/ExecutionSteps.jsx";
 import NQueensVisualization from "../components/NQueensVisualization.jsx";
 import { buildNQueensSteps } from "../logic/nQueensSimulation.js";
 import { algorithmMap } from "../data/algorithms.js";
+import ComplexityCard from "../components/ComplexityCard.jsx";
 
 const SPEED_LABELS = { 900: "Slow", 480: "Normal", 200: "Fast", 80: "Turbo" };
 
@@ -113,12 +114,6 @@ export default function NQueensPage() {
                 {algorithm.description}
               </p>
             </div>
-            <div className="flex flex-wrap gap-2 text-[10px] font-black uppercase tracking-widest">
-              {c.best && c.best !== "—" && <span className="rounded-full border border-slate-300 bg-slate-200 px-2 py-1 text-slate-900 dark:border-slate-600 dark:bg-slate-300">Best {c.best}</span>}
-              {c.average && c.average !== "—" && <span className="rounded-full border border-slate-300 bg-slate-200 px-2 py-1 text-slate-900 dark:border-slate-600 dark:bg-slate-300">Avg {c.average}</span>}
-              {c.worst && <span className="rounded-full border border-slate-300 bg-slate-200 px-2 py-1 text-slate-900 dark:border-slate-600 dark:bg-slate-300">Worst {c.worst}</span>}
-              {c.space && <span className="rounded-full border border-slate-300 bg-slate-200 px-2 py-1 text-slate-900 dark:border-slate-600 dark:bg-slate-300">Space {c.space}</span>}
-            </div>
           </div>
         </section>
 
@@ -149,6 +144,21 @@ export default function NQueensPage() {
         <section className="grid gap-6 lg:grid-cols-2">
           <CodeViewer code={algorithm.code} activeLine={step.line} language={algorithm.language} />
           <ExecutionSteps steps={steps} currentStep={currentStep} />
+        </section>
+
+        <section className="grid gap-4 grid-cols-2 sm:grid-cols-4 mt-6">
+          {algorithm.complexities.best && (
+            <ComplexityCard label="Best Case" value={algorithm.complexities.best} tone="green" />
+          )}
+          {algorithm.complexities.average && (
+            <ComplexityCard label="Average Case" value={algorithm.complexities.average} tone="orange" />
+          )}
+          {algorithm.complexities.worst && (
+            <ComplexityCard label="Worst Case" value={algorithm.complexities.worst} tone="red" />
+          )}
+          {algorithm.complexities.space && (
+            <ComplexityCard label="Space Complexity" value={algorithm.complexities.space} tone="blue" />
+          )}
         </section>
 
       </div>

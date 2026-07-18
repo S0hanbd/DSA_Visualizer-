@@ -3,6 +3,7 @@ import { useParams, Navigate, useLocation } from "react-router-dom";
 import Sidebar from "../components/Sidebar.jsx";
 import GraphVisualization from "../components/GraphVisualization.jsx";
 import CodeViewer from "../components/CodeViewer.jsx";
+import ComplexityCard from "../components/ComplexityCard.jsx";
 import ExecutionSteps from "../components/ExecutionSteps.jsx";
 import { algorithmMap } from "../data/algorithms.js";
 import { EXAMPLE_GRAPH, EXAMPLE_GRAPH_2, EXAMPLE_GRAPH_3, EXAMPLE_GRAPH_4, buildDijkstraSteps, buildBfsSteps, buildDfsSteps, buildPrimSteps, buildKruskalSteps } from "../logic/graphInteractive.js";
@@ -382,6 +383,22 @@ export default function GraphPage() {
           </div>
 
         </div>
+
+        <section className="grid gap-4 grid-cols-2 sm:grid-cols-4 mt-6">
+          {algorithm.complexities.best && (
+            <ComplexityCard label="Best Case" value={algorithm.complexities.best} tone="green" />
+          )}
+          {algorithm.complexities.average && (
+            <ComplexityCard label="Average Case" value={algorithm.complexities.average} tone="orange" />
+          )}
+          {algorithm.complexities.worst && (
+            <ComplexityCard label="Worst Case" value={algorithm.complexities.worst} tone="red" />
+          )}
+          {algorithm.complexities.space && (
+            <ComplexityCard label="Space Complexity" value={algorithm.complexities.space} tone="blue" />
+          )}
+        </section>
+
       </div>
     </div>
   );

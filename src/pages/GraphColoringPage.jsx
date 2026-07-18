@@ -3,6 +3,7 @@ import { useParams, Navigate, useLocation } from "react-router-dom";
 import Sidebar from "../components/Sidebar.jsx";
 import GraphColoringVisualization from "../components/GraphColoringVisualization.jsx";
 import CodeViewer from "../components/CodeViewer.jsx";
+import ComplexityCard from "../components/ComplexityCard.jsx";
 import ExecutionSteps from "../components/ExecutionSteps.jsx";
 import { algorithmMap } from "../data/algorithms.js";
 import { buildGraphColoringSteps } from "../logic/graphColoringSimulation.js";
@@ -368,6 +369,21 @@ export default function GraphColoringPage() {
             <div className="neo-panel overflow-hidden">
               <CodeViewer code={algorithm.code} activeLine={step?.line} language={algorithm.language} />
             </div>
+
+            <section className="grid gap-4 grid-cols-2 sm:grid-cols-4 mt-2">
+              {algorithm.complexities.best && (
+                <ComplexityCard label="Best Case" value={algorithm.complexities.best} tone="green" />
+              )}
+              {algorithm.complexities.average && (
+                <ComplexityCard label="Average Case" value={algorithm.complexities.average} tone="orange" />
+              )}
+              {algorithm.complexities.worst && (
+                <ComplexityCard label="Worst Case" value={algorithm.complexities.worst} tone="red" />
+              )}
+              {algorithm.complexities.space && (
+                <ComplexityCard label="Space Complexity" value={algorithm.complexities.space} tone="blue" />
+              )}
+            </section>
           </div>
         </div>
       </div>

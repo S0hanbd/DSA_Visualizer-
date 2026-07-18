@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Navigate, useParams, useLocation } from "react-router-dom";
 import CodeViewer from "../components/CodeViewer.jsx";
+import ComplexityCard from "../components/ComplexityCard.jsx";
 import ExecutionSteps from "../components/ExecutionSteps.jsx";
 import QueueUsingStacksVisualization from "../components/QueueUsingStacksVisualization.jsx";
 import Sidebar from "../components/Sidebar.jsx";
@@ -252,8 +253,23 @@ export default function QueueUsingStacksPage() {
         </section>
 
         {/* Execution Steps */}
-        <section>
+        <section className="mb-6">
           <ExecutionSteps steps={steps} currentStep={currentStep} />
+        </section>
+
+        <section className="grid gap-4 grid-cols-2 sm:grid-cols-4 mt-6">
+          {algorithm.complexities.best && (
+            <ComplexityCard label="Best Case" value={algorithm.complexities.best} tone="green" />
+          )}
+          {algorithm.complexities.average && (
+            <ComplexityCard label="Average Case" value={algorithm.complexities.average} tone="orange" />
+          )}
+          {algorithm.complexities.worst && (
+            <ComplexityCard label="Worst Case" value={algorithm.complexities.worst} tone="red" />
+          )}
+          {algorithm.complexities.space && (
+            <ComplexityCard label="Space Complexity" value={algorithm.complexities.space} tone="blue" />
+          )}
         </section>
 
       </div>

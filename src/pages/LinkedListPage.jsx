@@ -3,6 +3,7 @@ import { Navigate, useParams, useLocation } from "react-router-dom";
 import { useIsPresent, motion, AnimatePresence } from "framer-motion";
 import Sidebar from "../components/Sidebar.jsx";
 import CodeViewer from "../components/CodeViewer.jsx";
+import ComplexityCard from "../components/ComplexityCard.jsx";
 import LinkedListVisualization from "../components/LinkedListVisualization.jsx";
 import { algorithmMap } from "../data/algorithms.js";
 import {
@@ -391,6 +392,21 @@ export default function LinkedListPage() {
           activeLine={step.line}
           language={algorithm.language ?? "javascript"}
         />
+
+        <section className="grid gap-4 grid-cols-2 sm:grid-cols-4 mt-6">
+          {algorithm.complexities.best && (
+            <ComplexityCard label="Best Case" value={algorithm.complexities.best} tone="green" />
+          )}
+          {algorithm.complexities.average && (
+            <ComplexityCard label="Average Case" value={algorithm.complexities.average} tone="orange" />
+          )}
+          {algorithm.complexities.worst && (
+            <ComplexityCard label="Worst Case" value={algorithm.complexities.worst} tone="red" />
+          )}
+          {algorithm.complexities.space && (
+            <ComplexityCard label="Space Complexity" value={algorithm.complexities.space} tone="blue" />
+          )}
+        </section>
 
       </div>
     </div>
