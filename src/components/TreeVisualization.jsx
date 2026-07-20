@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 
-export default function TreeVisualization({ tree, markers, type }) {
+export default function TreeVisualization({ tree, markers, type, height = "h-[600px]", embedded = false }) {
   // Pan and Zoom State
   const [scale, setScale] = useState(1);
   const [pan, setPan] = useState({ x: 0, y: 0 });
@@ -59,7 +59,7 @@ export default function TreeVisualization({ tree, markers, type }) {
   });
 
   const width = Math.max(600, maxX - minX + 200);
-  const height = Math.max(400, maxY + 150);
+  const heightVal = Math.max(400, maxY + 150);
   
   // Offset to center the root which is at x=0
   const offsetX = width / 2;
@@ -67,7 +67,11 @@ export default function TreeVisualization({ tree, markers, type }) {
 
   return (
     <div 
-      className="relative w-full h-[600px] bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden shadow-sm cursor-grab active:cursor-grabbing"
+      className={`relative w-full ${height} ${
+        embedded 
+          ? "bg-transparent shadow-none border-0" 
+          : "bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-sm"
+      } overflow-hidden cursor-grab active:cursor-grabbing`}
       onWheel={handleWheel}
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
@@ -88,7 +92,7 @@ export default function TreeVisualization({ tree, markers, type }) {
         className="absolute inset-0 origin-top-left"
         style={{ transform: `translate(${pan.x}px, ${pan.y}px) scale(${scale})` }}
       >
-        <div className="relative" style={{ width, height, minWidth: "100%", minHeight: "100%" }}>
+        <div className="relative" style={{ width, height: heightVal, minWidth: "100%", minHeight: "100%" }}>
         {/* EDGES */}
         <svg className="absolute inset-0 pointer-events-none" style={{ width: "100%", height: "100%" }}>
           {edges.map((edge, i) => {

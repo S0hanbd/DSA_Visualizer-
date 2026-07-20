@@ -284,6 +284,47 @@ export default function PriorityQueuePage() {
                 </div>
             </div>
 
+            {/* Array Representation */}
+            <div className="neo-panel p-6">
+                <h3 className="text-sm font-bold text-slate-500 dark:text-slate-400 mb-4">
+                    Array Representation
+                </h3>
+                <div className="flex flex-wrap gap-2 items-end min-h-[64px]">
+                    <AnimatePresence mode="popLayout">
+                        {(step.array || []).map((node, i) => {
+                            const isSwapping = step.markers?.swapping?.includes(node.id);
+                            const isComparing = step.markers?.comparing?.includes(node.id);
+                            
+                            let bgClass = "bg-slate-100 border-slate-300 text-slate-700 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-300";
+                            if (isSwapping) bgClass = "bg-amber-100 border-amber-400 text-amber-800 dark:bg-amber-900/40 dark:border-amber-700 dark:text-amber-300";
+                            else if (isComparing) bgClass = "bg-blue-100 border-blue-400 text-blue-800 dark:bg-blue-900/40 dark:border-blue-700 dark:text-blue-300";
+
+                            return (
+                                <motion.div 
+                                    key={node.id} 
+                                    layout
+                                    initial={{ opacity: 0, y: 20, scale: 0.8 }}
+                                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                                    exit={{ opacity: 0, scale: 0.5 }}
+                                    transition={{ type: "spring", stiffness: 300, damping: 25 }}
+                                    className="flex flex-col items-center gap-1"
+                                >
+                                    <span className="text-[10px] text-slate-400 font-medium">{i}</span>
+                                    <div className={`w-12 h-12 flex items-center justify-center font-bold text-lg rounded-xl border-2 shadow-sm ${bgClass}`}>
+                                        {node.val}
+                                    </div>
+                                </motion.div>
+                            );
+                        })}
+                    </AnimatePresence>
+                    {(!step.array || step.array.length === 0) && (
+                        <div className="text-sm text-slate-500 italic flex items-center h-12">
+                            Queue is empty
+                        </div>
+                    )}
+                </div>
+            </div>
+
             {/* History */}
             <div className="neo-panel flex-1 p-6 flex flex-col min-h-[250px]">
                 <h3 className="text-lg font-black text-slate-800 dark:text-slate-200 mb-4">
@@ -344,55 +385,14 @@ export default function PriorityQueuePage() {
             {/* Visualization Area */}
             <div className="neo-panel bg-slate-50 dark:bg-[#0B1120] relative flex flex-col min-h-[500px]">
                 {/* Tree Visualization */}
-                <div className="flex-1 relative overflow-hidden flex flex-col border-b border-slate-200 dark:border-slate-800">
+                <div className="flex-1 relative overflow-hidden flex flex-col">
                     {/* Floating Explanation */}
                     <div className="absolute top-4 left-0 w-full flex justify-center z-10 pointer-events-none">
                         <div className="bg-slate-800 text-slate-200 px-4 py-2 rounded-full text-sm font-medium shadow-md">
                             {step.explanation}
                         </div>
                     </div>
-                    <TreeVisualization tree={step.tree} markers={step.markers} type="heap" />
-                </div>
-                
-                {/* Animated Array Representation */}
-                <div className="p-6">
-                    <h3 className="text-sm font-bold text-slate-500 dark:text-slate-400 mb-4">
-                        Array Representation
-                    </h3>
-                    <div className="flex flex-wrap gap-2 items-end min-h-[64px]">
-                        <AnimatePresence mode="popLayout">
-                            {(step.array || []).map((node, i) => {
-                                const isSwapping = step.markers?.swapping?.includes(node.id);
-                                const isComparing = step.markers?.comparing?.includes(node.id);
-                                
-                                let bgClass = "bg-slate-100 border-slate-300 text-slate-700 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-300";
-                                if (isSwapping) bgClass = "bg-amber-100 border-amber-400 text-amber-800 dark:bg-amber-900/40 dark:border-amber-700 dark:text-amber-300";
-                                else if (isComparing) bgClass = "bg-blue-100 border-blue-400 text-blue-800 dark:bg-blue-900/40 dark:border-blue-700 dark:text-blue-300";
-
-                                return (
-                                    <motion.div 
-                                        key={node.id} 
-                                        layout
-                                        initial={{ opacity: 0, y: 20, scale: 0.8 }}
-                                        animate={{ opacity: 1, y: 0, scale: 1 }}
-                                        exit={{ opacity: 0, scale: 0.5 }}
-                                        transition={{ type: "spring", stiffness: 300, damping: 25 }}
-                                        className="flex flex-col items-center gap-1"
-                                    >
-                                        <span className="text-[10px] text-slate-400 font-medium">{i}</span>
-                                        <div className={`w-12 h-12 flex items-center justify-center font-bold text-lg rounded-xl border-2 shadow-sm ${bgClass}`}>
-                                            {node.val}
-                                        </div>
-                                    </motion.div>
-                                );
-                            })}
-                        </AnimatePresence>
-                        {(!step.array || step.array.length === 0) && (
-                            <div className="text-sm text-slate-500 italic flex items-center h-12">
-                                Queue is empty
-                            </div>
-                        )}
-                    </div>
+                    <TreeVisualization tree={step.tree} markers={step.markers} type="heap" height="h-[500px]" embedded={true} />
                 </div>
             </div>
 
