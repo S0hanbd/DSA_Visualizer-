@@ -2,6 +2,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import Navbar from "./components/Navbar.jsx";
 import Footer from "./components/Footer.jsx";
+import ScrollToTop from "./components/ScrollToTop.jsx";
 import Home from "./pages/Home.jsx";
 import AlgorithmPage from "./pages/AlgorithmPage.jsx";
 import LinkedListPage from "./pages/LinkedListPage.jsx";
@@ -58,13 +59,13 @@ function AnimatedRoutes() {
           <Route path="/algorithm/n-queens" element={<NQueensPage />} />
           <Route path="/algorithm/graph-coloring" element={<GraphColoringPage />} />
           <Route path="/algorithm/:slug" element={<AlgorithmPage />} />
-          <Route path="/sorting" element={<Navigate to="/algorithm/bubble-sort" replace />} />
-          <Route path="/searching" element={<Navigate to="/algorithm/linear-search" replace />} />
-          <Route path="/linked-list" element={<Navigate to="/algorithm/singly-linked-list" replace />} />
-          <Route path="/stack" element={<Navigate to="/algorithm/stack-array" replace />} />
-          <Route path="/queue" element={<Navigate to="/algorithm/linear-queue" replace />} />
-          <Route path="/trees" element={<Navigate to="/algorithm/binary-tree" replace />} />
-          <Route path="/graph" element={<Navigate to="/algorithm/bfs" replace />} />
+          <Route path="/sorting" element={<AlgorithmPage overrideSlug="bubble-sort" />} />
+          <Route path="/searching" element={<AlgorithmPage overrideSlug="linear-search" />} />
+          <Route path="/linked-list" element={<LinkedListPage overrideSlug="singly-linked-list" />} />
+          <Route path="/stack" element={<StackPage />} />
+          <Route path="/queue" element={<QueuePage />} />
+          <Route path="/trees" element={<TreePage overrideSlug="binary-tree" />} />
+          <Route path="/graph" element={<GraphPage overrideSlug="bfs" />} />
           <Route path="/design" element={<DesignPage />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
@@ -77,7 +78,8 @@ export default function App() {
   return (
     <ThemeProvider>
       <SearchFilterProvider>
-        <div className="min-h-screen global-blueprint-bg text-slate-900 transition-colors duration-500 dark:text-slate-100">
+        <ScrollToTop />
+        <div className="min-h-screen global-blueprint-bg text-slate-900 transition-colors duration-500 dark:text-slate-100 flex flex-col">
           <Navbar />
           <AnimatedRoutes />
           <Footer />

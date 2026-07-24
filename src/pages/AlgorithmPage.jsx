@@ -18,8 +18,9 @@ const LINKED_LIST_SLUGS = new Set(["singly-linked-list", "doubly-linked-list", "
 
 const defaultArray = [42, 18, 73, 29, 64, 11, 90, 37, 56];
 
-export default function AlgorithmPage() {
-  const { slug } = useParams();
+export default function AlgorithmPage({ overrideSlug }) {
+  const { slug: routeSlug } = useParams();
+  const slug = overrideSlug || routeSlug;
   const location = useLocation();
   const isPresent = useIsPresent();
 

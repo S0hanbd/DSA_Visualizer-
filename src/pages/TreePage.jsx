@@ -45,12 +45,12 @@ function OpBtn({ label, onClick, color = "blue", disabled }) {
   );
 }
 
-export default function TreePage() {
+export default function TreePage({ overrideSlug }) {
   const { slug: routeSlug } = useParams();
   const location = useLocation();
   const isPresent = useIsPresent();
 
-  const slug = routeSlug || location.pathname.replace(/\/$/, "").split("/").pop();
+  const slug = overrideSlug || routeSlug || location.pathname.replace(/\/$/, "").split("/").pop();
 
   const activeSlugRef = useRef(slug);
   if (isPresent && slug && slug !== activeSlugRef.current) {

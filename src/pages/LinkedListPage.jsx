@@ -111,13 +111,13 @@ function Playback({ isPlaying, onPlay, onPause, onPrev, onNext, onReset, speed, 
 }
 
 // ─── main page ────────────────────────────────────────────────────────────────
-export default function LinkedListPage() {
+export default function LinkedListPage({ overrideSlug }) {
   const { slug: paramSlug } = useParams();
   const location = useLocation();
   const isPresent = useIsPresent();
 
-  // Static routes don't carry a :slug param, so fall back to the last path segment
-  const rawSlug = paramSlug || location.pathname.split("/").filter(Boolean).pop();
+  // Static routes don't carry a :slug param, so fall back to overrideSlug or the last path segment
+  const rawSlug = overrideSlug || paramSlug || location.pathname.split("/").filter(Boolean).pop();
 
   const activeSlugRef = useRef(rawSlug);
   if (isPresent && rawSlug && rawSlug !== activeSlugRef.current) activeSlugRef.current = rawSlug;
@@ -158,7 +158,9 @@ export default function LinkedListPage() {
     if (currentStep >= steps.length - 1) {
       setIsPlaying(false);
       // Commit the final list state when animation finishes
-      setLiveList([...steps[steps.length - 1].array]);
+      if (steps[steps.length - 1]?.array) {
+        setLiveList([...steps[steps.length - 1].array]);
+      }
       return;
     }
     const t = window.setTimeout(() => setCurrentStep((s) => Math.min(s + 1, steps.length - 1)), speed);

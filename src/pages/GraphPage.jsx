@@ -35,10 +35,10 @@ function ControlsButton({ label, onClick, className = "", disabled = false }) {
   );
 }
 
-export default function GraphPage() {
+export default function GraphPage({ overrideSlug }) {
   const { slug } = useParams();
   const location = useLocation();
-  const rawSlug = slug || location.pathname.split("/").filter(Boolean).pop();
+  const rawSlug = overrideSlug || slug || location.pathname.split("/").filter(Boolean).pop();
   const algorithm = algorithmMap[rawSlug];
 
   const [activeTab, setActiveTab] = useState("Algorithm"); // "Build Graph" | "Algorithm"

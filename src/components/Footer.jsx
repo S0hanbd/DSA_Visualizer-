@@ -42,19 +42,19 @@ export default function Footer() {
             </h3>
             <ul className="mt-4 space-y-2.5 text-sm">
               <li>
-                <Link to="/sorting" className="text-slate-300 hover:text-white transition duration-200">Sorting Algorithms</Link>
+                <Link to="/algorithm/bubble-sort" className="text-slate-300 hover:text-white transition duration-200">Sorting Algorithms</Link>
               </li>
               <li>
-                <Link to="/searching" className="text-slate-300 hover:text-white transition duration-200">Searching Algorithms</Link>
+                <Link to="/algorithm/linear-search" className="text-slate-300 hover:text-white transition duration-200">Searching Algorithms</Link>
               </li>
               <li>
-                <Link to="/linked-list" className="text-slate-300 hover:text-white transition duration-200">Linked Lists</Link>
+                <Link to="/algorithm/singly-linked-list" className="text-slate-300 hover:text-white transition duration-200">Linked Lists</Link>
               </li>
               <li>
-                <Link to="/trees" className="text-slate-300 hover:text-white transition duration-200">Trees & Heaps</Link>
+                <Link to="/algorithm/binary-tree" className="text-slate-300 hover:text-white transition duration-200">Trees & Heaps</Link>
               </li>
               <li>
-                <Link to="/graph" className="text-slate-300 hover:text-white transition duration-200">Graphs & Networks</Link>
+                <Link to="/algorithm/bfs" className="text-slate-300 hover:text-white transition duration-200">Graphs & Networks</Link>
               </li>
             </ul>
           </div>
