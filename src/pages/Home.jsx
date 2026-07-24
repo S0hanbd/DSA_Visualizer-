@@ -1,4 +1,4 @@
-﻿import { motion, useReducedMotion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import {
   ArrowUpDown,
   ArrowUpRight,
@@ -114,9 +114,33 @@ export default function Home() {
     <div className="mx-auto w-full px-4 py-8 max-w-[1400px]">
       {/* Hero Bento Grid */}
       <section className="grid grid-cols-1 gap-4 md:grid-cols-6 lg:grid-cols-12">
-        {/* Card 1: Live Bubble Sort Preview */}
+        {/* Card 1: Headline Tile (Left Side) */}
         <motion.div
           {...rise(0.05)}
+          className="relative overflow-hidden rounded-3xl bg-white dark:bg-slate-900/60 p-8 border border-slate-200/80 dark:border-slate-800/80 lg:col-span-7 lg:row-span-2 min-h-[320px] flex flex-col justify-between shadow-lg"
+        >
+          <div>
+            <span className="inline-flex items-center gap-2 rounded-full bg-slate-100 dark:bg-slate-800/80 px-3 py-1 font-mono text-[10px] uppercase tracking-widest text-slate-500 dark:text-slate-400">
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" /> Live simulations
+            </span>
+            <h1 className="mt-6 font-display text-[clamp(2.25rem,5.5vw,4.5rem)] font-black leading-[0.95] tracking-tight text-slate-900 dark:text-white">
+              SIMULATE<br />ALGORITHMS<br />
+              <span className="text-slate-400 dark:text-slate-600">IN REAL TIME.</span>
+            </h1>
+          </div>
+          <div className="mt-6 flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <RotatingBadge />
+              <p className="max-w-md text-xs leading-relaxed text-slate-500 dark:text-slate-400">
+                Interactive frontend lab for learning data structures & algorithms through beautiful step-by-step state animations.
+              </p>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* Card 2: Live Bubble Sort Preview (Right Side) */}
+        <motion.div
+          {...rise(0.1)}
           className="relative overflow-hidden rounded-3xl bg-slate-900 p-6 text-white md:col-span-3 lg:col-span-3 lg:row-span-2 min-h-[320px] flex flex-col justify-between shadow-lg border border-slate-800 dark:bg-slate-950"
         >
           <div className="flex items-start justify-between">
@@ -160,7 +184,7 @@ export default function Home() {
           </p>
         </motion.div>
 
-        {/* Card 2: Award / Graph Orb Tile */}
+        {/* Card 3: Award / Graph Orb Tile (Right Side) */}
         <motion.div
           {...rise(0.15)}
           className="relative overflow-hidden rounded-3xl bg-emerald-500 p-6 md:col-span-3 lg:col-span-2 lg:row-span-2 min-h-[320px] flex flex-col items-center justify-between text-center shadow-lg"
@@ -179,69 +203,9 @@ export default function Home() {
           </span>
         </motion.div>
 
-        {/* Card 3: Headline Tile */}
-        <motion.div
-          {...rise(0.1)}
-          className="relative overflow-hidden rounded-3xl bg-white dark:bg-slate-900/60 p-8 border border-slate-200/80 dark:border-slate-800/80 lg:col-span-7 lg:row-span-2 min-h-[320px] flex flex-col justify-between shadow-lg"
-        >
-          <div>
-            <span className="inline-flex items-center gap-2 rounded-full bg-slate-100 dark:bg-slate-800/80 px-3 py-1 font-mono text-[10px] uppercase tracking-widest text-slate-500 dark:text-slate-400">
-              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" /> Live simulations
-            </span>
-            <h1 className="mt-6 font-display text-[clamp(2.25rem,5.5vw,4.5rem)] font-black leading-[0.95] tracking-tight text-slate-900 dark:text-white">
-              SIMULATE<br />ALGORITHMS<br />
-              <span className="text-slate-400 dark:text-slate-600">IN REAL TIME.</span>
-            </h1>
-          </div>
-          <div className="mt-6 flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <RotatingBadge />
-              <p className="max-w-md text-xs leading-relaxed text-slate-500 dark:text-slate-400">
-                Interactive frontend lab for learning data structures & algorithms through beautiful step-by-step state animations.
-              </p>
-            </div>
-          </div>
-        </motion.div>
-
-        {/* Card 4: Wavy Pattern Card */}
+        {/* Card 4: Topics / Category Console Card (Left Side) */}
         <motion.div
           {...rise(0.2)}
-          className="relative overflow-hidden rounded-3xl bg-white dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-800/80 p-6 lg:col-span-3 min-h-[240px] flex flex-col justify-between shadow-lg"
-        >
-          <WavePattern />
-          <div className="relative flex h-full flex-col justify-between z-10">
-            <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500">
-              /graph-theory
-            </span>
-            
-            {/* Real Tree running In-Order Traversal */}
-            <div className="my-2 flex justify-center items-center">
-              <TreeTraversalSimulation />
-            </div>
-
-            <p className="font-display text-2xl font-bold leading-tight text-slate-900 dark:text-white">
-              Trace the<br />network flow.
-            </p>
-          </div>
-        </motion.div>
-
-        {/* Card 5: Stats Card */}
-        <motion.div
-          {...rise(0.25)}
-          className="rounded-3xl bg-slate-900 dark:bg-slate-950 border border-slate-850 p-6 text-white lg:col-span-2 min-h-[240px] flex flex-col justify-between shadow-lg"
-        >
-          <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-white/50">/stats</span>
-          <div>
-            <p className="font-display text-5xl font-black">
-              <AnimatedCounter target={35} duration={2000} />+
-            </p>
-            <p className="mt-2 text-xs text-white/60 leading-relaxed">interactive simulations across 11 key computer science topics</p>
-          </div>
-        </motion.div>
-
-        {/* Card 6: Topics / Category Console Card */}
-        <motion.div
-          {...rise(0.3)}
           className="rounded-3xl bg-white dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-800/80 p-6 lg:col-span-7 shadow-lg flex flex-col justify-between"
         >
           <div className="mb-4 flex items-center justify-between">
@@ -280,6 +244,42 @@ export default function Home() {
                 </button>
               );
             })}
+          </div>
+        </motion.div>
+
+        {/* Card 5: Wavy Pattern Card (Right Side) */}
+        <motion.div
+          {...rise(0.25)}
+          className="relative overflow-hidden rounded-3xl bg-white dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-800/80 p-6 lg:col-span-3 min-h-[240px] flex flex-col justify-between shadow-lg"
+        >
+          <WavePattern />
+          <div className="relative flex h-full flex-col justify-between z-10">
+            <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500">
+              /graph-theory
+            </span>
+            
+            {/* Real Tree running In-Order Traversal */}
+            <div className="my-2 flex justify-center items-center">
+              <TreeTraversalSimulation />
+            </div>
+
+            <p className="font-display text-2xl font-bold leading-tight text-slate-900 dark:text-white">
+              Trace the<br />network flow.
+            </p>
+          </div>
+        </motion.div>
+
+        {/* Card 6: Stats Card (Right Side) */}
+        <motion.div
+          {...rise(0.3)}
+          className="rounded-3xl bg-slate-900 dark:bg-slate-950 border border-slate-850 p-6 text-white lg:col-span-2 min-h-[240px] flex flex-col justify-between shadow-lg"
+        >
+          <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-white/50">/stats</span>
+          <div>
+            <p className="font-display text-5xl font-black">
+              <AnimatedCounter target={35} duration={2000} />+
+            </p>
+            <p className="mt-2 text-xs text-white/60 leading-relaxed">interactive simulations across 11 key computer science topics</p>
           </div>
         </motion.div>
       </section>
