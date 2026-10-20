@@ -1,1 +1,10 @@
 node_modules/
+dist/
+.cache/
+test-results/
+playwright-report/
+coverage/
+*.log
+.env
+.env.*
+!.env.example
