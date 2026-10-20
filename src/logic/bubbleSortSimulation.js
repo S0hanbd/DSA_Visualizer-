@@ -21,6 +21,7 @@ export function buildBubbleSortSteps(initialArray) {
   });
 
   for (let i = 0; i < n - 1; i++) {
+    let swapped = false;
     const sorted = Array.from({ length: i }, (_, k) => n - 1 - k);
 
     steps.push({
@@ -58,6 +59,7 @@ export function buildBubbleSortSteps(initialArray) {
         const rightVal = arr[j + 1];
         [arr[j], arr[j + 1]] = [arr[j + 1], arr[j]];
         swaps++;
+        swapped = true;
         steps.push({
           array: [...arr],
           comparing: [j, j + 1],
@@ -88,6 +90,7 @@ export function buildBubbleSortSteps(initialArray) {
       explanation: `Pass ${i + 1} complete — ${i + 1} element${i > 0 ? "s" : ""} sorted`,
       status: "Pass Complete",
     });
+    if (!swapped) break;
   }
 
   // Done step
@@ -109,5 +112,8 @@ export function buildBubbleSortSteps(initialArray) {
 }
 
 export function createRandomArray(size = 9) {
-  return Array.from({ length: size }, () => Math.floor(Math.random() * 82) + 12);
+  return Array.from(
+    { length: size },
+    () => Math.floor(Math.random() * 82) + 12,
+  );
 }

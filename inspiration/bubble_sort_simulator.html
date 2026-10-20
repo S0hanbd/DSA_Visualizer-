@@ -394,7 +394,7 @@ function stepBack() {
   stopPlay();
   stepIdx--;
   comparisons = 0; swaps = 0;
-  for (let k = 1; k <= stepIdx; k++) {
+  for (let k = 1; k < stepIdx; k++) {
     if (steps[k].type === 'compare') comparisons++;
     if (steps[k].type === 'swap') swaps++;
   }

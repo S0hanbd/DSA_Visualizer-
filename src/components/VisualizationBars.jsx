@@ -3,63 +3,84 @@ import { motion, AnimatePresence } from "framer-motion";
 const LEGENDS = {
   "bubble-sort": [
     { color: "text-blue-600 dark:text-cyan-300", label: "Unsorted" },
-    { color: "text-orange-500", label: "Comparing" },
-    { color: "text-red-500", label: "Swapping" },
-    { color: "text-emerald-500", label: "Sorted" },
+    { color: "text-orange-700 dark:text-orange-300", label: "Comparing" },
+    { color: "text-red-700 dark:text-red-300", label: "Swapping" },
+    { color: "text-emerald-700 dark:text-emerald-300", label: "Sorted" },
   ],
   "selection-sort": [
     { color: "text-blue-600 dark:text-cyan-300", label: "Unsorted" },
-    { color: "text-indigo-500 dark:text-indigo-400", label: "Scanning" },
-    { color: "text-amber-500", label: "Current Minimum" },
-    { color: "text-red-500", label: "Swapping" },
-    { color: "text-emerald-500", label: "Sorted" },
+    {
+      color: "text-indigo-700 dark:text-indigo-300 dark:text-indigo-400",
+      label: "Scanning",
+    },
+    { color: "text-amber-700 dark:text-amber-300", label: "Current Minimum" },
+    { color: "text-red-700 dark:text-red-300", label: "Swapping" },
+    { color: "text-emerald-700 dark:text-emerald-300", label: "Sorted" },
   ],
   "insertion-sort": [
     { color: "text-blue-600 dark:text-cyan-300", label: "Unsorted" },
-    { color: "text-indigo-500 dark:text-indigo-400", label: "Comparing" },
-    { color: "text-amber-500", label: "Key / Hole" },
-    { color: "text-red-500", label: "Shifting Right" },
-    { color: "text-emerald-500", label: "Sorted" },
+    {
+      color: "text-indigo-700 dark:text-indigo-300 dark:text-indigo-400",
+      label: "Comparing",
+    },
+    { color: "text-amber-700 dark:text-amber-300", label: "Key / Hole" },
+    { color: "text-red-700 dark:text-red-300", label: "Shifting Right" },
+    { color: "text-emerald-700 dark:text-emerald-300", label: "Sorted" },
   ],
   "merge-sort": [
     { color: "text-blue-600 dark:text-cyan-300", label: "Unsorted" },
-    { color: "text-violet-500", label: "Left Subarray" },
-    { color: "text-pink-500", label: "Right Subarray" },
-    { color: "text-red-500", label: "Placing" },
-    { color: "text-emerald-500", label: "Merged" },
+    { color: "text-violet-700 dark:text-violet-300", label: "Left Subarray" },
+    { color: "text-pink-700 dark:text-pink-300", label: "Right Subarray" },
+    { color: "text-red-700 dark:text-red-300", label: "Placing" },
+    { color: "text-emerald-700 dark:text-emerald-300", label: "Merged" },
   ],
   "quick-sort": [
     { color: "text-blue-600 dark:text-cyan-300", label: "Unsorted" },
-    { color: "text-amber-500", label: "Pivot" },
-    { color: "text-orange-500", label: "Comparing" },
-    { color: "text-red-500", label: "Swapping" },
-    { color: "text-emerald-500", label: "Pivot Placed" },
+    { color: "text-amber-700 dark:text-amber-300", label: "Pivot" },
+    { color: "text-orange-700 dark:text-orange-300", label: "Comparing" },
+    { color: "text-red-700 dark:text-red-300", label: "Swapping" },
+    { color: "text-emerald-700 dark:text-emerald-300", label: "Pivot Placed" },
   ],
   "heap-sort": [
     { color: "text-blue-600 dark:text-cyan-300", label: "Unsorted" },
-    { color: "text-orange-500", label: "Heapifying (children)" },
-    { color: "text-amber-500", label: "Root / Max" },
-    { color: "text-red-500", label: "Swapping" },
-    { color: "text-emerald-500", label: "Extracted (Sorted)" },
+    {
+      color: "text-orange-700 dark:text-orange-300",
+      label: "Heapifying (children)",
+    },
+    { color: "text-amber-700 dark:text-amber-300", label: "Root / Max" },
+    { color: "text-red-700 dark:text-red-300", label: "Swapping" },
+    {
+      color: "text-emerald-700 dark:text-emerald-300",
+      label: "Extracted (Sorted)",
+    },
   ],
   "shell-sort": [
     { color: "text-blue-600 dark:text-cyan-300", label: "Unsorted" },
-    { color: "text-indigo-500 dark:text-indigo-400", label: "Comparing (gap)" },
-    { color: "text-amber-500", label: "Key Element" },
-    { color: "text-red-500", label: "Shifting" },
-    { color: "text-emerald-500", label: "Sorted" },
+    {
+      color: "text-indigo-700 dark:text-indigo-300 dark:text-indigo-400",
+      label: "Comparing (gap)",
+    },
+    { color: "text-amber-700 dark:text-amber-300", label: "Key Element" },
+    { color: "text-red-700 dark:text-red-300", label: "Shifting" },
+    { color: "text-emerald-700 dark:text-emerald-300", label: "Sorted" },
   ],
   "counting-sort": [
     { color: "text-blue-600 dark:text-cyan-300", label: "Unsorted" },
-    { color: "text-indigo-500 dark:text-indigo-400", label: "Counting" },
-    { color: "text-red-500", label: "Placing" },
-    { color: "text-emerald-500", label: "Sorted" },
+    {
+      color: "text-indigo-700 dark:text-indigo-300 dark:text-indigo-400",
+      label: "Counting",
+    },
+    { color: "text-red-700 dark:text-red-300", label: "Placing" },
+    { color: "text-emerald-700 dark:text-emerald-300", label: "Sorted" },
   ],
   "radix-sort": [
     { color: "text-blue-600 dark:text-cyan-300", label: "Unsorted" },
-    { color: "text-indigo-500 dark:text-indigo-400", label: "Reading Digit" },
-    { color: "text-red-500", label: "Placing" },
-    { color: "text-emerald-500", label: "Sorted" },
+    {
+      color: "text-indigo-700 dark:text-indigo-300 dark:text-indigo-400",
+      label: "Reading Digit",
+    },
+    { color: "text-red-700 dark:text-red-300", label: "Placing" },
+    { color: "text-emerald-700 dark:text-emerald-300", label: "Sorted" },
   ],
 };
 
@@ -73,25 +94,27 @@ function colorFor(index, step, slug) {
       if (sorted.includes(index)) return "from-emerald-400 to-emerald-600";
       if (swapping.includes(index)) return "from-red-400 to-red-600";
       if (step.minIdx === index) return "from-amber-400 to-amber-600";
-      if (comparing.includes(index)) return "from-indigo-400 to-indigo-600 dark:from-indigo-300 dark:to-indigo-500";
+      if (comparing.includes(index))
+        return "from-indigo-400 to-indigo-600 dark:from-indigo-300 dark:to-indigo-500";
       return "from-blue-400 to-blue-600 dark:from-cyan-300 dark:to-blue-500";
 
     case "insertion-sort":
       if (sorted.includes(index)) return "from-emerald-400 to-emerald-600";
       if (swapping.includes(index)) return "from-red-400 to-red-600";
       if (step.keyIdx === index) return "from-amber-400 to-amber-600";
-      if (comparing.includes(index)) return "from-indigo-400 to-indigo-600 dark:from-indigo-300 dark:to-indigo-500";
+      if (comparing.includes(index))
+        return "from-indigo-400 to-indigo-600 dark:from-indigo-300 dark:to-indigo-500";
       return "from-blue-400 to-blue-600 dark:from-cyan-300 dark:to-blue-500";
 
     case "merge-sort":
       if (sorted.includes(index)) return "from-emerald-400 to-emerald-600";
-      if (swapping.includes(index)) return "from-red-400 to-red-600";
       // comparing = left subarray, swapping (before actual swap) = right subarray
       // In merge-sort we repurpose comparing=leftZone, swapping=rightZone for the merge announce step
       if (step.status === "Merging") {
         if (comparing.includes(index)) return "from-violet-400 to-violet-600";
         if (swapping.includes(index)) return "from-pink-400 to-pink-600";
       }
+      if (swapping.includes(index)) return "from-red-400 to-red-600";
       if (comparing.includes(index)) return "from-violet-400 to-violet-600";
       return "from-blue-400 to-blue-600 dark:from-cyan-300 dark:to-blue-500";
 
@@ -112,15 +135,18 @@ function colorFor(index, step, slug) {
     case "shell-sort":
       if (sorted.includes(index)) return "from-emerald-400 to-emerald-600";
       if (swapping.includes(index)) return "from-red-400 to-red-600";
-      if (step.status === "Pick Key" && comparing.includes(index)) return "from-amber-400 to-amber-600";
-      if (comparing.includes(index)) return "from-indigo-400 to-indigo-600 dark:from-indigo-300 dark:to-indigo-500";
+      if (step.status === "Pick Key" && comparing.includes(index))
+        return "from-amber-400 to-amber-600";
+      if (comparing.includes(index))
+        return "from-indigo-400 to-indigo-600 dark:from-indigo-300 dark:to-indigo-500";
       return "from-blue-400 to-blue-600 dark:from-cyan-300 dark:to-blue-500";
 
     case "counting-sort":
     case "radix-sort":
       if (sorted.includes(index)) return "from-emerald-400 to-emerald-600";
       if (swapping.includes(index)) return "from-red-400 to-red-600";
-      if (comparing.includes(index)) return "from-indigo-400 to-indigo-600 dark:from-indigo-300 dark:to-indigo-500";
+      if (comparing.includes(index))
+        return "from-indigo-400 to-indigo-600 dark:from-indigo-300 dark:to-indigo-500";
       return "from-blue-400 to-blue-600 dark:from-cyan-300 dark:to-blue-500";
 
     default: // bubble-sort and fallback
@@ -140,7 +166,11 @@ function ExtraBadge({ step, slug }) {
     );
   }
   if (slug === "counting-sort" && step.markers?.phase != null) {
-    const labels = { 1: "Phase 1: Count", 2: "Phase 2: Prefix Sum", 3: "Phase 3: Reconstruct" };
+    const labels = {
+      1: "Phase 1: Count",
+      2: "Phase 2: Prefix Sum",
+      3: "Phase 3: Reconstruct",
+    };
     return (
       <span className="rounded-full bg-violet-100 px-3 py-1 text-xs font-black text-violet-700 dark:bg-violet-900/60 dark:text-violet-300">
         {labels[step.markers.phase]}
@@ -148,7 +178,14 @@ function ExtraBadge({ step, slug }) {
     );
   }
   if (slug === "radix-sort" && step.markers?.digitPass != null) {
-    const digitName = step.markers.exp === 1 ? "Units" : step.markers.exp === 10 ? "Tens" : step.markers.exp === 100 ? "Hundreds" : `10^${Math.log10(step.markers.exp)}`;
+    const digitName =
+      step.markers.exp === 1
+        ? "Units"
+        : step.markers.exp === 10
+          ? "Tens"
+          : step.markers.exp === 100
+            ? "Hundreds"
+            : `10^${Math.log10(step.markers.exp)}`;
     return (
       <span className="rounded-full bg-pink-100 px-3 py-1 text-xs font-black text-pink-700 dark:bg-pink-900/60 dark:text-pink-300">
         Pass {step.markers.digitPass} · {digitName} digit
@@ -165,7 +202,8 @@ function ExtraBadge({ step, slug }) {
   if (slug === "merge-sort" && step.markers?.left != null) {
     return (
       <span className="rounded-full bg-violet-100 px-3 py-1 text-xs font-black text-violet-700 dark:bg-violet-900/60 dark:text-violet-300">
-        [{step.markers.left}…{step.markers.mid}] ↔ [{step.markers.mid + 1}…{step.markers.right}]
+        [{step.markers.left}…{step.markers.mid}] ↔ [{step.markers.mid + 1}…
+        {step.markers.right}]
       </span>
     );
   }
@@ -218,20 +256,73 @@ export default function VisualizationBars({ step, algorithm }) {
               >
                 <motion.div
                   initial={{ height: 20, opacity: 0.75 }}
-                  animate={{ height: `${Math.max(14, (value / max) * 100)}%`, opacity: 1 }}
+                  animate={{
+                    height: `${Math.max(14, (value / max) * 100)}%`,
+                    opacity: 1,
+                  }}
                   transition={{ type: "spring", stiffness: 160, damping: 20 }}
                   className={`w-full max-w-12 rounded-t-2xl bg-gradient-to-t ${barColor} shadow-lg`}
                 />
-                <span className="text-xs font-black text-slate-600 dark:text-slate-300">{value}</span>
+                <span className="text-xs font-black text-slate-600 dark:text-slate-300">
+                  {value}
+                </span>
+                <span className="text-[10px] font-bold text-slate-600 dark:text-slate-300">
+                  [{index}]
+                </span>
               </motion.div>
             );
           });
         })()}
       </div>
 
+      {algorithm?.type === "searching" && (
+        <p className="mt-4 text-sm font-bold">
+          {slug === "binary-search"
+            ? "Binary search uses an automatically sorted copy. "
+            : "Sequential search. "}
+          {["left", "mid", "right", "i"]
+            .filter((key) => step.markers?.[key] !== undefined)
+            .map((key) => `${key} = ${step.markers[key]}`)
+            .join(" · ")}
+        </p>
+      )}
+      {["count", "output", "leftBuffer", "rightBuffer"]
+        .filter((key) => Array.isArray(step[key]) && step[key].length)
+        .map((key) => (
+          <div className="mt-3" key={key}>
+            <p className="text-xs font-bold uppercase text-slate-500">{key}</p>
+            <div
+              className="mt-2 flex flex-wrap gap-1 max-h-32 overflow-y-auto"
+              aria-label={`${key} array`}
+            >
+              {step[key]
+                .map((value, index) => ({ value, index }))
+                .filter(({ value }) => key !== "count" || value !== 0)
+                .slice(0, 100)
+                .map(({ value, index }) => (
+                  <span
+                    className="rounded border border-slate-300 dark:border-slate-700 px-2 py-1 text-xs font-mono"
+                    key={index}
+                  >
+                    [{index}] {value ?? "·"}
+                  </span>
+                ))}
+            </div>
+            {key === "count" &&
+              step.count.filter((value) => value !== 0).length > 100 && (
+                <p className="text-xs">
+                  First 100 nonzero counts shown; all counts are retained in
+                  this bounded snapshot.
+                </p>
+              )}
+          </div>
+        ))}
+
       <div className="mt-4 flex flex-wrap gap-x-4 gap-y-1.5 text-xs font-bold">
         {legend.map(({ color, label }) => (
-          <span key={label} className={color}>{label}</span>
+          <span key={label} className={color}>
+            {label}
+          </span>
         ))}
       </div>
     </section>

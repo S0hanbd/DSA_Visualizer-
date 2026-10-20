@@ -7,11 +7,12 @@ export default function ThemeToggle() {
 
   return (
     <label className="switch" title="Toggle theme">
-      <input 
-        id="input" 
-        type="checkbox" 
-        checked={isDark} 
-        onChange={toggleTheme} 
+      <input
+        aria-label="Dark theme"
+        id="input"
+        type="checkbox"
+        checked={isDark}
+        onChange={toggleTheme}
       />
       <div className="slider round">
         <div className="sun-moon">

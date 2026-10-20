@@ -1,9 +1,15 @@
 import { useRef, useState, useEffect } from "react";
 import { motion } from "framer-motion";
 
-export default function GraphVisualization({ nodes, edges, step, onCanvasClick, onNodePositionChange }) {
+export default function GraphVisualization({
+  nodes,
+  edges,
+  step,
+  onCanvasClick,
+  onNodePositionChange,
+}) {
   const containerRef = useRef(null);
-  
+
   // Pan and Zoom State
   const [scale, setScale] = useState(1);
   const [pan, setPan] = useState({ x: 0, y: 0 });
@@ -29,16 +35,16 @@ export default function GraphVisualization({ nodes, edges, step, onCanvasClick, 
 
   const handlePointerMove = (e) => {
     if (!isDragging && !draggingNodeId) return;
-    
+
     const dx = e.clientX - dragStart.x;
     const dy = e.clientY - dragStart.y;
-    
+
     if (draggingNodeId) {
       if (onNodePositionChange) {
         onNodePositionChange(draggingNodeId, dx / scale, dy / scale);
       }
     } else {
-      setPan(prev => ({ x: prev.x + dx, y: prev.y + dy }));
+      setPan((prev) => ({ x: prev.x + dx, y: prev.y + dy }));
       if (Math.abs(dx) > 2 || Math.abs(dy) > 2) {
         setHasMoved(true);
       }
@@ -52,10 +58,10 @@ export default function GraphVisualization({ nodes, edges, step, onCanvasClick, 
       return;
     }
     if (isDragging && !hasMoved && onCanvasClick && containerRef.current) {
-        const rect = containerRef.current.getBoundingClientRect();
-        const svgX = (e.clientX - rect.left - pan.x) / scale;
-        const svgY = (e.clientY - rect.top - pan.y) / scale;
-        onCanvasClick({ x: svgX, y: svgY });
+      const rect = containerRef.current.getBoundingClientRect();
+      const svgX = (e.clientX - rect.left - pan.x) / scale;
+      const svgY = (e.clientY - rect.top - pan.y) / scale;
+      onCanvasClick({ x: svgX, y: svgY });
     }
     setIsDragging(false);
   };
@@ -89,16 +95,20 @@ export default function GraphVisualization({ nodes, edges, step, onCanvasClick, 
   const isPathEdge = (source, target) => {
     if (path && path.length >= 2) {
       for (let i = 0; i < path.length - 1; i++) {
-        if ((path[i] === source && path[i + 1] === target) ||
-            (path[i] === target && path[i + 1] === source)) {
+        if (
+          (path[i] === source && path[i + 1] === target) ||
+          (path[i] === target && path[i + 1] === source)
+        ) {
           return true;
         }
       }
     }
     if (mstEdges && mstEdges.length > 0) {
       for (let edge of mstEdges) {
-        if ((edge.source === source && edge.target === target) ||
-            (edge.source === target && edge.target === source)) {
+        if (
+          (edge.source === source && edge.target === target) ||
+          (edge.source === target && edge.target === source)
+        ) {
           return true;
         }
       }
@@ -109,15 +119,19 @@ export default function GraphVisualization({ nodes, edges, step, onCanvasClick, 
   // Check if an edge is currently being evaluated
   const isCheckingEdge = (source, target) => {
     if (!activeEdge) return false;
-    return (activeEdge.source === source && activeEdge.target === target) ||
-           (activeEdge.source === target && activeEdge.target === source);
+    return (
+      (activeEdge.source === source && activeEdge.target === target) ||
+      (activeEdge.source === target && activeEdge.target === source)
+    );
   };
 
   const isVisibleEdge = (source, target) => {
     if (visibleEdges.length > 0) {
       for (let edge of visibleEdges) {
-        if ((edge.source === source && edge.target === target) ||
-            (edge.source === target && edge.target === source)) {
+        if (
+          (edge.source === source && edge.target === target) ||
+          (edge.source === target && edge.target === source)
+        ) {
           return true;
         }
       }
@@ -128,10 +142,14 @@ export default function GraphVisualization({ nodes, edges, step, onCanvasClick, 
   const visibleNodes = new Set();
   if (hideUnused) {
     if (markers.visibleNodes) {
-      markers.visibleNodes.forEach(n => visibleNodes.add(n));
+      markers.visibleNodes.forEach((n) => visibleNodes.add(n));
     } else {
-      edges.forEach(edge => {
-        if (isPathEdge(edge.source, edge.target) || isCheckingEdge(edge.source, edge.target) || isVisibleEdge(edge.source, edge.target)) {
+      edges.forEach((edge) => {
+        if (
+          isPathEdge(edge.source, edge.target) ||
+          isCheckingEdge(edge.source, edge.target) ||
+          isVisibleEdge(edge.source, edge.target)
+        ) {
           visibleNodes.add(edge.source);
           visibleNodes.add(edge.target);
         }
@@ -140,7 +158,7 @@ export default function GraphVisualization({ nodes, edges, step, onCanvasClick, 
   }
 
   return (
-    <div 
+    <div
       ref={containerRef}
       className="w-full h-[600px] relative overflow-hidden bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-200 dark:border-slate-800 shadow-inner cursor-grab active:cursor-grabbing"
       onPointerDown={handlePointerDown}
@@ -151,30 +169,40 @@ export default function GraphVisualization({ nodes, edges, step, onCanvasClick, 
       <svg width="100%" height="100%">
         {/* Dotted Background Pattern */}
         <defs>
-          <pattern id="dotted-pattern" width="20" height="20" patternUnits="userSpaceOnUse" patternTransform={`translate(${pan.x % 20}, ${pan.y % 20}) scale(${scale})`}>
-            <circle cx="10" cy="10" r="1" className="fill-slate-300 dark:fill-slate-700" />
+          <pattern
+            id="dotted-pattern"
+            width="20"
+            height="20"
+            patternUnits="userSpaceOnUse"
+            patternTransform={`translate(${pan.x % 20}, ${pan.y % 20}) scale(${scale})`}
+          >
+            <circle
+              cx="10"
+              cy="10"
+              r="1"
+              className="fill-slate-300 dark:fill-slate-700"
+            />
           </pattern>
         </defs>
         <rect width="100%" height="100%" fill="url(#dotted-pattern)" />
 
         {/* Graph Content */}
         <g transform={`translate(${pan.x}, ${pan.y}) scale(${scale})`}>
-          
           {/* Edges */}
           {edges.map((edge, idx) => {
-            const srcNode = nodes.find(n => n.id === edge.source);
-            const tgtNode = nodes.find(n => n.id === edge.target);
+            const srcNode = nodes.find((n) => n.id === edge.source);
+            const tgtNode = nodes.find((n) => n.id === edge.target);
             if (!srcNode || !tgtNode) return null;
 
             const inPath = isPathEdge(edge.source, edge.target);
             const isChecking = isCheckingEdge(edge.source, edge.target);
             const isVisible = isVisibleEdge(edge.source, edge.target);
-            
+
             if (hideUnused && !inPath && !isChecking && !isVisible) return null;
 
-            const strokeColor = inPath 
+            const strokeColor = inPath
               ? "rgb(16, 185, 129)" // Emerald-500
-              : isChecking 
+              : isChecking
                 ? "rgb(59, 130, 246)" // Blue-500
                 : "rgba(148, 163, 184, 0.4)"; // Slate-400 transparent
 
@@ -198,7 +226,11 @@ export default function GraphVisualization({ nodes, edges, step, onCanvasClick, 
                   height="20"
                   rx="4"
                   className={`fill-white dark:fill-slate-900 border ${
-                    inPath ? "border-emerald-500" : isChecking ? "border-blue-500" : "border-slate-300 dark:border-slate-700"
+                    inPath
+                      ? "border-emerald-500"
+                      : isChecking
+                        ? "border-blue-500"
+                        : "border-slate-300 dark:border-slate-700"
                   }`}
                 />
                 <text
@@ -206,7 +238,11 @@ export default function GraphVisualization({ nodes, edges, step, onCanvasClick, 
                   y={(srcNode.y + tgtNode.y) / 2 + 4}
                   textAnchor="middle"
                   className={`text-[10px] font-bold ${
-                    inPath ? "fill-emerald-600 dark:fill-emerald-400" : isChecking ? "fill-blue-600 dark:fill-blue-400" : "fill-slate-600 dark:fill-slate-400"
+                    inPath
+                      ? "fill-emerald-600 dark:fill-emerald-400"
+                      : isChecking
+                        ? "fill-blue-600 dark:fill-blue-400"
+                        : "fill-slate-600 dark:fill-slate-400"
                   }`}
                 >
                   {edge.weight}
@@ -216,24 +252,46 @@ export default function GraphVisualization({ nodes, edges, step, onCanvasClick, 
           })}
 
           {/* Nodes */}
-          {nodes.map(node => {
+          {nodes.map((node) => {
             if (hideUnused && !visibleNodes.has(node.id)) return null;
 
-            let bgColor = "fill-blue-500";
-            if (path.includes(node.id)) bgColor = "fill-emerald-500";
-            else if (activeNode === node.id) bgColor = "fill-amber-500";
-            else if (checkingNode === node.id || updatedNode === node.id) bgColor = "fill-purple-500";
+            let bgColor;
+            if (path.includes(node.id)) bgColor = "fill-emerald-700";
+            else if (activeNode === node.id) bgColor = "fill-amber-700";
+            else if (checkingNode === node.id || updatedNode === node.id)
+              bgColor = "fill-purple-700";
             else if (visited.has(node.id)) bgColor = "fill-blue-600";
-            else bgColor = "fill-slate-400 dark:fill-slate-600";
+            else bgColor = "fill-slate-600 dark:fill-slate-600";
 
             return (
-              <motion.g 
+              <motion.g
                 key={node.id}
                 initial={false}
                 animate={{ x: node.x, y: node.y }}
-                transition={draggingNodeId === node.id ? { duration: 0 } : { type: "spring", stiffness: 300, damping: 25 }}
+                transition={
+                  draggingNodeId === node.id
+                    ? { duration: 0 }
+                    : { type: "spring", stiffness: 300, damping: 25 }
+                }
+                role="button"
+                tabIndex={0}
+                aria-label={`Node ${node.id}; use arrow keys to move`}
+                onKeyDown={(event) => {
+                  const delta = {
+                    ArrowLeft: [-10, 0],
+                    ArrowRight: [10, 0],
+                    ArrowUp: [0, -10],
+                    ArrowDown: [0, 10],
+                  }[event.key];
+                  if (delta) {
+                    event.preventDefault();
+                    onNodePositionChange?.(node.id, ...delta);
+                  }
+                }}
                 onPointerDown={(e) => handleNodePointerDown(e, node.id)}
-                className={draggingNodeId === node.id ? "cursor-grabbing" : "cursor-grab"}
+                className={
+                  draggingNodeId === node.id ? "cursor-grabbing" : "cursor-grab"
+                }
               >
                 <circle
                   cx={0}
@@ -249,7 +307,7 @@ export default function GraphVisualization({ nodes, edges, step, onCanvasClick, 
                 >
                   {node.id}
                 </text>
-                
+
                 {/* Distance Label below node */}
                 {markers.distances && (
                   <text
@@ -258,36 +316,49 @@ export default function GraphVisualization({ nodes, edges, step, onCanvasClick, 
                     textAnchor="middle"
                     className="fill-slate-600 dark:fill-slate-400 text-[11px] font-bold"
                   >
-                    {markers.distances[node.id] === Infinity ? "∞" : markers.distances[node.id]}
+                    {markers.distances[node.id] === Infinity
+                      ? "∞"
+                      : markers.distances[node.id]}
                   </text>
                 )}
               </motion.g>
             );
           })}
-
         </g>
       </svg>
 
       {/* Controls Overlay */}
       <div className="absolute bottom-4 right-4 flex gap-2">
-         <button 
-           onClick={(e) => { e.stopPropagation(); setScale(s => Math.min(3, s + 0.2)); }}
-           className="w-8 h-8 flex items-center justify-center rounded-lg bg-white/90 dark:bg-slate-800/90 shadow-sm border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
-         >
-           +
-         </button>
-         <button 
-           onClick={(e) => { e.stopPropagation(); setScale(s => Math.max(0.2, s - 0.2)); }}
-           className="w-8 h-8 flex items-center justify-center rounded-lg bg-white/90 dark:bg-slate-800/90 shadow-sm border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
-         >
-           -
-         </button>
-         <button 
-           onClick={(e) => { e.stopPropagation(); setScale(1); setPan({x:0, y:0}); }}
-           className="px-3 h-8 flex items-center justify-center rounded-lg bg-white/90 dark:bg-slate-800/90 shadow-sm border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors text-xs font-bold"
-         >
-           Reset
-         </button>
+        <button
+          aria-label="Zoom in"
+          onClick={(e) => {
+            e.stopPropagation();
+            setScale((s) => Math.min(3, s + 0.2));
+          }}
+          className="w-8 h-8 flex items-center justify-center rounded-lg bg-white/90 dark:bg-slate-800/90 shadow-sm border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
+        >
+          +
+        </button>
+        <button
+          aria-label="Zoom out"
+          onClick={(e) => {
+            e.stopPropagation();
+            setScale((s) => Math.max(0.2, s - 0.2));
+          }}
+          className="w-8 h-8 flex items-center justify-center rounded-lg bg-white/90 dark:bg-slate-800/90 shadow-sm border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
+        >
+          -
+        </button>
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            setScale(1);
+            setPan({ x: 0, y: 0 });
+          }}
+          className="px-3 h-8 flex items-center justify-center rounded-lg bg-white/90 dark:bg-slate-800/90 shadow-sm border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors text-xs font-bold"
+        >
+          Reset
+        </button>
       </div>
     </div>
   );

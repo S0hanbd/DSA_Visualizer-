@@ -13,8 +13,13 @@ import LinkedListVisualization from "../components/LinkedListVisualization.jsx";
 import { algorithmMap } from "../data/algorithms.js";
 import { createRandomArray } from "../logic/bubbleSortSimulation.js";
 import { buildSimulationSteps } from "../logic/simulations.js";
+import { parseNumbers } from "../logic/validation.js";
 
-const LINKED_LIST_SLUGS = new Set(["singly-linked-list", "doubly-linked-list", "circular-linked-list"]);
+const LINKED_LIST_SLUGS = new Set([
+  "singly-linked-list",
+  "doubly-linked-list",
+  "circular-linked-list",
+]);
 
 const defaultArray = [42, 18, 73, 29, 64, 11, 90, 37, 56];
 
@@ -39,7 +44,11 @@ export default function AlgorithmPage({ overrideSlug }) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [speed, setSpeed] = useState(640);
 
-  const steps = useMemo(() => (algorithm ? buildSimulationSteps(array, algorithm, Number(target)) : []), [algorithm, array, target]);
+  const steps = useMemo(
+    () =>
+      algorithm ? buildSimulationSteps(array, algorithm, Number(target)) : [],
+    [algorithm, array, target],
+  );
   const step = steps[currentStep] || steps[0];
 
   useEffect(() => {
@@ -53,7 +62,10 @@ export default function AlgorithmPage({ overrideSlug }) {
       setIsPlaying(false);
       return undefined;
     }
-    const timer = window.setTimeout(() => setCurrentStep((value) => Math.min(value + 1, steps.length - 1)), speed);
+    const timer = window.setTimeout(
+      () => setCurrentStep((value) => Math.min(value + 1, steps.length - 1)),
+      speed,
+    );
     return () => window.clearTimeout(timer);
   }, [currentStep, isPlaying, speed, steps.length, isPresent]);
 
@@ -67,14 +79,20 @@ export default function AlgorithmPage({ overrideSlug }) {
           <section className="neo-panel p-6">
             <p className="muted-label">{algorithm.category}</p>
             <div className="mt-3">
-              <h1 className="text-4xl font-black sm:text-5xl">{algorithm.title}</h1>
-              <p className="mt-4 max-w-3xl text-base leading-7 text-slate-600 dark:text-slate-300">{algorithm.description}</p>
+              <h1 className="text-4xl font-black sm:text-5xl">
+                {algorithm.title}
+              </h1>
+              <p className="mt-4 max-w-3xl text-base leading-7 text-slate-600 dark:text-slate-300">
+                {algorithm.description}
+              </p>
             </div>
           </section>
-          
+
           <div className="neo-panel flex flex-col items-center justify-center py-24 text-center">
             <span className="text-5xl mb-4">🚧</span>
-            <h2 className="text-2xl font-black text-slate-800 dark:text-slate-200">Coming Soon</h2>
+            <h2 className="text-2xl font-black text-slate-800 dark:text-slate-200">
+              Coming Soon
+            </h2>
             <p className="text-slate-600 dark:text-slate-400 mt-2 font-semibold">
               The algorithm will be added soon!
             </p>
@@ -85,19 +103,15 @@ export default function AlgorithmPage({ overrideSlug }) {
   }
 
   const setCustomArray = () => {
-    const parsed = input
-      .split(/[,\s]+/)
-      .map((item) => Number(item.trim()))
-      .filter((number) => Number.isFinite(number) && number > 0 && number <= 999)
-      .slice(0, 20);
-
-    if (parsed.length < 2) {
-      setInputError("Enter at least 2 numbers between 1 and 999.");
-      return;
+    try {
+      const parsed = parseNumbers(input, { min: 1, max: 999, maxCount: 20 });
+      if (parsed.length < 2)
+        throw new Error("Enter at least 2 integers between 1 and 999.");
+      setInputError("");
+      setArray(parsed);
+    } catch (error) {
+      setInputError(error.message);
     }
-
-    setInputError("");
-    setArray(parsed);
   };
 
   const randomize = () => {
@@ -114,24 +128,34 @@ export default function AlgorithmPage({ overrideSlug }) {
           <p className="muted-label">{algorithm.category}</p>
           <div className="mt-3 flex flex-col justify-between gap-5 lg:flex-row lg:items-end">
             <div>
-              <h1 className="text-4xl font-black sm:text-5xl">{algorithm.title}</h1>
-              <p className="mt-4 max-w-3xl text-base leading-7 text-slate-600 dark:text-slate-300">{algorithm.description}</p>
+              <h1 className="text-4xl font-black sm:text-5xl">
+                {algorithm.title}
+              </h1>
+              <p className="mt-4 max-w-3xl text-base leading-7 text-slate-600 dark:text-slate-300">
+                {algorithm.description}
+              </p>
             </div>
           </div>
         </section>
 
-
-
-        <StatsPanel step={step} totalSteps={steps.length} currentStep={currentStep} />
-        {LINKED_LIST_SLUGS.has(activeSlug)
-          ? <LinkedListVisualization step={step} algorithm={algorithm} />
-          : <VisualizationBars step={step} algorithm={algorithm} />}
+        <StatsPanel
+          step={step}
+          totalSteps={steps.length}
+          currentStep={currentStep}
+        />
+        {LINKED_LIST_SLUGS.has(activeSlug) ? (
+          <LinkedListVisualization step={step} algorithm={algorithm} />
+        ) : (
+          <VisualizationBars step={step} algorithm={algorithm} />
+        )}
         <Controls
           isPlaying={isPlaying}
           onPlay={() => setIsPlaying(true)}
           onPause={() => setIsPlaying(false)}
           onPrev={() => setCurrentStep((value) => Math.max(0, value - 1))}
-          onNext={() => setCurrentStep((value) => Math.min(steps.length - 1, value + 1))}
+          onNext={() =>
+            setCurrentStep((value) => Math.min(steps.length - 1, value + 1))
+          }
           onReset={() => {
             setCurrentStep(0);
             setIsPlaying(false);
@@ -150,6 +174,7 @@ export default function AlgorithmPage({ overrideSlug }) {
             <p className="muted-label">Search Target</p>
             <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center">
               <input
+                aria-label="Search target"
                 type="number"
                 min="1"
                 max="999"
@@ -158,29 +183,58 @@ export default function AlgorithmPage({ overrideSlug }) {
                 className="capsule-input w-full sm:max-w-56"
               />
               <p className="text-sm font-semibold text-slate-500 dark:text-slate-400">
-                The searching simulation uses this value as the student-selected target.
+                The searching simulation uses this value as the student-selected
+                target.
               </p>
             </div>
           </section>
         )}
 
         <section className="grid gap-6 lg:grid-cols-2">
-          <CodeViewer code={algorithm.code} activeLine={step.line} language={algorithm.language} />
-          <ExecutionSteps steps={steps} currentStep={currentStep} />
+          <CodeViewer
+            algorithm={algorithm}
+            step={step}
+            code={algorithm.code}
+            language={algorithm.language}
+          />
+          <ExecutionSteps
+            steps={steps}
+            currentStep={currentStep}
+            onStepClick={(index) => {
+              setCurrentStep(index);
+              setIsPlaying(false);
+            }}
+          />
         </section>
 
         <section className="grid gap-4 grid-cols-2 sm:grid-cols-4">
           {algorithm.complexities.best && (
-            <ComplexityCard label="Best Case" value={algorithm.complexities.best} tone="green" />
+            <ComplexityCard
+              label="Best Case"
+              value={algorithm.complexities.best}
+              tone="green"
+            />
           )}
           {algorithm.complexities.average && (
-            <ComplexityCard label="Average Case" value={algorithm.complexities.average} tone="orange" />
+            <ComplexityCard
+              label="Average Case"
+              value={algorithm.complexities.average}
+              tone="orange"
+            />
           )}
           {algorithm.complexities.worst && (
-            <ComplexityCard label="Worst Case" value={algorithm.complexities.worst} tone="red" />
+            <ComplexityCard
+              label="Worst Case"
+              value={algorithm.complexities.worst}
+              tone="red"
+            />
           )}
           {algorithm.complexities.space && (
-            <ComplexityCard label="Space Complexity" value={algorithm.complexities.space} tone="blue" />
+            <ComplexityCard
+              label="Space Complexity"
+              value={algorithm.complexities.space}
+              tone="blue"
+            />
           )}
         </section>
       </div>

@@ -1,6 +1,7 @@
+import { validateNumbers } from "./validation.js";
 // ─────────────────────────────────────────────────────────────────────────────
 // Queue Operation Simulation Builders
-// Each builder takes the CURRENT queue state and returns step-by-step 
+// Each builder takes the CURRENT queue state and returns step-by-step
 // animation steps for that single operation.
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -18,39 +19,53 @@ function makeStep(state, explanation, status, opts = {}) {
       operation: opts.operation ?? status,
       enqueuing: opts.enqueuing ?? false,
       dequeuing: opts.dequeuing ?? false,
-      success: opts.success ?? true
-    }
+      success: opts.success ?? true,
+    },
   };
 }
 
 // ─── Enqueue ─────────────────────────────────────────────────────────────────
 export function buildEnqueueSteps(queueState, value) {
+  validateNumbers([value]);
   const steps = [];
   let state = {
-      array: [...queueState.array],
-      front: queueState.front,
-      rear: queueState.rear
+    array: [...queueState.array],
+    front: queueState.front,
+    rear: queueState.rear,
   };
 
   const push = (expl, status, opts = {}) =>
-    steps.push(makeStep(state, expl, status, { ...opts, operation: "Enqueue" }));
+    steps.push(
+      makeStep(state, expl, status, { ...opts, operation: "Enqueue" }),
+    );
 
-  push(`Enqueue ${value} into queue. Checking for overflow.`, "Enqueue", { line: 26 });
+  push(`Enqueue ${value} into queue. Checking for overflow.`, "Enqueue", {
+    line: 26,
+  });
 
   if (state.rear >= MAX - 1) {
-    push(`Queue Overflow: rear pointer reached MAX capacity (${MAX}). Cannot enqueue.`, "Error", { line: 27, success: false });
+    push(
+      `Queue Overflow: rear pointer reached MAX capacity (${MAX}). Cannot enqueue.`,
+      "Error",
+      { line: 27, success: false },
+    );
     return steps;
   }
 
-  push(`Space available. Preparing to enqueue ${value}.`, "Processing", { line: 29 });
-  
+  push(`Space available. Preparing to enqueue ${value}.`, "Processing", {
+    line: 29,
+  });
+
   if (state.front === -1) {
-      state.front = 0; // First element inserted
+    state.front = 0; // First element inserted
   }
   state.rear++;
   state.array[state.rear] = value;
-  
-  push(`arr[++rear] = ${value}. Enqueued to rear. `, "Done", { line: 30, enqueuing: true });
+
+  push(`arr[++rear] = ${value}. Enqueued to rear. `, "Done", {
+    line: 30,
+    enqueuing: true,
+  });
 
   return steps;
 }
@@ -59,27 +74,39 @@ export function buildEnqueueSteps(queueState, value) {
 export function buildDequeueSteps(queueState) {
   const steps = [];
   let state = {
-      array: [...queueState.array],
-      front: queueState.front,
-      rear: queueState.rear
+    array: [...queueState.array],
+    front: queueState.front,
+    rear: queueState.rear,
   };
 
   const push = (expl, status, opts = {}) =>
-    steps.push(makeStep(state, expl, status, { ...opts, operation: "Dequeue" }));
+    steps.push(
+      makeStep(state, expl, status, { ...opts, operation: "Dequeue" }),
+    );
 
-  push(`Dequeue value from queue. Checking for underflow.`, "Dequeue", { line: 34 });
+  push(`Dequeue value from queue. Checking for underflow.`, "Dequeue", {
+    line: 34,
+  });
 
   if (state.front === -1 || state.front > state.rear) {
-    push(`Queue Underflow: front pointer passed rear (Queue is empty). Cannot dequeue.`, "Error", { line: 35, success: false });
+    push(
+      `Queue Underflow: front pointer passed rear (Queue is empty). Cannot dequeue.`,
+      "Error",
+      { line: 35, success: false },
+    );
     return steps;
   }
 
   const dequeuedValue = state.array[state.front];
-  push(`Queue not empty. Dequeuing front element (${dequeuedValue}).`, "Processing", { line: 37, dequeuing: true });
-  
+  push(
+    `Queue not empty. Dequeuing front element (${dequeuedValue}).`,
+    "Processing",
+    { line: 37, dequeuing: true },
+  );
+
   state.array[state.front] = null; // Clear the visually dequeued spot
   state.front++;
-  
+
   push(`Removed ${dequeuedValue} from front (front++). `, "Done", { line: 38 });
 
   return steps;

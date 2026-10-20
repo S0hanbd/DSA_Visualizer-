@@ -1,90 +1,93 @@
-import { AnimatePresence, motion } from "framer-motion";
-import { Navigate, Route, Routes, useLocation } from "react-router-dom";
+import { capabilities, aliases } from "./data/capabilities.js";
+import { lazy, Suspense } from "react";
+import ErrorBoundary from "./components/ErrorBoundary.jsx";
+import { motion, useReducedMotion } from "framer-motion";
+import {
+  Navigate,
+  Route,
+  Routes,
+  useLocation,
+  useParams,
+} from "react-router-dom";
 import Navbar from "./components/Navbar.jsx";
 import Footer from "./components/Footer.jsx";
 import ScrollToTop from "./components/ScrollToTop.jsx";
-import Home from "./pages/Home.jsx";
-import AlgorithmPage from "./pages/AlgorithmPage.jsx";
-import LinkedListPage from "./pages/LinkedListPage.jsx";
-import TreePage from "./pages/TreePage.jsx";
-import StackPage from "./pages/StackPage.jsx";
-import QueuePage from "./pages/QueuePage.jsx";
-import CircularQueuePage from "./pages/CircularQueuePage.jsx";
-import PriorityQueuePage from "./pages/PriorityQueuePage.jsx";
-import QueueUsingStacksPage from "./pages/QueueUsingStacksPage.jsx";
-import GraphPage from "./pages/GraphPage.jsx";
-import NQueensPage from "./pages/NQueensPage.jsx";
-import GraphColoringPage from "./pages/GraphColoringPage.jsx";
-import DesignPage from "./pages/DesignPage.jsx";
+const Home = lazy(() => import("./pages/Home.jsx"));
+const AlgorithmPage = lazy(() => import("./pages/AlgorithmPage.jsx"));
+const StructurePage = lazy(() => import("./pages/StructurePage.jsx"));
+const GraphPage = lazy(() => import("./pages/GraphPage.jsx"));
+const NQueensPage = lazy(() => import("./pages/NQueensPage.jsx"));
+const GraphColoringPage = lazy(() => import("./pages/GraphColoringPage.jsx"));
+const AdvancedPage = lazy(() => import("./pages/AdvancedPage.jsx"));
+const GuidePage = lazy(() => import("./pages/GuidePage.jsx"));
+const DesignPage = lazy(() => import("./pages/DesignPage.jsx"));
 import { ThemeProvider } from "./hooks/useTheme.jsx";
-import { SearchFilterProvider } from "./hooks/useSearchFilter.jsx";
+
+function CatalogRoute() {
+  const { slug } = useParams();
+  const view = capabilities[slug]?.view;
+  const Page = {
+    array: AlgorithmPage,
+    structure: StructurePage,
+    graph: GraphPage,
+    queens: NQueensPage,
+    coloring: GraphColoringPage,
+    advanced: AdvancedPage,
+  }[view];
+  return Page ? <Page /> : <Navigate to="/" replace />;
+}
 
 function AnimatedRoutes() {
   const location = useLocation();
+  const reduce = useReducedMotion();
 
   return (
-    <AnimatePresence mode="wait">
-      <motion.main
-        key={location.pathname}
-        initial={{ opacity: 0, y: 14 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: -10 }}
-        transition={{ duration: 0.26, ease: "easeOut" }}
-        className="flex-1"
-      >
-        <Routes location={location}>
-          <Route path="/" element={<Home />} />
-          <Route path="/algorithm/singly-linked-list" element={<LinkedListPage />} />
-          <Route path="/algorithm/doubly-linked-list" element={<LinkedListPage />} />
-          <Route path="/algorithm/circular-linked-list" element={<LinkedListPage />} />
-          
-          <Route path="/algorithm/binary-tree" element={<TreePage />} />
-          <Route path="/algorithm/bst" element={<TreePage />} />
-          <Route path="/algorithm/avl" element={<TreePage />} />
-          <Route path="/algorithm/tree-traversal" element={<TreePage />} />
-          <Route path="/algorithm/max-heap" element={<TreePage />} />
-          
-          <Route path="/algorithm/stack-array" element={<StackPage />} />
-          <Route path="/algorithm/linear-queue" element={<QueuePage />} />
-          <Route path="/algorithm/circular-queue" element={<CircularQueuePage />} />
-          <Route path="/algorithm/priority-queue" element={<PriorityQueuePage />} />
-          <Route path="/algorithm/queue-using-stacks" element={<QueueUsingStacksPage />} />
-          
-          <Route path="/algorithm/dijkstra" element={<GraphPage />} />
-          <Route path="/algorithm/bfs" element={<GraphPage />} />
-          <Route path="/algorithm/dfs" element={<GraphPage />} />
-          <Route path="/algorithm/prim" element={<GraphPage />} />
-          <Route path="/algorithm/kruskal" element={<GraphPage />} />
-          
-          <Route path="/algorithm/n-queens" element={<NQueensPage />} />
-          <Route path="/algorithm/graph-coloring" element={<GraphColoringPage />} />
-          <Route path="/algorithm/:slug" element={<AlgorithmPage />} />
-          <Route path="/sorting" element={<AlgorithmPage overrideSlug="bubble-sort" />} />
-          <Route path="/searching" element={<AlgorithmPage overrideSlug="linear-search" />} />
-          <Route path="/linked-list" element={<LinkedListPage overrideSlug="singly-linked-list" />} />
-          <Route path="/stack" element={<StackPage />} />
-          <Route path="/queue" element={<QueuePage />} />
-          <Route path="/trees" element={<TreePage overrideSlug="binary-tree" />} />
-          <Route path="/graph" element={<GraphPage overrideSlug="bfs" />} />
-          <Route path="/design" element={<DesignPage />} />
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-      </motion.main>
-    </AnimatePresence>
+    <motion.main
+      key={location.pathname}
+      initial={reduce ? false : { opacity: 0, y: 14 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.26, ease: "easeOut" }}
+      className="flex-1"
+    >
+      <ErrorBoundary key={location.pathname}>
+        <Suspense
+          fallback={
+            <p role="status" className="p-8">
+              Loading visualization...
+            </p>
+          }
+        >
+          <Routes location={location}>
+            <Route path="/" element={<Home />} />
+            <Route path="/algorithm/:slug" element={<CatalogRoute />} />
+            {Object.entries(aliases).map(([path, slug]) => (
+              <Route
+                key={path}
+                path={path}
+                element={<Navigate to={`/algorithm/${slug}`} replace />}
+              />
+            ))}
+            <Route path="/guide" element={<GuidePage />} />
+            <Route path="/design" element={<DesignPage />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </Suspense>
+      </ErrorBoundary>
+    </motion.main>
   );
 }
 
 export default function App() {
   return (
     <ThemeProvider>
-      <SearchFilterProvider>
+      <>
         <ScrollToTop />
         <div className="min-h-screen global-blueprint-bg text-slate-900 transition-colors duration-500 dark:text-slate-100 flex flex-col">
           <Navbar />
           <AnimatedRoutes />
           <Footer />
         </div>
-      </SearchFilterProvider>
+      </>
     </ThemeProvider>
   );
 }

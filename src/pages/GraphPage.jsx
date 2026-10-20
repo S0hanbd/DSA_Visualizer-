@@ -1,3 +1,9 @@
+import {
+  LIMITS,
+  parseNumber,
+  topologyKey,
+  validateGraph,
+} from "../logic/validation.js";
 import { useState, useEffect } from "react";
 import { useParams, Navigate, useLocation } from "react-router-dom";
 import Sidebar from "../components/Sidebar.jsx";
@@ -6,16 +12,26 @@ import CodeViewer from "../components/CodeViewer.jsx";
 import ComplexityCard from "../components/ComplexityCard.jsx";
 import ExecutionSteps from "../components/ExecutionSteps.jsx";
 import { algorithmMap } from "../data/algorithms.js";
-import { EXAMPLE_GRAPH, EXAMPLE_GRAPH_2, EXAMPLE_GRAPH_3, EXAMPLE_GRAPH_4, buildDijkstraSteps, buildBfsSteps, buildDfsSteps, buildPrimSteps, buildKruskalSteps } from "../logic/graphInteractive.js";
+import {
+  EXAMPLE_GRAPH,
+  EXAMPLE_GRAPH_2,
+  EXAMPLE_GRAPH_3,
+  EXAMPLE_GRAPH_4,
+  buildDijkstraSteps,
+  buildBfsSteps,
+  buildDfsSteps,
+  buildPrimSteps,
+  buildKruskalSteps,
+} from "../logic/graphInteractive.js";
 
 function TabButton({ active, label, onClick }) {
   return (
     <button
       onClick={onClick}
       className={`flex-1 py-2 text-sm font-bold rounded-lg transition-colors ${
-        active 
-          ? "bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 shadow-sm border border-slate-200 dark:border-slate-700" 
-          : "text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-300"
+        active
+          ? "bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 shadow-sm border border-slate-200 dark:border-slate-700"
+          : "text-slate-600 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-300"
       }`}
     >
       {label}
@@ -38,15 +54,16 @@ function ControlsButton({ label, onClick, className = "", disabled = false }) {
 export default function GraphPage({ overrideSlug }) {
   const { slug } = useParams();
   const location = useLocation();
-  const rawSlug = overrideSlug || slug || location.pathname.split("/").filter(Boolean).pop();
+  const rawSlug =
+    overrideSlug || slug || location.pathname.split("/").filter(Boolean).pop();
   const algorithm = algorithmMap[rawSlug];
 
   const [activeTab, setActiveTab] = useState("Algorithm"); // "Build Graph" | "Algorithm"
-  
+
   // Graph State
   const [nodes, setNodes] = useState(EXAMPLE_GRAPH.nodes);
   const [edges, setEdges] = useState(EXAMPLE_GRAPH.edges);
-  
+
   // Builder State
   const [sourceId, setSourceId] = useState("");
   const [targetId, setTargetId] = useState("");
@@ -56,9 +73,28 @@ export default function GraphPage({ overrideSlug }) {
   // Algorithm State
   const [startNode, setStartNode] = useState("A");
   const [endNode, setEndNode] = useState("F");
-  const [steps, setSteps] = useState([{ status: "Idle", explanation: "Ready to run algorithm.", markers: {} }]);
+  const [steps, setSteps] = useState([
+    { status: "Idle", explanation: "Ready to run algorithm.", markers: {} },
+  ]);
   const [currentStep, setCurrentStep] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
+
+  const graphVersion = topologyKey(nodes, edges);
+  const [error, setError] = useState("");
+  useEffect(() => {
+    const ids = JSON.parse(graphVersion).nodes;
+    setStartNode((value) => (ids.includes(value) ? value : (ids[0] ?? "")));
+    setEndNode((value) => (ids.includes(value) ? value : (ids.at(-1) ?? "")));
+    setSteps([
+      {
+        status: "Idle",
+        explanation: "Graph changed. Run the algorithm again.",
+        markers: {},
+      },
+    ]);
+    setCurrentStep(0);
+    setIsPlaying(false);
+  }, [graphVersion]);
 
   // Playback loop
   useEffect(() => {
@@ -68,7 +104,7 @@ export default function GraphPage({ overrideSlug }) {
       return;
     }
     const timer = setTimeout(() => {
-      setCurrentStep(s => s + 1);
+      setCurrentStep((s) => s + 1);
     }, 1000);
     return () => clearTimeout(timer);
   }, [isPlaying, currentStep, steps.length]);
@@ -92,15 +128,22 @@ export default function GraphPage({ overrideSlug }) {
     } else if (rawSlug === "kruskal") {
       newSteps = buildKruskalSteps(nodes, edges);
     }
-    
-    setSteps([{ status: "Init", explanation: "Algorithm Ready", markers: {} }, ...newSteps]);
+
+    setSteps([
+      { status: "Init", explanation: "Algorithm Ready", markers: {} },
+      ...newSteps.map((step) => ({ ...step, topologyVersion: graphVersion })),
+    ]);
     setCurrentStep(0);
     setIsPlaying(true);
   };
 
   const handleAddRandomNode = (xOverride, yOverride) => {
+    if (nodes.length >= LIMITS.graphNodes) {
+      setError("Use at most 16 graph nodes.");
+      return;
+    }
     const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    const existingIds = nodes.map(n => n.id);
+    const existingIds = nodes.map((n) => n.id);
     let newId = "";
     for (let i = 0; i < letters.length; i++) {
       if (!existingIds.includes(letters[i])) {
@@ -109,10 +152,16 @@ export default function GraphPage({ overrideSlug }) {
       }
     }
     if (!newId) newId = `N${nodes.length + 1}`;
-    
-    const x = typeof xOverride === "number" ? xOverride : Math.floor(Math.random() * 600) + 100;
-    const y = typeof yOverride === "number" ? yOverride : Math.floor(Math.random() * 400) + 100;
-    
+
+    const x =
+      typeof xOverride === "number"
+        ? xOverride
+        : Math.floor(Math.random() * 600) + 100;
+    const y =
+      typeof yOverride === "number"
+        ? yOverride
+        : Math.floor(Math.random() * 400) + 100;
+
     setNodes([...nodes, { id: newId, x, y }]);
   };
 
@@ -124,16 +173,34 @@ export default function GraphPage({ overrideSlug }) {
   };
 
   const handleNodePositionChange = (nodeId, dx, dy) => {
-    setNodes(prev => prev.map(n => n.id === nodeId ? { ...n, x: n.x + dx, y: n.y + dy } : n));
+    setNodes((prev) =>
+      prev.map((n) =>
+        n.id === nodeId ? { ...n, x: n.x + dx, y: n.y + dy } : n,
+      ),
+    );
   };
 
   const handleAddEdge = () => {
-    if (!sourceId || !targetId || !weight) return;
-    if (!nodes.find(n => n.id === sourceId) || !nodes.find(n => n.id === targetId)) {
-        alert("Source or Target node does not exist!");
-        return;
+    try {
+      const next = [
+        ...edges,
+        {
+          source: sourceId,
+          target: targetId,
+          weight: parseNumber(weight, {
+            integer: false,
+            min: rawSlug === "dijkstra" ? 0 : -LIMITS.weight,
+            max: LIMITS.weight,
+          }),
+        },
+      ];
+      validateGraph(nodes, next, { nonnegative: rawSlug === "dijkstra" });
+      setEdges(next);
+      setError("");
+    } catch (error) {
+      setError(error.message);
+      return;
     }
-    setEdges([...edges, { source: sourceId, target: targetId, weight: parseInt(weight, 10) }]);
     setSourceId("");
     setTargetId("");
     setWeight("");
@@ -152,51 +219,78 @@ export default function GraphPage({ overrideSlug }) {
   return (
     <div className="mx-auto flex w-full gap-6 px-4 py-8">
       <Sidebar />
+      {error && (
+        <p role="alert" className="text-red-600">
+          {error}
+        </p>
+      )}
       <div className="min-w-0 flex-1">
-        
         {/* Header */}
         <div className="mb-6">
-          <p className="font-bold tracking-widest text-emerald-500 uppercase">{algorithm.category}</p>
-          <h1 className="text-4xl font-black text-slate-900 dark:text-white mt-2">{algorithm.title}</h1>
+          <p className="font-bold tracking-widest text-emerald-500 uppercase">
+            {algorithm.category}
+          </p>
+          <h1 className="text-4xl font-black text-slate-900 dark:text-white mt-2">
+            {algorithm.title}
+          </h1>
           <p className="mt-2 max-w-2xl text-lg text-slate-600 dark:text-slate-400">
             {algorithm.description}
           </p>
         </div>
 
         <div className="grid gap-6 lg:grid-cols-[400px_1fr]">
-          
           {/* Controls Panel */}
           <div className="flex flex-col gap-6 h-full">
             <div className="neo-panel p-5 border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm rounded-xl flex flex-col flex-1">
-              
-              <h2 className="text-xl font-black text-slate-800 dark:text-slate-100 mb-4">Controls</h2>
-              
+              <h2 className="text-xl font-black text-slate-800 dark:text-slate-100 mb-4">
+                Controls
+              </h2>
+
               <div className="flex bg-slate-100 dark:bg-slate-900 p-1 rounded-lg mb-6 border border-slate-200 dark:border-slate-800">
-                <TabButton active={activeTab === "Build Graph"} label="Build Graph" onClick={() => setActiveTab("Build Graph")} />
-                <TabButton active={activeTab === "Algorithm"} label="Algorithm" onClick={() => setActiveTab("Algorithm")} />
+                <TabButton
+                  active={activeTab === "Build Graph"}
+                  label="Build Graph"
+                  onClick={() => setActiveTab("Build Graph")}
+                />
+                <TabButton
+                  active={activeTab === "Algorithm"}
+                  label="Algorithm"
+                  onClick={() => setActiveTab("Algorithm")}
+                />
               </div>
 
               {activeTab === "Build Graph" && (
                 <div className="space-y-6 flex-1">
                   <div className="p-4 border border-slate-200 dark:border-slate-800 rounded-lg bg-slate-50 dark:bg-slate-900/50">
-                    <h3 className="font-bold text-sm text-slate-800 dark:text-slate-200">Example Graphs</h3>
-                    <p className="text-xs text-slate-500 dark:text-slate-400 mb-3">Load a predefined graph</p>
-                    <select 
+                    <h3 className="font-bold text-sm text-slate-800 dark:text-slate-200">
+                      Example Graphs
+                    </h3>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 mb-3">
+                      Load a predefined graph
+                    </p>
+                    <select
+                      aria-label="Example graph"
                       className="w-full bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-sm font-semibold outline-none"
                       onChange={(e) => {
-                          const val = e.target.value;
-                          let selectedGraph = null;
-                          if (val === "example1") selectedGraph = EXAMPLE_GRAPH;
-                          if (val === "example2") selectedGraph = EXAMPLE_GRAPH_2;
-                          if (val === "example3") selectedGraph = EXAMPLE_GRAPH_3;
-                          if (val === "example4") selectedGraph = EXAMPLE_GRAPH_4;
-                          
-                          if (selectedGraph) {
-                              setNodes(selectedGraph.nodes);
-                              setEdges(selectedGraph.edges);
-                              setSteps([{ status: "Idle", explanation: "Loaded example graph.", markers: {} }]);
-                              setCurrentStep(0);
-                          }
+                        const val = e.target.value;
+                        let selectedGraph = null;
+                        if (val === "example1") selectedGraph = EXAMPLE_GRAPH;
+                        if (val === "example2") selectedGraph = EXAMPLE_GRAPH_2;
+                        if (val === "example3") selectedGraph = EXAMPLE_GRAPH_3;
+                        if (val === "example4") selectedGraph = EXAMPLE_GRAPH_4;
+
+                        if (selectedGraph) {
+                          setNodes(selectedGraph.nodes);
+                          setEdges(selectedGraph.edges);
+                          setSteps([
+                            {
+                              status: "Idle",
+                              explanation: "Loaded example graph.",
+                              markers: {},
+                            },
+                          ]);
+                          setCurrentStep(0);
+                        }
                       }}
                     >
                       <option value="example1">Example Graph 1</option>
@@ -207,22 +301,64 @@ export default function GraphPage({ overrideSlug }) {
                   </div>
 
                   <div className="p-4 border border-slate-200 dark:border-slate-800 rounded-lg bg-slate-50 dark:bg-slate-900/50">
-                    <h3 className="font-bold text-sm text-slate-800 dark:text-slate-200">Manual Build</h3>
-                    <p className="text-xs text-slate-500 dark:text-slate-400 mb-3">Add nodes and edges</p>
-                    
-                    <ControlsButton 
-                      label={isPlacingNode ? "Click Canvas to Place" : "Place a New Node"} 
-                      onClick={() => setIsPlacingNode(!isPlacingNode)} 
+                    <h3 className="font-bold text-sm text-slate-800 dark:text-slate-200">
+                      Manual Build
+                    </h3>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 mb-3">
+                      Add nodes and edges
+                    </p>
+
+                    <ControlsButton
+                      label={
+                        isPlacingNode
+                          ? "Click Canvas to Place"
+                          : "Place a New Node"
+                      }
+                      onClick={() => setIsPlacingNode(!isPlacingNode)}
                       className={`w-full mb-4 ${isPlacingNode ? "bg-amber-500 hover:bg-amber-600 text-white" : "bg-slate-800 hover:bg-slate-900 text-white dark:bg-slate-700 dark:hover:bg-slate-600"}`}
                     />
-                    
+                    <ControlsButton
+                      label="Add node"
+                      onClick={() => handleAddRandomNode()}
+                      className="soft-button mb-4"
+                    />
+
                     <div className="grid grid-cols-2 gap-2 mb-2">
-                      <input type="text" placeholder="Source node ID" value={sourceId} onChange={e => setSourceId(e.target.value.toUpperCase())} className="capsule-input w-full" />
-                      <input type="text" placeholder="Target node ID" value={targetId} onChange={e => setTargetId(e.target.value.toUpperCase())} className="capsule-input w-full" />
+                      <input
+                        aria-label="Source node ID"
+                        type="text"
+                        placeholder="Source node ID"
+                        value={sourceId}
+                        onChange={(e) =>
+                          setSourceId(e.target.value.toUpperCase())
+                        }
+                        className="capsule-input w-full"
+                      />
+                      <input
+                        aria-label="Target node ID"
+                        type="text"
+                        placeholder="Target node ID"
+                        value={targetId}
+                        onChange={(e) =>
+                          setTargetId(e.target.value.toUpperCase())
+                        }
+                        className="capsule-input w-full"
+                      />
                     </div>
                     <div className="flex gap-2">
-                      <input type="number" placeholder="Edge weight" value={weight} onChange={e => setWeight(e.target.value)} className="flex-1 capsule-input" />
-                      <ControlsButton label="Add Edge" onClick={handleAddEdge} className="bg-slate-800 hover:bg-slate-900 text-white dark:bg-slate-700 dark:hover:bg-slate-600" />
+                      <input
+                        aria-label="Edge weight"
+                        type="number"
+                        placeholder="Edge weight"
+                        value={weight}
+                        onChange={(e) => setWeight(e.target.value)}
+                        className="flex-1 capsule-input"
+                      />
+                      <ControlsButton
+                        label="Add Edge"
+                        onClick={handleAddEdge}
+                        className="bg-slate-800 hover:bg-slate-900 text-white dark:bg-slate-700 dark:hover:bg-slate-600"
+                      />
                     </div>
                   </div>
                 </div>
@@ -231,174 +367,271 @@ export default function GraphPage({ overrideSlug }) {
               {activeTab === "Algorithm" && (
                 <div className="space-y-6 flex-1">
                   <div className="p-4 border border-slate-200 dark:border-slate-800 rounded-lg bg-slate-50 dark:bg-slate-900/50">
-                    <h3 className="font-bold text-sm text-slate-800 dark:text-slate-200">Run Algorithm</h3>
-                    <p className="text-xs text-slate-500 dark:text-slate-400 mb-3">Execute the graph algorithm</p>
-                    
-                    {(rawSlug !== "kruskal") && (
-                      <div className={`grid ${["prim"].includes(rawSlug) ? "grid-cols-1" : "grid-cols-2"} gap-4 mb-4`}>
+                    <h3 className="font-bold text-sm text-slate-800 dark:text-slate-200">
+                      Run Algorithm
+                    </h3>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 mb-3">
+                      Execute the graph algorithm
+                    </p>
+
+                    {rawSlug !== "kruskal" && (
+                      <div
+                        className={`grid ${["prim"].includes(rawSlug) ? "grid-cols-1" : "grid-cols-2"} gap-4 mb-4`}
+                      >
                         <div>
-                          <label className="text-xs font-bold text-slate-600 dark:text-slate-400 block mb-1">Start Node</label>
-                          <input type="text" value={startNode} onChange={e => setStartNode(e.target.value.toUpperCase())} className="w-full capsule-input" />
+                          <label className="text-xs font-bold text-slate-600 dark:text-slate-400 block mb-1">
+                            Start Node
+                          </label>
+                          <input
+                            aria-label="Start Node"
+                            type="text"
+                            value={startNode}
+                            onChange={(e) =>
+                              setStartNode(e.target.value.toUpperCase())
+                            }
+                            className="w-full capsule-input"
+                          />
                         </div>
                         {!["prim"].includes(rawSlug) && (
                           <div>
-                            <label className="text-xs font-bold text-slate-600 dark:text-slate-400 block mb-1">End Node</label>
-                            <input type="text" value={endNode} onChange={e => setEndNode(e.target.value.toUpperCase())} className="w-full capsule-input" />
+                            <label className="text-xs font-bold text-slate-600 dark:text-slate-400 block mb-1">
+                              End Node
+                            </label>
+                            <input
+                              aria-label="End Node"
+                              type="text"
+                              value={endNode}
+                              onChange={(e) =>
+                                setEndNode(e.target.value.toUpperCase())
+                              }
+                              className="w-full capsule-input"
+                            />
                           </div>
                         )}
                       </div>
                     )}
-                    
-                    <ControlsButton 
-                      label={`Run ${algorithm.title}`} 
-                      onClick={handleRunAlgorithm} 
-                      className="w-full bg-slate-900 hover:bg-slate-950 text-white dark:bg-slate-200 dark:text-slate-900 dark:hover:bg-white mb-3" 
+
+                    <ControlsButton
+                      label={`Run ${algorithm.title}`}
+                      onClick={handleRunAlgorithm}
+                      className="w-full bg-slate-900 hover:bg-slate-950 text-white dark:bg-slate-200 dark:text-slate-900 dark:hover:bg-white mb-3"
                     />
 
                     <div className="grid grid-cols-3 gap-2">
-                        <ControlsButton 
-                          label="Previous" 
-                          onClick={() => { setIsPlaying(false); setCurrentStep(s => Math.max(0, s - 1)); }} 
-                          disabled={currentStep === 0}
-                          className="bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 hover:bg-slate-50" 
-                        />
-                        <ControlsButton 
-                          label={isPlaying ? "⏸" : "▶"} 
-                          onClick={() => setIsPlaying(!isPlaying)} 
-                          className="bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 hover:bg-slate-50" 
-                        />
-                        <ControlsButton 
-                          label="Next" 
-                          onClick={() => { setIsPlaying(false); setCurrentStep(s => Math.min(steps.length - 1, s + 1)); }} 
-                          disabled={currentStep === steps.length - 1}
-                          className="bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 hover:bg-slate-50" 
-                        />
+                      <ControlsButton
+                        label="Previous"
+                        onClick={() => {
+                          setIsPlaying(false);
+                          setCurrentStep((s) => Math.max(0, s - 1));
+                        }}
+                        disabled={currentStep === 0}
+                        className="bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 hover:bg-slate-50"
+                      />
+                      <ControlsButton
+                        label={isPlaying ? "⏸" : "▶"}
+                        onClick={() => setIsPlaying(!isPlaying)}
+                        className="bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 hover:bg-slate-50"
+                      />
+                      <ControlsButton
+                        label="Next"
+                        onClick={() => {
+                          setIsPlaying(false);
+                          setCurrentStep((s) =>
+                            Math.min(steps.length - 1, s + 1),
+                          );
+                        }}
+                        disabled={currentStep === steps.length - 1}
+                        className="bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 hover:bg-slate-50"
+                      />
                     </div>
                   </div>
 
                   <div className="p-4 border border-slate-200 dark:border-slate-800 rounded-lg bg-slate-50 dark:bg-slate-900/50">
-                    <h3 className="font-bold text-sm text-slate-800 dark:text-slate-200">Current Path</h3>
-                    <p className="text-xs text-slate-500 dark:text-slate-400 mb-4">Path details and distance</p>
-                    
+                    <h3 className="font-bold text-sm text-slate-800 dark:text-slate-200">
+                      Current Path
+                    </h3>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 mb-4">
+                      Path details and distance
+                    </p>
+
                     <div className="flex justify-between items-center mb-2">
-                      <span className="text-sm font-bold text-slate-700 dark:text-slate-300">Path:</span>
+                      <span className="text-sm font-bold text-slate-700 dark:text-slate-300">
+                        Path:
+                      </span>
                       <span className="text-sm font-mono font-bold text-slate-900 dark:text-white">
-                         {activeStepObj.markers?.path ? activeStepObj.markers.path.join(" → ") : "-"}
+                        {activeStepObj.markers?.path
+                          ? activeStepObj.markers.path.join(" → ")
+                          : "-"}
                       </span>
                     </div>
                     <div className="flex justify-between items-center">
-                      <span className="text-sm font-bold text-slate-700 dark:text-slate-300">Total Distance:</span>
+                      <span className="text-sm font-bold text-slate-700 dark:text-slate-300">
+                        Total Distance:
+                      </span>
                       <span className="text-sm font-mono font-bold text-emerald-600 dark:text-emerald-400">
-                        {activeStepObj.markers?.distances && endNode && activeStepObj.markers.distances[endNode] !== undefined && activeStepObj.markers.distances[endNode] !== Infinity ? activeStepObj.markers.distances[endNode] : "-"}
+                        {activeStepObj.markers?.distances &&
+                        endNode &&
+                        activeStepObj.markers.distances[endNode] !==
+                          undefined &&
+                        activeStepObj.markers.distances[endNode] !== Infinity
+                          ? activeStepObj.markers.distances[endNode]
+                          : "-"}
                       </span>
                     </div>
                   </div>
 
-                  {rawSlug === "dijkstra" && activeStepObj.markers?.distances && (
-                    <div className="p-4 border border-slate-200 dark:border-slate-800 rounded-lg bg-slate-50 dark:bg-slate-900/50 overflow-x-auto">
-                      <h3 className="font-bold text-sm text-slate-800 dark:text-slate-200">Dijkstra State</h3>
-                      <p className="text-xs text-slate-500 dark:text-slate-400 mb-4">Current distances and parents</p>
-                      
-                      <div className="grid grid-cols-2 gap-4">
-                        <div>
-                          <table className="w-full text-xs text-left">
-                            <thead className="text-slate-500 dark:text-slate-400 border-b border-slate-200 dark:border-slate-700">
-                              <tr>
-                                <th className="pb-1">Node</th>
-                                <th className="pb-1 text-right">Distance</th>
-                              </tr>
-                            </thead>
-                            <tbody className="font-mono">
-                              {Object.entries(activeStepObj.markers.distances).map(([nodeId, dist]) => (
-                                <tr key={`dist-${nodeId}`} className="border-b border-slate-200 dark:border-slate-800/50">
-                                  <td className="py-1 font-bold text-slate-700 dark:text-slate-300">{nodeId}</td>
-                                  <td className="py-1 text-right text-emerald-600 dark:text-emerald-400">
-                                    {dist === Infinity ? "∞" : dist}
-                                  </td>
+                  {rawSlug === "dijkstra" &&
+                    activeStepObj.markers?.distances && (
+                      <div className="p-4 border border-slate-200 dark:border-slate-800 rounded-lg bg-slate-50 dark:bg-slate-900/50 overflow-x-auto">
+                        <h3 className="font-bold text-sm text-slate-800 dark:text-slate-200">
+                          Dijkstra State
+                        </h3>
+                        <p className="text-xs text-slate-500 dark:text-slate-400 mb-4">
+                          Current distances and parents
+                        </p>
+
+                        <div className="grid grid-cols-2 gap-4">
+                          <div>
+                            <table className="w-full text-xs text-left">
+                              <thead className="text-slate-500 dark:text-slate-400 border-b border-slate-200 dark:border-slate-700">
+                                <tr>
+                                  <th className="pb-1">Node</th>
+                                  <th className="pb-1 text-right">Distance</th>
                                 </tr>
-                              ))}
-                            </tbody>
-                          </table>
-                        </div>
-                        <div>
-                          <table className="w-full text-xs text-left">
-                            <thead className="text-slate-500 dark:text-slate-400 border-b border-slate-200 dark:border-slate-700">
-                              <tr>
-                                <th className="pb-1">Node</th>
-                                <th className="pb-1 text-right">Parent</th>
-                              </tr>
-                            </thead>
-                            <tbody className="font-mono">
-                              {Object.entries(activeStepObj.markers.parents || {}).map(([nodeId, parent]) => (
-                                <tr key={`parent-${nodeId}`} className="border-b border-slate-200 dark:border-slate-800/50">
-                                  <td className="py-1 font-bold text-slate-700 dark:text-slate-300">{nodeId}</td>
-                                  <td className="py-1 text-right text-blue-600 dark:text-blue-400">
-                                    {parent === null ? "-" : parent}
-                                  </td>
+                              </thead>
+                              <tbody className="font-mono">
+                                {Object.entries(
+                                  activeStepObj.markers.distances,
+                                ).map(([nodeId, dist]) => (
+                                  <tr
+                                    key={`dist-${nodeId}`}
+                                    className="border-b border-slate-200 dark:border-slate-800/50"
+                                  >
+                                    <td className="py-1 font-bold text-slate-700 dark:text-slate-300">
+                                      {nodeId}
+                                    </td>
+                                    <td className="py-1 text-right text-emerald-600 dark:text-emerald-400">
+                                      {dist === Infinity ? "∞" : dist}
+                                    </td>
+                                  </tr>
+                                ))}
+                              </tbody>
+                            </table>
+                          </div>
+                          <div>
+                            <table className="w-full text-xs text-left">
+                              <thead className="text-slate-500 dark:text-slate-400 border-b border-slate-200 dark:border-slate-700">
+                                <tr>
+                                  <th className="pb-1">Node</th>
+                                  <th className="pb-1 text-right">Parent</th>
                                 </tr>
-                              ))}
-                            </tbody>
-                          </table>
+                              </thead>
+                              <tbody className="font-mono">
+                                {Object.entries(
+                                  activeStepObj.markers.parents || {},
+                                ).map(([nodeId, parent]) => (
+                                  <tr
+                                    key={`parent-${nodeId}`}
+                                    className="border-b border-slate-200 dark:border-slate-800/50"
+                                  >
+                                    <td className="py-1 font-bold text-slate-700 dark:text-slate-300">
+                                      {nodeId}
+                                    </td>
+                                    <td className="py-1 text-right text-blue-600 dark:text-blue-400">
+                                      {parent === null ? "-" : parent}
+                                    </td>
+                                  </tr>
+                                ))}
+                              </tbody>
+                            </table>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  )}
-
+                    )}
                 </div>
               )}
 
-              <ControlsButton 
-                label="Clear Graph" 
-                onClick={handleClearGraph} 
-                className="mt-4 w-full bg-red-500 hover:bg-red-600 text-white" 
+              <ControlsButton
+                label="Clear Graph"
+                onClick={handleClearGraph}
+                className="mt-4 w-full bg-red-700 hover:bg-red-800 text-white"
               />
             </div>
 
             {/* Code Viewer (only when Algorithm is selected and code exists) */}
             {activeTab === "Algorithm" && algorithm.code && (
-              <CodeViewer code={algorithm.code} language={algorithm.language} />
+              <CodeViewer
+                code={algorithm.code}
+                step={activeStepObj}
+                algorithm={algorithm}
+                language={algorithm.language}
+              />
             )}
-
           </div>
 
           {/* Visualization Canvas */}
           <div className="flex flex-col gap-4 overflow-hidden">
-            <GraphVisualization 
-              nodes={nodes} 
-              edges={edges} 
-              step={activeStepObj} 
-              onCanvasClick={handleCanvasClick} 
-              onNodePositionChange={handleNodePositionChange} 
+            <GraphVisualization
+              nodes={nodes}
+              edges={edges}
+              step={activeStepObj}
+              onCanvasClick={handleCanvasClick}
+              onNodePositionChange={handleNodePositionChange}
             />
-            
+
             <div className="neo-panel p-4 border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm rounded-xl">
-               <p className="text-xs font-black uppercase tracking-widest text-slate-400 mb-1">{activeStepObj.status}</p>
-               <p className="text-sm font-bold text-slate-700 dark:text-slate-300">{activeStepObj.explanation}</p>
+              <p className="text-xs font-black uppercase tracking-widest text-slate-600 dark:text-slate-300 mb-1">
+                {activeStepObj.status}
+              </p>
+              <p className="text-sm font-bold text-slate-700 dark:text-slate-300">
+                {activeStepObj.explanation}
+              </p>
             </div>
 
             {/* Algorithm Steps List */}
             {activeTab === "Algorithm" && (
-                <ExecutionSteps steps={steps} currentStep={currentStep} />
+              <ExecutionSteps
+                steps={steps}
+                currentStep={currentStep}
+                onStepClick={(index) => {
+                  setCurrentStep(index);
+                  setIsPlaying(false);
+                }}
+              />
             )}
           </div>
-
         </div>
 
         <section className="grid gap-4 grid-cols-2 sm:grid-cols-4 mt-6">
           {algorithm.complexities.best && (
-            <ComplexityCard label="Best Case" value={algorithm.complexities.best} tone="green" />
+            <ComplexityCard
+              label="Best Case"
+              value={algorithm.complexities.best}
+              tone="green"
+            />
           )}
           {algorithm.complexities.average && (
-            <ComplexityCard label="Average Case" value={algorithm.complexities.average} tone="orange" />
+            <ComplexityCard
+              label="Average Case"
+              value={algorithm.complexities.average}
+              tone="orange"
+            />
           )}
           {algorithm.complexities.worst && (
-            <ComplexityCard label="Worst Case" value={algorithm.complexities.worst} tone="red" />
+            <ComplexityCard
+              label="Worst Case"
+              value={algorithm.complexities.worst}
+              tone="red"
+            />
           )}
           {algorithm.complexities.space && (
-            <ComplexityCard label="Space Complexity" value={algorithm.complexities.space} tone="blue" />
+            <ComplexityCard
+              label="Space Complexity"
+              value={algorithm.complexities.space}
+              tone="blue"
+            />
           )}
         </section>
-
       </div>
     </div>
   );

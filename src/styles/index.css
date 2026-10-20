@@ -1,6 +1,6 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+@config "../../tailwind.config.js";
+@custom-variant dark (&:where(.dark, .dark *));
 
 :root {
   color-scheme: light;
@@ -52,7 +52,7 @@ input {
 
   .text-3d-blueprint {
     color: #ffffff;
-    text-shadow: 
+    text-shadow:
       -1px 1px 0px #e2e8f0,
       -2px 2px 0px #cbd5e1,
       -3px 3px 0px #cbd5e1,
@@ -64,7 +64,7 @@ input {
 
   .dark .text-3d-blueprint {
     color: #ffffff;
-    text-shadow: 
+    text-shadow:
       -1px 1px 0px #1e293b,
       -2px 2px 0px #0f172a,
       -3px 3px 0px #0f172a,
@@ -85,10 +85,26 @@ input {
       32px 32px,
       32px 32px;
     background-image:
-      radial-gradient(circle at 18% 20%, rgba(37, 99, 235, 0.15), transparent 40%),
-      radial-gradient(circle at 85% 10%, rgba(16, 185, 129, 0.12), transparent 35%),
-      linear-gradient(to right, rgba(148, 163, 184, 0.15) 1.5px, transparent 1.5px),
-      linear-gradient(to bottom, rgba(148, 163, 184, 0.15) 1.5px, transparent 1.5px),
+      radial-gradient(
+        circle at 18% 20%,
+        rgba(37, 99, 235, 0.15),
+        transparent 40%
+      ),
+      radial-gradient(
+        circle at 85% 10%,
+        rgba(16, 185, 129, 0.12),
+        transparent 35%
+      ),
+      linear-gradient(
+        to right,
+        rgba(148, 163, 184, 0.15) 1.5px,
+        transparent 1.5px
+      ),
+      linear-gradient(
+        to bottom,
+        rgba(148, 163, 184, 0.15) 1.5px,
+        transparent 1.5px
+      ),
       linear-gradient(to right, rgba(148, 163, 184, 0.05) 1px, transparent 1px),
       linear-gradient(to bottom, rgba(148, 163, 184, 0.05) 1px, transparent 1px);
   }
@@ -97,10 +113,26 @@ input {
     background-color: #0b0f19;
     border: 1px solid rgba(30, 41, 59, 0.5);
     background-image:
-      radial-gradient(circle at 18% 20%, rgba(34, 211, 238, 0.18), transparent 40%),
-      radial-gradient(circle at 85% 10%, rgba(16, 185, 129, 0.14), transparent 35%),
-      linear-gradient(to right, rgba(51, 65, 85, 0.28) 1.5px, transparent 1.5px),
-      linear-gradient(to bottom, rgba(51, 65, 85, 0.28) 1.5px, transparent 1.5px),
+      radial-gradient(
+        circle at 18% 20%,
+        rgba(34, 211, 238, 0.18),
+        transparent 40%
+      ),
+      radial-gradient(
+        circle at 85% 10%,
+        rgba(16, 185, 129, 0.14),
+        transparent 35%
+      ),
+      linear-gradient(
+        to right,
+        rgba(51, 65, 85, 0.28) 1.5px,
+        transparent 1.5px
+      ),
+      linear-gradient(
+        to bottom,
+        rgba(51, 65, 85, 0.28) 1.5px,
+        transparent 1.5px
+      ),
       linear-gradient(to right, rgba(51, 65, 85, 0.08) 1px, transparent 1px),
       linear-gradient(to bottom, rgba(51, 65, 85, 0.08) 1px, transparent 1px);
   }
@@ -115,10 +147,26 @@ input {
       32px 32px,
       32px 32px;
     background-image:
-      radial-gradient(circle at 18% 20%, rgba(37, 99, 235, 0.12), transparent 40%),
-      radial-gradient(circle at 85% 10%, rgba(16, 185, 129, 0.09), transparent 35%),
-      linear-gradient(to right, rgba(148, 163, 184, 0.12) 1.5px, transparent 1.5px),
-      linear-gradient(to bottom, rgba(148, 163, 184, 0.12) 1.5px, transparent 1.5px),
+      radial-gradient(
+        circle at 18% 20%,
+        rgba(37, 99, 235, 0.12),
+        transparent 40%
+      ),
+      radial-gradient(
+        circle at 85% 10%,
+        rgba(16, 185, 129, 0.09),
+        transparent 35%
+      ),
+      linear-gradient(
+        to right,
+        rgba(148, 163, 184, 0.12) 1.5px,
+        transparent 1.5px
+      ),
+      linear-gradient(
+        to bottom,
+        rgba(148, 163, 184, 0.12) 1.5px,
+        transparent 1.5px
+      ),
       linear-gradient(to right, rgba(148, 163, 184, 0.04) 1px, transparent 1px),
       linear-gradient(to bottom, rgba(148, 163, 184, 0.04) 1px, transparent 1px);
   }
@@ -126,10 +174,26 @@ input {
   .dark .global-blueprint-bg {
     background-color: #020617;
     background-image:
-      radial-gradient(circle at 18% 20%, rgba(34, 211, 238, 0.12), transparent 40%),
-      radial-gradient(circle at 85% 10%, rgba(16, 185, 129, 0.1), transparent 35%),
-      linear-gradient(to right, rgba(51, 65, 85, 0.22) 1.5px, transparent 1.5px),
-      linear-gradient(to bottom, rgba(51, 65, 85, 0.22) 1.5px, transparent 1.5px),
+      radial-gradient(
+        circle at 18% 20%,
+        rgba(34, 211, 238, 0.12),
+        transparent 40%
+      ),
+      radial-gradient(
+        circle at 85% 10%,
+        rgba(16, 185, 129, 0.1),
+        transparent 35%
+      ),
+      linear-gradient(
+        to right,
+        rgba(51, 65, 85, 0.22) 1.5px,
+        transparent 1.5px
+      ),
+      linear-gradient(
+        to bottom,
+        rgba(51, 65, 85, 0.22) 1.5px,
+        transparent 1.5px
+      ),
       linear-gradient(to right, rgba(51, 65, 85, 0.06) 1px, transparent 1px),
       linear-gradient(to bottom, rgba(51, 65, 85, 0.06) 1px, transparent 1px);
   }
@@ -199,48 +263,16 @@ input {
   z-index: 99;
 }
 
-/* Uiverse.io Input Styles */
-input[type="text"],
-input[type="number"] {
-  border: 1px solid #cbd5e1 !important;
-  padding: 0.625rem 1.25rem !important;
-  border-radius: 9999px !important;
-  background: #f8fafc !important;
-  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05) !important;
-  transition: 0.2s !important;
-  color: #334155 !important;
-}
-
-input[type="text"]:focus,
-input[type="number"]:focus {
-  outline: none !important;
-  border-color: #3b82f6 !important;
-  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2) !important;
-}
-
-/* Dark Mode support for the neumorphic input */
-.dark input[type="text"],
-.dark input[type="number"] {
-  background: #1e293b !important;
-  border-color: #334155 !important;
-  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.3) !important;
-  color: #f1f5f9 !important;
-}
-
-.dark input[type="text"]:focus,
-.dark input[type="number"]:focus {
-  border-color: #22d3ee !important;
-  box-shadow: 0 0 0 2px rgba(34, 211, 238, 0.2) !important;
-}
-
 /* Typography animations from Uiverse.io */
 .dash {
-  animation: dashArray 2s ease-in-out infinite,
+  animation:
+    dashArray 2s ease-in-out infinite,
     dashOffset 2s linear infinite;
 }
 
 .spin {
-  animation: spinDashArray 2s ease-in-out infinite,
+  animation:
+    spinDashArray 2s ease-in-out infinite,
     spin 8s ease-in-out infinite,
     dashOffset 2s linear infinite;
   transform-origin: center;
@@ -316,12 +348,35 @@ input[type="number"]:focus {
 }
 /* Hide scrollbar for IE, Edge and Firefox */
 .no-scrollbar {
-  -ms-overflow-style: none;  /* IE and Edge */
-  scrollbar-width: none;  /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
 }
 
 @layer components {
   .capsule-input {
     @apply rounded-full bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 px-5 py-2.5 text-sm font-semibold text-slate-700 dark:text-slate-200 outline-none placeholder:text-slate-400 dark:placeholder:text-slate-500 shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 dark:focus:border-cyan-400 dark:focus:ring-cyan-400 transition-all duration-200;
+  }
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+summary:focus-visible {
+  outline: 3px solid #2563eb;
+  outline-offset: 3px;
+}
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }

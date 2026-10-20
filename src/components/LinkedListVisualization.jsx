@@ -1,27 +1,52 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { useMemo } from "react";
+import { useId } from "react";
 
 // ─── Constants ───────────────────────────────────────────────────────────────
-const NODE_HEIGHT = 80;
-const SPACING = 70;
-
-function getNodeWidth(isDoubly) {
-    return isDoubly ? 156 : 108;
-}
-
 // ─── Colors per step state ───────────────────────────────────────────────────
 function nodeColors(index, step, overrideIsNew = false) {
   const { comparing = [], swapping = [], sorted = [], markers = {} } = step;
-  const isNew      = markers.newNode === index || overrideIsNew;
+  const isNew =
+    markers.newNode === index ||
+    overrideIsNew ||
+    markers.nodeLayouts?.[index]?.isNew;
   const isDeleting = markers.deleting === index || swapping.includes(index);
-  const isFound    = sorted.includes(index);
-  const isActive   = comparing.includes(index);
+  const isFound = sorted.includes(index);
+  const isActive = comparing.includes(index);
 
-  if (isNew)      return { ring: "ring-2 ring-emerald-500", bg: "bg-emerald-50 dark:bg-emerald-950/80", glow: "shadow-[0_0_15px_rgba(16,185,129,0.3)]", label: "text-emerald-700 dark:text-emerald-300" };
-  if (isDeleting) return { ring: "ring-2 ring-red-500",     bg: "bg-red-50 dark:bg-red-950/70",     glow: "shadow-[0_0_15px_rgba(239,68,68,0.3)]", label: "text-red-700 dark:text-red-300" };
-  if (isFound)    return { ring: "ring-2 ring-emerald-400", bg: "bg-emerald-50 dark:bg-emerald-900/60", glow: "shadow-[0_0_15px_rgba(52,211,153,0.3)]", label: "text-emerald-600 dark:text-emerald-200" };
-  if (isActive)   return { ring: "ring-2 ring-orange-400",  bg: "bg-orange-50 dark:bg-orange-950/70",  glow: "shadow-[0_0_15px_rgba(251,146,60,0.3)]",  label: "text-orange-700 dark:text-orange-200" };
-  return           { ring: "ring-1 ring-slate-300 dark:ring-slate-700", bg: "bg-white dark:bg-slate-800/90", glow: "shadow-sm", label: "text-slate-800 dark:text-slate-100" };
+  if (isNew)
+    return {
+      ring: "ring-2 ring-emerald-500",
+      bg: "bg-emerald-50 dark:bg-emerald-950/80",
+      glow: "shadow-[0_0_15px_rgba(16,185,129,0.3)]",
+      label: "text-emerald-700 dark:text-emerald-300",
+    };
+  if (isDeleting)
+    return {
+      ring: "ring-2 ring-red-500",
+      bg: "bg-red-50 dark:bg-red-950/70",
+      glow: "shadow-[0_0_15px_rgba(239,68,68,0.3)]",
+      label: "text-red-700 dark:text-red-300",
+    };
+  if (isFound)
+    return {
+      ring: "ring-2 ring-emerald-400",
+      bg: "bg-emerald-50 dark:bg-emerald-900/60",
+      glow: "shadow-[0_0_15px_rgba(52,211,153,0.3)]",
+      label: "text-emerald-600 dark:text-emerald-200",
+    };
+  if (isActive)
+    return {
+      ring: "ring-2 ring-orange-400",
+      bg: "bg-orange-50 dark:bg-orange-950/70",
+      glow: "shadow-[0_0_15px_rgba(251,146,60,0.3)]",
+      label: "text-orange-700 dark:text-orange-200",
+    };
+  return {
+    ring: "ring-1 ring-slate-300 dark:ring-slate-700",
+    bg: "bg-white dark:bg-slate-800/90",
+    glow: "shadow-sm",
+    label: "text-slate-800 dark:text-slate-100",
+  };
 }
 
 // ─── single node box ─────────────────────────────────────────────────────────
@@ -29,8 +54,6 @@ function NodeBox({ value, index, isDoubly, isHead, isTail, step }) {
   const isLast = step.array.length - 1 === index;
   const isCircular = step.structure === "circular-list";
   const { ring, bg, glow, label } = nodeColors(index, step);
-  const { markers = {} } = step;
-  const isNew = markers.newNode === index;
 
   return (
     <div className="flex flex-col items-center gap-1.5">
@@ -57,12 +80,15 @@ function NodeBox({ value, index, isDoubly, isHead, isTail, step }) {
       {isHead && <div className="h-3 w-px bg-amber-400/70" />}
 
       {/* Node box */}
-      <div className={`flex items-stretch overflow-hidden rounded-2xl transition-all duration-300 ${ring} ${bg} ${glow}`}>
-
+      <div
+        className={`flex items-stretch overflow-hidden rounded-2xl transition-all duration-300 ${ring} ${bg} ${glow}`}
+      >
         {/* PREV slot (doubly only) */}
         {isDoubly && (
           <div className="flex min-w-[2.8rem] flex-col items-center justify-center border-r border-slate-200 dark:border-slate-700 bg-cyan-50 dark:bg-cyan-950/50 px-2 py-2.5">
-            <span className="text-[8px] font-black uppercase tracking-widest text-cyan-600 dark:text-cyan-500">Prev</span>
+            <span className="text-[8px] font-black uppercase tracking-widest text-cyan-600 dark:text-cyan-500">
+              Prev
+            </span>
             <span className="mt-1 text-xs font-black text-cyan-500 dark:text-cyan-300">
               {isHead ? "∅" : "●"}
             </span>
@@ -71,13 +97,17 @@ function NodeBox({ value, index, isDoubly, isHead, isTail, step }) {
 
         {/* DATA slot */}
         <div className="flex min-w-[3.6rem] flex-col items-center justify-center px-3 py-2.5">
-          <span className="text-[8px] font-black uppercase tracking-widest text-slate-400">Data</span>
+          <span className="text-[8px] font-black uppercase tracking-widest text-slate-400">
+            Data
+          </span>
           <span className={`mt-1 text-2xl font-black ${label}`}>{value}</span>
         </div>
 
         {/* NEXT slot */}
         <div className="flex min-w-[2.8rem] flex-col items-center justify-center border-l border-slate-200 dark:border-slate-700 bg-blue-50 dark:bg-blue-950/50 px-2 py-2.5">
-          <span className="text-[8px] font-black uppercase tracking-widest text-blue-600 dark:text-blue-500">Next</span>
+          <span className="text-[8px] font-black uppercase tracking-widest text-blue-600 dark:text-blue-500">
+            Next
+          </span>
           <span className="mt-1 text-xs font-black text-blue-400 dark:text-blue-300">
             {isLast && !isCircular ? "∅" : "●"}
           </span>
@@ -96,7 +126,10 @@ function Arrow({ highlighted, isDoubly }) {
     <div className="mb-8 flex flex-shrink-0 flex-col items-center justify-center gap-0.5">
       {isDoubly && (
         <motion.span
-          animate={{ opacity: highlighted ? 1 : 0.3, scale: highlighted ? 1.15 : 1 }}
+          animate={{
+            opacity: highlighted ? 1 : 0.3,
+            scale: highlighted ? 1.15 : 1,
+          }}
           transition={{ duration: 0.2 }}
           className={`text-base font-black transition-colors ${highlighted ? "text-cyan-500" : "text-slate-400 dark:text-slate-600"}`}
         >
@@ -104,7 +137,10 @@ function Arrow({ highlighted, isDoubly }) {
         </motion.span>
       )}
       <motion.span
-        animate={{ opacity: highlighted ? 1 : 0.35, scale: highlighted ? 1.15 : 1 }}
+        animate={{
+          opacity: highlighted ? 1 : 0.35,
+          scale: highlighted ? 1.15 : 1,
+        }}
         transition={{ duration: 0.2 }}
         className={`text-2xl font-black transition-colors ${highlighted ? "text-blue-500" : "text-slate-400 dark:text-slate-600"}`}
       >
@@ -118,7 +154,9 @@ function Arrow({ highlighted, isDoubly }) {
 function NullTerminal() {
   return (
     <div className="mb-8 flex items-center gap-1.5">
-      <span className="text-lg font-black text-slate-400 dark:text-slate-600">→</span>
+      <span className="text-lg font-black text-slate-400 dark:text-slate-600">
+        →
+      </span>
       <span className="rounded-xl border border-slate-200 dark:border-slate-600/50 bg-slate-100 dark:bg-slate-900/60 px-2.5 py-1.5 text-xs font-black text-slate-500 dark:text-slate-400">
         NULL
       </span>
@@ -128,27 +166,132 @@ function NullTerminal() {
 
 // ─── operation badge colours ──────────────────────────────────────────────────
 const OP_BADGE = {
-  "Insert Head":   "border-emerald-500/50 bg-emerald-900/30 text-emerald-300",
-  "Insert Tail":   "border-cyan-500/50 bg-cyan-900/30 text-cyan-300",
-  "Insert At":     "border-blue-500/50 bg-blue-900/30 text-blue-300",
-  "Traverse":      "border-orange-500/50 bg-orange-900/30 text-orange-300",
-  "Search":        "border-violet-500/50 bg-violet-900/30 text-violet-300",
-  "Delete Head":   "border-red-500/50 bg-red-900/30 text-red-300",
-  "Delete Tail":   "border-rose-500/50 bg-rose-900/30 text-rose-300",
-  "Delete Value":  "border-pink-500/50 bg-pink-900/30 text-pink-300",
+  "Insert Head":
+    "border-emerald-400 bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-200",
+  "Insert Tail":
+    "border-cyan-400 bg-cyan-100 text-cyan-800 dark:bg-cyan-900/30 dark:text-cyan-200",
+  "Insert At":
+    "border-blue-400 bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-200",
+  Traverse:
+    "border-orange-400 bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-200",
+  Search:
+    "border-violet-400 bg-violet-100 text-violet-800 dark:bg-violet-900/30 dark:text-violet-200",
+  "Delete Head":
+    "border-red-400 bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-200",
+  "Delete Tail":
+    "border-rose-400 bg-rose-100 text-rose-800 dark:bg-rose-900/30 dark:text-rose-200",
+  "Delete Value":
+    "border-pink-400 bg-pink-100 text-pink-800 dark:bg-pink-900/30 dark:text-pink-200",
 };
+
+function StagedChain({ values, step, isDoubly }) {
+  const markerId = useId().replace(/:/g, "");
+  const width = isDoubly ? 156 : 108,
+    spacing = width + 70,
+    baseY = 140;
+  const { customEdges = [], hiddenEdges = [], nodeLayouts = {} } = step.markers;
+  const edges = values
+    .slice(0, -1)
+    .map((_, i) => ({ from: i, to: i + 1, status: "standard" }))
+    .filter(
+      (edge) =>
+        !hiddenEdges.some(([from, to]) => from === edge.from && to === edge.to),
+    );
+  const connections = [...edges, ...customEdges];
+  return (
+    <div
+      className="relative"
+      style={{ width: values.length * spacing + 60, height: 300 }}
+      aria-label="Staged pointer updates"
+    >
+      <svg className="absolute inset-0 h-full w-full" aria-hidden="true">
+        <defs>
+          <marker
+            id={markerId}
+            markerWidth="8"
+            markerHeight="8"
+            refX="7"
+            refY="4"
+            orient="auto"
+          >
+            <path d="M0 0L8 4L0 8Z" fill="currentColor" />
+          </marker>
+        </defs>
+        {connections.map((edge, i) => {
+          const fromX = edge.from * spacing + width,
+            toX = edge.to * spacing,
+            fromY = baseY + (nodeLayouts[edge.from]?.yOffset ?? 0) + 55,
+            toY = baseY + (nodeLayouts[edge.to]?.yOffset ?? 0) + 55;
+          return (
+            <g key={i}>
+              <path
+                d={`M${fromX} ${fromY} C${fromX + 45} ${fromY}, ${toX - 45} ${toY}, ${toX} ${toY}`}
+                markerEnd={`url(#${markerId})`}
+                fill="none"
+                stroke={
+                  edge.status === "broken"
+                    ? "#ef4444"
+                    : edge.status === "curved"
+                      ? "#2563eb"
+                      : "#64748b"
+                }
+                strokeWidth="2"
+                strokeDasharray={edge.status === "broken" ? "5 4" : undefined}
+              />
+              {isDoubly && edge.status !== "broken" && (
+                <path
+                  d={`M${toX} ${toY + 12}L${fromX} ${fromY + 12}`}
+                  markerEnd={`url(#${markerId})`}
+                  stroke="#0891b2"
+                  fill="none"
+                />
+              )}
+            </g>
+          );
+        })}
+      </svg>
+      {values.map((value, index) => (
+        <motion.div
+          key={index}
+          className="absolute"
+          animate={{
+            x: index * spacing,
+            y: baseY + (nodeLayouts[index]?.yOffset ?? 0),
+          }}
+          transition={{ type: "spring", stiffness: 220, damping: 24 }}
+        >
+          <NodeBox
+            value={value}
+            index={index}
+            isDoubly={isDoubly}
+            isHead={index === 0}
+            isTail={index === values.length - 1}
+            step={step}
+          />
+        </motion.div>
+      ))}
+    </div>
+  );
+}
 
 // ─── main component ───────────────────────────────────────────────────────────
 export default function LinkedListVisualization({ step, algorithm }) {
-  const values    = step.array ?? [];
+  const values = step.array ?? [];
   const { markers = {} } = step;
-  const slug      = algorithm?.slug ?? "";
-  const isDoubly  = slug === "doubly-linked-list";
-  const isCircular= slug === "circular-linked-list";
-  const op        = markers.operation ?? step.status ?? "Ready";
-  const opBadge   = OP_BADGE[op] ?? "border-slate-600/50 bg-slate-800/50 text-slate-300";
+  const slug = algorithm?.slug ?? "";
+  const isDoubly = slug === "doubly-linked-list";
+  const isCircular = slug === "circular-linked-list";
+  const op = markers.operation ?? step.status ?? "Ready";
+  const opBadge =
+    OP_BADGE[op] ??
+    "border-slate-300 bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-200";
 
   const listTitle = isDoubly ? "Doubly" : isCircular ? "Circular" : "Singly";
+  const staged = Boolean(
+    markers.customEdges?.length ||
+    markers.hiddenEdges?.length ||
+    Object.keys(markers.nodeLayouts ?? {}).length,
+  );
 
   return (
     <section className="neo-panel p-5">
@@ -190,12 +333,20 @@ export default function LinkedListVisualization({ step, algorithm }) {
         {values.length === 0 ? (
           <div className="flex h-40 flex-col items-center justify-center gap-3">
             <div className="flex items-center gap-3">
-              <span className="rounded-xl border border-slate-300 bg-slate-200 px-3 py-1.5 text-xs font-black text-slate-900">HEAD</span>
+              <span className="rounded-xl border border-slate-300 bg-slate-200 px-3 py-1.5 text-xs font-black text-slate-900">
+                HEAD
+              </span>
               <span className="text-xl font-black text-slate-500">→</span>
-              <span className="rounded-xl border border-slate-600/50 bg-slate-900/60 px-3 py-1.5 text-xs font-black text-slate-400">NULL</span>
+              <span className="rounded-xl border border-slate-600/50 bg-slate-900/60 px-3 py-1.5 text-xs font-black text-slate-400">
+                NULL
+              </span>
             </div>
-            <p className="text-sm font-semibold text-slate-500">Empty list — waiting for first operation</p>
+            <p className="text-sm font-semibold text-slate-500">
+              Empty list — waiting for first operation
+            </p>
           </div>
+        ) : staged ? (
+          <StagedChain values={values} step={step} isDoubly={isDoubly} />
         ) : (
           <div className="flex flex-col gap-6">
             {/* Node chain */}
@@ -206,20 +357,25 @@ export default function LinkedListVisualization({ step, algorithm }) {
                   return values.map((value, index) => {
                     occurrences[value] = (occurrences[value] || 0) + 1;
                     const itemKey = `${value}-${occurrences[value] - 1}`;
-                    const isHead     = index === 0;
-                    const isTail     = index === values.length - 1;
+                    const isHead = index === 0;
+                    const isTail = index === values.length - 1;
                     const arrowHighlight = markers.highlightArrowFrom === index;
                     const isNew = markers.newNode === index;
-                    
+
                     return (
-                      <motion.div 
-                        layout 
-                        key={itemKey} 
+                      <motion.div
+                        layout
+                        key={itemKey}
                         className="flex items-center"
                         initial={{ scale: 0.5, opacity: 0, y: -28 }}
                         animate={{ scale: 1, opacity: 1, y: 0 }}
                         exit={{ scale: 0.4, opacity: 0, x: -40 }}
-                        transition={{ type: "spring", stiffness: 220, damping: 22, delay: isNew ? 0.08 : 0 }}
+                        transition={{
+                          type: "spring",
+                          stiffness: 220,
+                          damping: 22,
+                          delay: isNew ? 0.08 : 0,
+                        }}
                       >
                         <NodeBox
                           value={value}
@@ -231,10 +387,13 @@ export default function LinkedListVisualization({ step, algorithm }) {
                         />
                         {/* Arrow or NULL */}
                         {!isTail ? (
-                          <Arrow highlighted={arrowHighlight} isDoubly={isDoubly} />
+                          <Arrow
+                            highlighted={arrowHighlight}
+                            isDoubly={isDoubly}
+                          />
                         ) : isCircular ? (
                           /* Circular back arrow */
-                          <div className="mb-8 flex items-center gap-1.5 text-violet-400">
+                          <div className="mb-8 flex items-center gap-1.5 text-violet-700 dark:text-violet-300">
                             <span className="text-xl font-black">→</span>
                             <span className="rounded-xl border border-slate-300 bg-slate-200 px-2 py-1 text-[10px] font-black text-slate-900">
                               → HEAD
@@ -254,8 +413,9 @@ export default function LinkedListVisualization({ step, algorithm }) {
             {isCircular && values.length > 1 && (
               <div className="flex items-center gap-3">
                 <div className="h-px flex-1 bg-gradient-to-r from-transparent via-violet-500/50 to-transparent" />
-                <span className="text-xs font-black text-violet-400">
-                  ↩ Circular link: {values[values.length - 1]} → {values[0]} (HEAD)
+                <span className="text-xs font-black text-violet-700 dark:text-violet-300">
+                  ↩ Circular link: {values[values.length - 1]} → {values[0]}{" "}
+                  (HEAD)
                 </span>
                 <div className="h-px flex-1 bg-gradient-to-r from-transparent via-violet-500/50 to-transparent" />
               </div>
@@ -267,14 +427,28 @@ export default function LinkedListVisualization({ step, algorithm }) {
       {/* Legend */}
       <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-1.5 text-xs font-bold">
         <span className="text-slate-400">● Default</span>
-        <span className="text-orange-400">● Traversal pointer</span>
-        <span className="text-emerald-400">● New node / Found</span>
-        <span className="text-red-400">● Being deleted</span>
+        <span className="text-orange-700 dark:text-orange-300">
+          ● Traversal pointer
+        </span>
+        <span className="text-emerald-700 dark:text-emerald-300">
+          ● New node / Found
+        </span>
+        <span className="text-red-700 dark:text-red-300">● Being deleted</span>
         <span className="text-slate-900 dark:text-slate-400">HEAD</span>
-        {(isDoubly || isCircular) && <span className="text-slate-900 dark:text-slate-400">TAIL</span>}
-        <span className="text-blue-400">→ next pointer</span>
-        {isDoubly && <span className="text-cyan-400">← prev pointer</span>}
-        {isCircular && <span className="text-violet-400">→ HEAD (circular)</span>}
+        {(isDoubly || isCircular) && (
+          <span className="text-slate-900 dark:text-slate-400">TAIL</span>
+        )}
+        <span className="text-blue-700 dark:text-blue-300">→ next pointer</span>
+        {isDoubly && (
+          <span className="text-cyan-700 dark:text-cyan-300">
+            ← prev pointer
+          </span>
+        )}
+        {isCircular && (
+          <span className="text-violet-700 dark:text-violet-300">
+            → HEAD (circular)
+          </span>
+        )}
       </div>
     </section>
   );

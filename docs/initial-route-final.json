@@ -1,0 +1,31 @@
+{
+  "scripts": [
+    {
+      "name": "index-D3KVfe5u.js",
+      "bytes": 355094,
+      "gzip": 114127
+    },
+    {
+      "name": "Home-CDZ9cmKe.js",
+      "bytes": 18169,
+      "gzip": 5581
+    },
+    {
+      "name": "AlgorithmCard-E6tYGKiI.js",
+      "bytes": 2591,
+      "gzip": 994
+    },
+    {
+      "name": "bubbleSortSimulation-BPLDxcgQ.js",
+      "bytes": 1556,
+      "gzip": 630
+    },
+    {
+      "name": "chevron-down-vNrGHdU3.js",
+      "bytes": 296,
+      "gzip": 243
+    }
+  ],
+  "bytes": 377706,
+  "gzip": 121575
+}

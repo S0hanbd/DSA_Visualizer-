@@ -6,7 +6,9 @@ import CodeViewer from "../components/CodeViewer.jsx";
 import ComplexityCard from "../components/ComplexityCard.jsx";
 import ExecutionSteps from "../components/ExecutionSteps.jsx";
 import { algorithmMap } from "../data/algorithms.js";
-import { buildGraphColoringSteps } from "../logic/graphColoringSimulation.js";
+import { COLORING_LIMITS } from "../logic/graphColoringSimulation.js";
+import { validateGraph, topologyKey } from "../logic/validation.js";
+import useColoringRun from "../hooks/useColoringRun.js";
 
 // Example graph specifically suited for coloring
 const EXAMPLE_GRAPH_COLORING = {
@@ -28,7 +30,7 @@ const EXAMPLE_GRAPH_COLORING = {
     { source: "D", target: "G" },
     { source: "E", target: "F" },
     { source: "F", target: "G" },
-  ]
+  ],
 };
 
 const EXAMPLE_GRAPH_COLORING_2 = {
@@ -44,7 +46,7 @@ const EXAMPLE_GRAPH_COLORING_2 = {
     { source: "C", target: "B" },
     { source: "C", target: "D" },
     { source: "C", target: "E" },
-  ]
+  ],
 };
 
 const EXAMPLE_GRAPH_COLORING_3 = {
@@ -61,7 +63,7 @@ const EXAMPLE_GRAPH_COLORING_3 = {
     { source: "A", target: "D" },
     { source: "B", target: "D" },
     { source: "C", target: "D" },
-  ]
+  ],
 };
 
 const COLOR_PALETTE = [
@@ -77,9 +79,9 @@ function TabButton({ active, label, onClick }) {
     <button
       onClick={onClick}
       className={`flex-1 py-2 text-sm font-bold rounded-lg transition-colors ${
-        active 
-          ? "bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 shadow-sm border border-slate-200 dark:border-slate-700" 
-          : "text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-300"
+        active
+          ? "bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 shadow-sm border border-slate-200 dark:border-slate-700"
+          : "text-slate-600 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-300"
       }`}
     >
       {label}
@@ -118,23 +120,20 @@ export default function GraphColoringPage() {
 
   // Simulation State
   const [numColors, setNumColors] = useState(3);
-  const [steps, setSteps] = useState([{ status: "Idle", explanation: "Ready to run algorithm.", markers: {} }]);
+  const generation = useColoringRun(nodes, edges, numColors);
+  const { steps, solutions, generating } = generation;
+  const [error, setError] = useState("");
+  const [solutionPage, setSolutionPage] = useState(0);
+  const graphVersion = topologyKey(nodes, edges);
   const [currentStep, setCurrentStep] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const [speed, setSpeed] = useState(640);
 
-  // Generate steps whenever graph or numColors change
   useEffect(() => {
     setCurrentStep(0);
     setIsPlaying(false);
-    
-    if (nodes.length > 0) {
-      const generatedSteps = buildGraphColoringSteps(nodes, edges, numColors);
-      setSteps([{ status: "Init", explanation: "Algorithm Ready", markers: {} }, ...generatedSteps]);
-    } else {
-      setSteps([{ status: "Idle", explanation: "Graph is empty.", markers: {} }]);
-    }
-  }, [nodes, edges, numColors]);
+    setSolutionPage(0);
+  }, [graphVersion, numColors]);
 
   // Playback loop
   useEffect(() => {
@@ -152,11 +151,16 @@ export default function GraphColoringPage() {
   if (!algorithm) return <Navigate to="/" replace />;
 
   const step = steps[currentStep] || steps[0];
+  const visibleSolutions = solutions.slice(0, step.solutionCount ?? 0);
 
   // Build Graph Handlers
   const handleAddRandomNode = (xOverride, yOverride) => {
+    if (nodes.length >= COLORING_LIMITS.maxNodes) {
+      setError("Use at most 10 nodes for graph coloring.");
+      return;
+    }
     const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    const existingIds = nodes.map(n => n.id);
+    const existingIds = nodes.map((n) => n.id);
     let newId = "";
     for (let i = 0; i < letters.length; i++) {
       if (!existingIds.includes(letters[i])) {
@@ -165,10 +169,16 @@ export default function GraphColoringPage() {
       }
     }
     if (!newId) newId = `N${nodes.length + 1}`;
-    
-    const x = typeof xOverride === "number" ? xOverride : Math.floor(Math.random() * 600) + 100;
-    const y = typeof yOverride === "number" ? yOverride : Math.floor(Math.random() * 400) + 100;
-    
+
+    const x =
+      typeof xOverride === "number"
+        ? xOverride
+        : Math.floor(Math.random() * 600) + 100;
+    const y =
+      typeof yOverride === "number"
+        ? yOverride
+        : Math.floor(Math.random() * 400) + 100;
+
     setNodes([...nodes, { id: newId, x, y }]);
   };
 
@@ -180,16 +190,23 @@ export default function GraphColoringPage() {
   };
 
   const handleNodePositionChange = (nodeId, dx, dy) => {
-    setNodes(prev => prev.map(n => n.id === nodeId ? { ...n, x: n.x + dx, y: n.y + dy } : n));
+    setNodes((prev) =>
+      prev.map((n) =>
+        n.id === nodeId ? { ...n, x: n.x + dx, y: n.y + dy } : n,
+      ),
+    );
   };
 
   const handleAddEdge = () => {
-    if (!sourceId || !targetId) return;
-    if (!nodes.find(n => n.id === sourceId) || !nodes.find(n => n.id === targetId)) {
-        alert("Source or Target node does not exist!");
-        return;
+    try {
+      const next = [...edges, { source: sourceId, target: targetId }];
+      validateGraph(nodes, next, { weighted: false });
+      setEdges(next);
+      setError("");
+    } catch (error) {
+      setError(error.message);
+      return;
     }
-    setEdges([...edges, { source: sourceId, target: targetId }]);
     setSourceId("");
     setTargetId("");
   };
@@ -202,77 +219,139 @@ export default function GraphColoringPage() {
   return (
     <div className="mx-auto flex w-full gap-6 px-4 py-8">
       <Sidebar />
+      {error && (
+        <p role="alert" className="text-red-600">
+          {error}
+        </p>
+      )}
       <div className="min-w-0 flex-1">
-        
         {/* Header */}
         <div className="mb-6">
-          <p className="font-bold tracking-widest text-emerald-500 uppercase">{algorithm.category}</p>
-          <h1 className="text-4xl font-black text-slate-900 dark:text-white mt-2">{algorithm.title}</h1>
+          <p className="font-bold tracking-widest text-emerald-500 uppercase">
+            {algorithm.category}
+          </p>
+          <h1 className="text-4xl font-black text-slate-900 dark:text-white mt-2">
+            {algorithm.title}
+          </h1>
           <p className="mt-2 max-w-2xl text-lg text-slate-600 dark:text-slate-400">
             {algorithm.description}
           </p>
         </div>
 
         <div className="grid gap-6 lg:grid-cols-[400px_1fr]">
-          
           {/* Controls Panel */}
           <div className="flex flex-col gap-6 h-full">
             <div className="neo-panel p-5 border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm rounded-xl flex flex-col flex-1">
-              
-              <h2 className="text-xl font-black text-slate-800 dark:text-slate-100 mb-4">Controls</h2>
-              
+              <h2 className="text-xl font-black text-slate-800 dark:text-slate-100 mb-4">
+                Controls
+              </h2>
+
               <div className="flex bg-slate-100 dark:bg-slate-900 p-1 rounded-lg mb-6 border border-slate-200 dark:border-slate-800">
-                <TabButton active={activeTab === "Build Graph"} label="Build Graph" onClick={() => setActiveTab("Build Graph")} />
-                <TabButton active={activeTab === "Algorithm"} label="Algorithm" onClick={() => setActiveTab("Algorithm")} />
+                <TabButton
+                  active={activeTab === "Build Graph"}
+                  label="Build Graph"
+                  onClick={() => setActiveTab("Build Graph")}
+                />
+                <TabButton
+                  active={activeTab === "Algorithm"}
+                  label="Algorithm"
+                  onClick={() => setActiveTab("Algorithm")}
+                />
               </div>
 
               {activeTab === "Build Graph" && (
                 <div className="space-y-6 flex-1">
                   <div className="p-4 border border-slate-200 dark:border-slate-800 rounded-lg bg-slate-50 dark:bg-slate-900/50">
-                    <h3 className="font-bold text-sm text-slate-800 dark:text-slate-200">Example Graphs</h3>
-                    <p className="text-xs text-slate-500 dark:text-slate-400 mb-3">Load a predefined graph</p>
-                    <select 
+                    <h3 className="font-bold text-sm text-slate-800 dark:text-slate-200">
+                      Example Graphs
+                    </h3>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 mb-3">
+                      Load a predefined graph
+                    </p>
+                    <select
+                      aria-label="Example graph"
                       className="w-full bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-sm font-semibold outline-none"
                       onChange={(e) => {
-                          const val = e.target.value;
-                          if (val === "example1") {
-                              setNodes(EXAMPLE_GRAPH_COLORING.nodes);
-                              setEdges(EXAMPLE_GRAPH_COLORING.edges);
-                          } else if (val === "example2") {
-                              setNodes(EXAMPLE_GRAPH_COLORING_2.nodes);
-                              setEdges(EXAMPLE_GRAPH_COLORING_2.edges);
-                          } else if (val === "example3") {
-                              setNodes(EXAMPLE_GRAPH_COLORING_3.nodes);
-                              setEdges(EXAMPLE_GRAPH_COLORING_3.edges);
-                          } else {
-                              setNodes([]);
-                              setEdges([]);
-                          }
+                        const val = e.target.value;
+                        if (val === "example1") {
+                          setNodes(EXAMPLE_GRAPH_COLORING.nodes);
+                          setEdges(EXAMPLE_GRAPH_COLORING.edges);
+                        } else if (val === "example2") {
+                          setNodes(EXAMPLE_GRAPH_COLORING_2.nodes);
+                          setEdges(EXAMPLE_GRAPH_COLORING_2.edges);
+                        } else if (val === "example3") {
+                          setNodes(EXAMPLE_GRAPH_COLORING_3.nodes);
+                          setEdges(EXAMPLE_GRAPH_COLORING_3.edges);
+                        } else {
+                          setNodes([]);
+                          setEdges([]);
+                        }
                       }}
                     >
-                      <option value="example1">Coloring Example 1 (Hexagon)</option>
-                      <option value="example2">Coloring Example 2 (Star Graph)</option>
-                      <option value="example3">Coloring Example 3 (K4 Complete)</option>
+                      <option value="example1">
+                        Coloring Example 1 (Hexagon)
+                      </option>
+                      <option value="example2">
+                        Coloring Example 2 (Star Graph)
+                      </option>
+                      <option value="example3">
+                        Coloring Example 3 (K4 Complete)
+                      </option>
                       <option value="empty">Empty Graph</option>
                     </select>
                   </div>
 
                   <div className="p-4 border border-slate-200 dark:border-slate-800 rounded-lg bg-slate-50 dark:bg-slate-900/50">
-                    <h3 className="font-bold text-sm text-slate-800 dark:text-slate-200">Manual Build</h3>
-                    <p className="text-xs text-slate-500 dark:text-slate-400 mb-3">Add nodes and edges</p>
-                    
-                    <ControlsButton 
-                      label={isPlacingNode ? "Click Canvas to Place" : "Place a New Node"} 
-                      onClick={() => setIsPlacingNode(!isPlacingNode)} 
+                    <h3 className="font-bold text-sm text-slate-800 dark:text-slate-200">
+                      Manual Build
+                    </h3>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 mb-3">
+                      Add nodes and edges
+                    </p>
+
+                    <ControlsButton
+                      label={
+                        isPlacingNode
+                          ? "Click Canvas to Place"
+                          : "Place a New Node"
+                      }
+                      onClick={() => setIsPlacingNode(!isPlacingNode)}
                       className={`w-full mb-4 ${isPlacingNode ? "bg-amber-500 hover:bg-amber-600 text-white" : "bg-slate-800 hover:bg-slate-900 text-white dark:bg-slate-700 dark:hover:bg-slate-600"}`}
                     />
-                    
+                    <ControlsButton
+                      label="Add node"
+                      onClick={() => handleAddRandomNode()}
+                      className="soft-button mb-4"
+                    />
+
                     <div className="grid grid-cols-2 gap-2 mb-2">
-                      <input type="text" placeholder="Source ID" value={sourceId} onChange={e => setSourceId(e.target.value.toUpperCase())} className="capsule-input w-full" />
-                      <input type="text" placeholder="Target ID" value={targetId} onChange={e => setTargetId(e.target.value.toUpperCase())} className="capsule-input w-full" />
+                      <input
+                        aria-label="Source node ID"
+                        type="text"
+                        placeholder="Source ID"
+                        value={sourceId}
+                        onChange={(e) =>
+                          setSourceId(e.target.value.toUpperCase())
+                        }
+                        className="capsule-input w-full"
+                      />
+                      <input
+                        aria-label="Target node ID"
+                        type="text"
+                        placeholder="Target ID"
+                        value={targetId}
+                        onChange={(e) =>
+                          setTargetId(e.target.value.toUpperCase())
+                        }
+                        className="capsule-input w-full"
+                      />
                     </div>
                     <div className="flex gap-2">
-                      <ControlsButton label="Add Edge" onClick={handleAddEdge} className="w-full bg-slate-800 hover:bg-slate-900 text-white dark:bg-slate-700 dark:hover:bg-slate-600" />
+                      <ControlsButton
+                        label="Add Edge"
+                        onClick={handleAddEdge}
+                        className="w-full bg-slate-800 hover:bg-slate-900 text-white dark:bg-slate-700 dark:hover:bg-slate-600"
+                      />
                     </div>
                   </div>
                 </div>
@@ -281,17 +360,26 @@ export default function GraphColoringPage() {
               {activeTab === "Algorithm" && (
                 <div className="space-y-6 flex-1">
                   <div className="p-4 border border-slate-200 dark:border-slate-800 rounded-lg bg-slate-50 dark:bg-slate-900/50">
-                    <h3 className="font-bold text-sm text-slate-800 dark:text-slate-200">Run Algorithm</h3>
-                    <p className="text-xs text-slate-500 dark:text-slate-400 mb-3">Execute Graph Coloring</p>
-                    
+                    <h3 className="font-bold text-sm text-slate-800 dark:text-slate-200">
+                      Run Algorithm
+                    </h3>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 mb-3">
+                      Execute Graph Coloring
+                    </p>
+
                     <div className="grid grid-cols-1 gap-4 mb-4">
                       <div>
-                        <label className="text-xs font-bold text-slate-600 dark:text-slate-400 block mb-1">Number of Colors</label>
+                        <label className="text-xs font-bold text-slate-600 dark:text-slate-400 block mb-1">
+                          Number of Colors
+                        </label>
                         <div className="flex items-center gap-2">
-                          {[2, 3, 4].map(c => (
+                          {[2, 3, 4].map((c) => (
                             <button
                               key={c}
-                              onClick={() => { setNumColors(c); setActiveTab("Algorithm"); }}
+                              onClick={() => {
+                                setNumColors(c);
+                                setActiveTab("Algorithm");
+                              }}
                               className={`flex-1 py-2 rounded-lg text-sm font-bold transition-all ${numColors === c ? "bg-emerald-500 text-white shadow-md" : "bg-slate-200 text-slate-600 hover:bg-slate-300 dark:bg-slate-800 dark:text-slate-400"}`}
                             >
                               {c} Colors
@@ -301,87 +389,218 @@ export default function GraphColoringPage() {
                       </div>
                     </div>
 
-                    <div className="flex gap-2">
-                      <ControlsButton label="Play" onClick={() => setIsPlaying(true)} disabled={isPlaying || currentStep >= steps.length - 1} className="flex-1 bg-emerald-500 hover:bg-emerald-600 text-white" />
-                      <ControlsButton label="Pause" onClick={() => setIsPlaying(false)} disabled={!isPlaying} className="flex-1 bg-amber-500 hover:bg-amber-600 text-white" />
-                      <ControlsButton label="Step" onClick={() => setCurrentStep(s => Math.min(steps.length - 1, s + 1))} disabled={isPlaying || currentStep >= steps.length - 1} className="flex-1 bg-blue-500 hover:bg-blue-600 text-white" />
+                    <p className="text-sm mb-3" role="status">
+                      {generation.outcome} · limit: 10 nodes, 200 solutions,
+                      12,000 steps, 1.5s. Search runs only when requested.
+                    </p>
+                    <div className="flex flex-wrap gap-2">
+                      <ControlsButton
+                        label="Run search"
+                        onClick={() => {
+                          generation.start();
+                          setCurrentStep(0);
+                          setIsPlaying(false);
+                        }}
+                        disabled={generating || !nodes.length}
+                        className="primary-button"
+                      />
+                      <ControlsButton
+                        label="Cancel search"
+                        onClick={generation.cancel}
+                        disabled={!generating}
+                        className="soft-button"
+                      />
+                      <ControlsButton
+                        label="Play"
+                        onClick={() => setIsPlaying(true)}
+                        disabled={isPlaying || currentStep >= steps.length - 1}
+                        className="flex-1 bg-emerald-500 hover:bg-emerald-600 text-white"
+                      />
+                      <ControlsButton
+                        label="Pause"
+                        onClick={() => setIsPlaying(false)}
+                        disabled={!isPlaying}
+                        className="flex-1 bg-amber-500 hover:bg-amber-600 text-white"
+                      />
+                      <ControlsButton
+                        label="Step"
+                        onClick={() =>
+                          setCurrentStep((s) =>
+                            Math.min(steps.length - 1, s + 1),
+                          )
+                        }
+                        disabled={isPlaying || currentStep >= steps.length - 1}
+                        className="flex-1 bg-blue-500 hover:bg-blue-600 text-white"
+                      />
                     </div>
                   </div>
-                  
+
                   <div className="p-4 border border-slate-200 dark:border-slate-800 rounded-lg bg-slate-50 dark:bg-slate-900/50">
                     <div className="flex items-center justify-between mb-2">
-                      <span className="text-xs font-bold text-slate-500">Speed</span>
-                      <span className="text-xs font-black text-slate-400">{1000 - speed}ms</span>
+                      <span className="text-xs font-bold text-slate-500">
+                        Speed
+                      </span>
+                      <span className="text-xs font-black text-slate-600 dark:text-slate-300">
+                        {1000 - speed}ms
+                      </span>
                     </div>
-                    <input type="range" min="80" max="900" step="10" value={1000 - speed} onChange={(e) => setSpeed(1000 - Number(e.target.value))} className="w-full accent-emerald-500" />
+                    <input
+                      aria-label="Step delay"
+                      type="range"
+                      min="80"
+                      max="900"
+                      step="10"
+                      value={1000 - speed}
+                      onChange={(e) => setSpeed(1000 - Number(e.target.value))}
+                      className="w-full accent-emerald-500"
+                    />
                   </div>
-                  
+
                   {/* Solutions Snapshots */}
-                  {step?.solutions?.length > 0 && (
+                  {visibleSolutions.length > 0 && (
                     <div className="p-4 border border-slate-200 dark:border-slate-800 rounded-lg bg-slate-50 dark:bg-slate-900/50">
                       <h3 className="font-bold text-sm text-slate-800 dark:text-slate-200 mb-3">
-                        Solutions Found: {step.solutions.length}
+                        Solutions Found: {visibleSolutions.length}
                       </h3>
                       <div className="flex flex-col gap-4 max-h-[350px] overflow-y-auto pr-2">
-                        {step.solutions.map((sol, solIdx) => (
-                          <div key={solIdx} className="bg-white dark:bg-slate-950 p-3 rounded-lg border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col items-center">
-                            <span className="text-xs font-bold text-slate-500 mb-2">Solution {solIdx + 1}</span>
-                            <div className="relative w-full aspect-video min-h-[120px]">
-                               {/* Mini graph render */}
-                               <svg className="absolute inset-0 h-full w-full" viewBox="0 0 800 600">
-                                  {edges.map((edge, idx) => {
-                                    const s = nodes.find(n => n.id === edge.source);
-                                    const t = nodes.find(n => n.id === edge.target);
-                                    return s && t ? <line key={idx} x1={s.x} y1={s.y} x2={t.x} y2={t.y} stroke="#cbd5e1" strokeWidth={4} /> : null;
-                                  })}
-                                  {nodes.map((n, i) => (
-                                    <circle key={i} cx={n.x} cy={n.y} r={30} fill={COLOR_PALETTE[sol[i]]} />
-                                  ))}
-                               </svg>
-                            </div>
-                          </div>
-                        ))}
+                        {visibleSolutions
+                          .slice(solutionPage * 8, solutionPage * 8 + 8)
+                          .map((sol, pageIdx) => {
+                            const solIdx = solutionPage * 8 + pageIdx;
+                            return (
+                              <div
+                                key={solIdx}
+                                className="bg-white dark:bg-slate-950 p-3 rounded-lg border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col items-center"
+                              >
+                                <span className="text-xs font-bold text-slate-500 mb-2">
+                                  Solution {solIdx + 1}
+                                </span>
+                                <div className="relative w-full aspect-video min-h-[120px]">
+                                  {/* Mini graph render */}
+                                  <svg
+                                    className="absolute inset-0 h-full w-full"
+                                    viewBox="0 0 800 600"
+                                  >
+                                    {edges.map((edge, idx) => {
+                                      const s = nodes.find(
+                                        (n) => n.id === edge.source,
+                                      );
+                                      const t = nodes.find(
+                                        (n) => n.id === edge.target,
+                                      );
+                                      return s && t ? (
+                                        <line
+                                          key={idx}
+                                          x1={s.x}
+                                          y1={s.y}
+                                          x2={t.x}
+                                          y2={t.y}
+                                          stroke="#cbd5e1"
+                                          strokeWidth={4}
+                                        />
+                                      ) : null;
+                                    })}
+                                    {nodes.map((n, i) => (
+                                      <circle
+                                        key={i}
+                                        cx={n.x}
+                                        cy={n.y}
+                                        r={30}
+                                        fill={COLOR_PALETTE[sol[i]]}
+                                      />
+                                    ))}
+                                  </svg>
+                                </div>
+                              </div>
+                            );
+                          })}
+                      </div>
+                      <div className="flex gap-2 mt-3">
+                        <button
+                          className="soft-button"
+                          disabled={solutionPage === 0}
+                          onClick={() => setSolutionPage((p) => p - 1)}
+                        >
+                          Previous solutions
+                        </button>
+                        <button
+                          className="soft-button"
+                          disabled={
+                            (solutionPage + 1) * 8 >= visibleSolutions.length
+                          }
+                          onClick={() => setSolutionPage((p) => p + 1)}
+                        >
+                          More solutions
+                        </button>
                       </div>
                     </div>
                   )}
                 </div>
               )}
             </div>
-            
-            <ControlsButton 
-              label="Clear Graph" 
+
+            <ControlsButton
+              label="Clear Graph"
               onClick={handleClearGraph}
-              className="bg-red-500 hover:bg-red-600 text-white shadow-md py-3 text-lg" 
+              className="bg-red-700 hover:bg-red-800 text-white shadow-md py-3 text-lg"
             />
           </div>
 
           <div className="flex flex-col gap-6 overflow-hidden">
-            <GraphColoringVisualization 
-              nodes={nodes} 
-              edges={edges} 
-              step={step} 
+            <GraphColoringVisualization
+              nodes={nodes}
+              edges={edges}
+              step={step}
               onCanvasClick={handleCanvasClick}
               onNodePositionChange={handleNodePositionChange}
             />
-            
-            <ExecutionSteps steps={steps} currentStep={currentStep} />
-            
+
+            <ExecutionSteps
+              steps={steps}
+              currentStep={currentStep}
+              onStepClick={(index) => {
+                setIsPlaying(false);
+                setCurrentStep(index);
+              }}
+            />
+
             <div className="neo-panel overflow-hidden">
-              <CodeViewer code={algorithm.code} activeLine={step?.line} language={algorithm.language} />
+              <CodeViewer
+                algorithm={algorithm}
+                step={step}
+                code={algorithm.code}
+                language={algorithm.language}
+              />
             </div>
 
             <section className="grid gap-4 grid-cols-2 sm:grid-cols-4 mt-2">
               {algorithm.complexities.best && (
-                <ComplexityCard label="Best Case" value={algorithm.complexities.best} tone="green" />
+                <ComplexityCard
+                  label="Best Case"
+                  value={algorithm.complexities.best}
+                  tone="green"
+                />
               )}
               {algorithm.complexities.average && (
-                <ComplexityCard label="Average Case" value={algorithm.complexities.average} tone="orange" />
+                <ComplexityCard
+                  label="Average Case"
+                  value={algorithm.complexities.average}
+                  tone="orange"
+                />
               )}
               {algorithm.complexities.worst && (
-                <ComplexityCard label="Worst Case" value={algorithm.complexities.worst} tone="red" />
+                <ComplexityCard
+                  label="Worst Case"
+                  value={algorithm.complexities.worst}
+                  tone="red"
+                />
               )}
               {algorithm.complexities.space && (
-                <ComplexityCard label="Space Complexity" value={algorithm.complexities.space} tone="blue" />
+                <ComplexityCard
+                  label="Space Complexity"
+                  value={algorithm.complexities.space}
+                  tone="blue"
+                />
               )}
             </section>
           </div>

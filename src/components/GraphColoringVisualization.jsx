@@ -1,9 +1,15 @@
 import { useRef, useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 
-export default function GraphColoringVisualization({ nodes, edges, step, onCanvasClick, onNodePositionChange }) {
+export default function GraphColoringVisualization({
+  nodes,
+  edges,
+  step,
+  onCanvasClick,
+  onNodePositionChange,
+}) {
   const containerRef = useRef(null);
-  
+
   // Pan and Zoom State
   const [scale, setScale] = useState(1);
   const [pan, setPan] = useState({ x: 0, y: 0 });
@@ -30,13 +36,13 @@ export default function GraphColoringVisualization({ nodes, edges, step, onCanva
     if (!isDragging && !draggingNodeId) return;
     const dx = e.clientX - dragStart.x;
     const dy = e.clientY - dragStart.y;
-    
+
     if (draggingNodeId) {
       if (onNodePositionChange) {
         onNodePositionChange(draggingNodeId, dx / scale, dy / scale);
       }
     } else {
-      setPan(prev => ({ x: prev.x + dx, y: prev.y + dy }));
+      setPan((prev) => ({ x: prev.x + dx, y: prev.y + dy }));
       if (Math.abs(dx) > 2 || Math.abs(dy) > 2) {
         setHasMoved(true);
       }
@@ -50,10 +56,10 @@ export default function GraphColoringVisualization({ nodes, edges, step, onCanva
       return;
     }
     if (isDragging && !hasMoved && onCanvasClick && containerRef.current) {
-        const rect = containerRef.current.getBoundingClientRect();
-        const svgX = (e.clientX - rect.left - pan.x) / scale;
-        const svgY = (e.clientY - rect.top - pan.y) / scale;
-        onCanvasClick({ x: svgX, y: svgY });
+      const rect = containerRef.current.getBoundingClientRect();
+      const svgX = (e.clientX - rect.left - pan.x) / scale;
+      const svgY = (e.clientY - rect.top - pan.y) / scale;
+      onCanvasClick({ x: svgX, y: svgY });
     }
     setIsDragging(false);
   };
@@ -82,41 +88,62 @@ export default function GraphColoringVisualization({ nodes, edges, step, onCanva
 
   return (
     <div className="flex flex-col gap-6">
-      <div 
+      <div
         ref={containerRef}
         className="neo-panel relative h-[500px] w-full overflow-hidden bg-slate-50 dark:bg-slate-900/50"
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}
         onPointerLeave={handlePointerUp}
-        style={{ cursor: isDragging ? "grabbing" : draggingNodeId ? "grabbing" : "grab" }}
+        style={{
+          cursor: isDragging
+            ? "grabbing"
+            : draggingNodeId
+              ? "grabbing"
+              : "grab",
+        }}
       >
         <svg
           className="absolute inset-0 h-full w-full"
-          style={{ transform: `translate(${pan.x}px, ${pan.y}px) scale(${scale})`, transformOrigin: "0 0" }}
+          style={{
+            transform: `translate(${pan.x}px, ${pan.y}px) scale(${scale})`,
+            transformOrigin: "0 0",
+          }}
         >
           <defs>
-            <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+            <marker
+              id="arrowhead"
+              markerWidth="10"
+              markerHeight="7"
+              refX="9"
+              refY="3.5"
+              orient="auto"
+            >
               <polygon points="0 0, 10 3.5, 0 7" fill="#94a3b8" />
             </marker>
           </defs>
-          
+
           {/* Edges */}
           {edges.map((edge, idx) => {
-            const sourceNode = nodes.find(n => n.id === edge.source);
-            const targetNode = nodes.find(n => n.id === edge.target);
+            const sourceNode = nodes.find((n) => n.id === edge.source);
+            const targetNode = nodes.find((n) => n.id === edge.target);
             if (!sourceNode || !targetNode) return null;
 
             // Highlight attacking edges
             let isAttacking = false;
             if (step?.markers?.attacking) {
-                const [attackingIdx] = step.markers.attacking;
-                const checkingIdx = step.markers.checking ? step.markers.checking[0] : -1;
-                const aId = nodes[attackingIdx]?.id;
-                const cId = nodes[checkingIdx]?.id;
-                if ((edge.source === aId && edge.target === cId) || (edge.source === cId && edge.target === aId)) {
-                    isAttacking = true;
-                }
+              const [attackingIdx] = step.markers.attacking;
+              const checkingIdx = step.markers.checking
+                ? step.markers.checking[0]
+                : -1;
+              const aId = nodes[attackingIdx]?.id;
+              const cId = nodes[checkingIdx]?.id;
+              if (
+                (edge.source === aId && edge.target === cId) ||
+                (edge.source === cId && edge.target === aId)
+              ) {
+                isAttacking = true;
+              }
             }
 
             return (
@@ -136,15 +163,27 @@ export default function GraphColoringVisualization({ nodes, edges, step, onCanva
         </svg>
 
         {/* Nodes (HTML for framer-motion layout) */}
-        <div style={{ transform: `translate(${pan.x}px, ${pan.y}px) scale(${scale})`, transformOrigin: "0 0", position: 'absolute', inset: 0, pointerEvents: 'none' }}>
+        <div
+          style={{
+            transform: `translate(${pan.x}px, ${pan.y}px) scale(${scale})`,
+            transformOrigin: "0 0",
+            position: "absolute",
+            inset: 0,
+            pointerEvents: "none",
+          }}
+        >
           {nodes.map((node, i) => {
             const colorCode = step?.color ? step.color[i] : 0;
             const nodeColor = COLOR_PALETTE[colorCode];
-            
-            let isChecking = step?.markers?.checking && step.markers.checking[0] === i;
-            let isAttacking = step?.markers?.attacking && step.markers.attacking[0] === i;
-            let isColored = step?.markers?.colored && step.markers.colored[0] === i;
-            let isBacktracking = step?.markers?.backtracking && step.markers.backtracking[0] === i;
+
+            let isChecking =
+              step?.markers?.checking && step.markers.checking[0] === i;
+            let isAttacking =
+              step?.markers?.attacking && step.markers.attacking[0] === i;
+            let isColored =
+              step?.markers?.colored && step.markers.colored[0] === i;
+            let isBacktracking =
+              step?.markers?.backtracking && step.markers.backtracking[0] === i;
 
             return (
               <motion.div
@@ -153,30 +192,68 @@ export default function GraphColoringVisualization({ nodes, edges, step, onCanva
                 animate={{
                   x: node.x - 24,
                   y: node.y - 24,
-                  scale: isChecking || isAttacking || isColored || isBacktracking ? 1.2 : 1,
+                  scale:
+                    isChecking || isAttacking || isColored || isBacktracking
+                      ? 1.2
+                      : 1,
                   backgroundColor: nodeColor,
-                  borderColor: isChecking ? "#3b82f6" : isAttacking ? "#ef4444" : isColored ? "#10b981" : "#ffffff",
+                  borderColor: isChecking
+                    ? "#3b82f6"
+                    : isAttacking
+                      ? "#ef4444"
+                      : isColored
+                        ? "#10b981"
+                        : "#ffffff",
                   borderWidth: isChecking || isAttacking || isColored ? 4 : 2,
                 }}
+                role="button"
+                tabIndex={0}
+                aria-label={`Node ${node.id}; use arrow keys to move`}
+                onKeyDown={(event) => {
+                  const delta = {
+                    ArrowLeft: [-10, 0],
+                    ArrowRight: [10, 0],
+                    ArrowUp: [0, -10],
+                    ArrowDown: [0, 10],
+                  }[event.key];
+                  if (delta) {
+                    event.preventDefault();
+                    onNodePositionChange?.(node.id, ...delta);
+                  }
+                }}
                 onPointerDown={(e) => handleNodePointerDown(e, node.id)}
-                className="absolute flex h-12 w-12 items-center justify-center rounded-full text-sm font-bold text-white shadow-lg transition-colors cursor-grab active:cursor-grabbing"
-                style={{ zIndex: isChecking ? 10 : 1, pointerEvents: 'auto' }}
+                className="absolute flex h-12 w-12 items-center justify-center rounded-full text-sm font-bold text-slate-950 shadow-lg transition-colors cursor-grab active:cursor-grabbing"
+                style={{ zIndex: isChecking ? 10 : 1, pointerEvents: "auto" }}
               >
                 {node.id}
               </motion.div>
             );
           })}
         </div>
-        
+
         {/* Zoom Controls */}
         <div className="absolute bottom-4 right-4 flex gap-2">
-          <button onClick={() => setScale(s => Math.min(s + 0.2, 3))} className="flex h-8 w-8 items-center justify-center rounded-lg bg-white font-bold text-slate-700 shadow-sm border border-slate-200 hover:bg-slate-50 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-700">
+          <button
+            aria-label="Zoom in"
+            onClick={() => setScale((s) => Math.min(s + 0.2, 3))}
+            className="flex h-8 w-8 items-center justify-center rounded-lg bg-white font-bold text-slate-700 shadow-sm border border-slate-200 hover:bg-slate-50 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-700"
+          >
             +
           </button>
-          <button onClick={() => setScale(s => Math.max(s - 0.2, 0.2))} className="flex h-8 w-8 items-center justify-center rounded-lg bg-white font-bold text-slate-700 shadow-sm border border-slate-200 hover:bg-slate-50 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-700">
+          <button
+            aria-label="Zoom out"
+            onClick={() => setScale((s) => Math.max(s - 0.2, 0.2))}
+            className="flex h-8 w-8 items-center justify-center rounded-lg bg-white font-bold text-slate-700 shadow-sm border border-slate-200 hover:bg-slate-50 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-700"
+          >
             -
           </button>
-          <button onClick={() => { setScale(1); setPan({ x: 0, y: 0 }); }} className="flex h-8 px-3 items-center justify-center rounded-lg bg-white text-xs font-bold text-slate-700 shadow-sm border border-slate-200 hover:bg-slate-50 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-700">
+          <button
+            onClick={() => {
+              setScale(1);
+              setPan({ x: 0, y: 0 });
+            }}
+            className="flex h-8 px-3 items-center justify-center rounded-lg bg-white text-xs font-bold text-slate-700 shadow-sm border border-slate-200 hover:bg-slate-50 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-700"
+          >
             Reset
           </button>
         </div>

@@ -1,7 +1,12 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 
-export default function TreeVisualization({ tree, markers, type, height = "h-[600px]", embedded = false }) {
+export default function TreeVisualization({
+  tree,
+  markers,
+  height = "h-[600px]",
+  embedded = false,
+}) {
   // Pan and Zoom State
   const [scale, setScale] = useState(1);
   const [pan, setPan] = useState({ x: 0, y: 0 });
@@ -24,7 +29,7 @@ export default function TreeVisualization({ tree, markers, type, height = "h-[60
     if (!isDragging) return;
     const dx = e.clientX - dragStart.x;
     const dy = e.clientY - dragStart.y;
-    setPan(prev => ({ x: prev.x + dx, y: prev.y + dy }));
+    setPan((prev) => ({ x: prev.x + dx, y: prev.y + dy }));
     setDragStart({ x: e.clientX, y: e.clientY });
   };
 
@@ -51,8 +56,10 @@ export default function TreeVisualization({ tree, markers, type, height = "h-[60
   traverse(tree);
 
   // Find bounding box to center the tree
-  let minX = 0, maxX = 0, maxY = 0;
-  nodes.forEach(n => {
+  let minX = 0,
+    maxX = 0,
+    maxY = 0;
+  nodes.forEach((n) => {
     if (n.x < minX) minX = n.x;
     if (n.x > maxX) maxX = n.x;
     if (n.y > maxY) maxY = n.y;
@@ -60,16 +67,16 @@ export default function TreeVisualization({ tree, markers, type, height = "h-[60
 
   const width = Math.max(600, maxX - minX + 200);
   const heightVal = Math.max(400, maxY + 150);
-  
+
   // Offset to center the root which is at x=0
-  const offsetX = width / 2;
+  const offsetX = 100 - minX;
   const offsetY = 50;
 
   return (
-    <div 
+    <div
       className={`relative w-full ${height} ${
-        embedded 
-          ? "bg-transparent shadow-none border-0" 
+        embedded
+          ? "bg-transparent shadow-none border-0"
           : "bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-sm"
       } overflow-hidden cursor-grab active:cursor-grabbing`}
       onWheel={handleWheel}
@@ -79,93 +86,139 @@ export default function TreeVisualization({ tree, markers, type, height = "h-[60
       onPointerLeave={handlePointerUp}
     >
       {/* Dotted background pattern */}
-      <svg className="absolute inset-0 w-full h-full pointer-events-none" xmlns="http://www.w3.org/2000/svg">
+      <svg
+        className="absolute inset-0 w-full h-full pointer-events-none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
         <defs>
-          <pattern id="dotPattern" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse" patternTransform={`translate(${pan.x}, ${pan.y}) scale(${scale})`}>
-            <circle cx="2" cy="2" r="1" className="fill-slate-300 dark:fill-slate-700" />
+          <pattern
+            id="dotPattern"
+            x="0"
+            y="0"
+            width="20"
+            height="20"
+            patternUnits="userSpaceOnUse"
+            patternTransform={`translate(${pan.x}, ${pan.y}) scale(${scale})`}
+          >
+            <circle
+              cx="2"
+              cy="2"
+              r="1"
+              className="fill-slate-300 dark:fill-slate-700"
+            />
           </pattern>
         </defs>
         <rect x="0" y="0" width="100%" height="100%" fill="url(#dotPattern)" />
       </svg>
 
-      <div 
+      <div
         className="absolute inset-0 origin-top-left"
-        style={{ transform: `translate(${pan.x}px, ${pan.y}px) scale(${scale})` }}
+        style={{
+          transform: `translate(${pan.x}px, ${pan.y}px) scale(${scale})`,
+        }}
       >
-        <div className="relative" style={{ width, height: heightVal, minWidth: "100%", minHeight: "100%" }}>
-        {/* EDGES */}
-        <svg className="absolute inset-0 pointer-events-none" style={{ width: "100%", height: "100%" }}>
-          {edges.map((edge, i) => {
-            const sx = edge.source.x + offsetX;
-            const sy = edge.source.y + offsetY;
-            const tx = edge.target.x + offsetX;
-            const ty = edge.target.y + offsetY;
-            // Bezier curve for edges
-            const path = `M ${sx} ${sy + 20} C ${sx} ${sy + 40}, ${tx} ${ty - 40}, ${tx} ${ty - 20}`;
+        <div
+          className="relative"
+          style={{
+            width,
+            height: heightVal,
+            minWidth: "100%",
+            minHeight: "100%",
+          }}
+        >
+          {/* EDGES */}
+          <svg
+            className="absolute inset-0 pointer-events-none"
+            style={{ width: "100%", height: "100%" }}
+          >
+            {edges.map((edge) => {
+              const sx = edge.source.x + offsetX;
+              const sy = edge.source.y + offsetY;
+              const tx = edge.target.x + offsetX;
+              const ty = edge.target.y + offsetY;
+              // Bezier curve for edges
+              const path = `M ${sx} ${sy + 20} C ${sx} ${sy + 40}, ${tx} ${ty - 40}, ${tx} ${ty - 20}`;
+              return (
+                <motion.path
+                  key={`${edge.source.id}-${edge.target.id}`}
+                  d={path}
+                  fill="none"
+                  strokeWidth="2"
+                  className="stroke-slate-400 dark:stroke-slate-600"
+                  initial={{ pathLength: 0, opacity: 0 }}
+                  animate={{ pathLength: 1, opacity: 1 }}
+                  transition={{ duration: 0.4 }}
+                />
+              );
+            })}
+          </svg>
+
+          {/* NODES */}
+          {nodes.map((node) => {
+            const isComparing = markers?.comparing?.includes(node.id);
+            const isSwapping = markers?.swapping?.includes(node.id);
+            const isInserted = markers?.inserted === node.id;
+            const isActive = markers?.active === node.id;
+
+            let bgColor = "bg-slate-700 dark:bg-slate-600"; // Default dark circle
+            if (isActive || isComparing) bgColor = "bg-blue-600";
+            if (isSwapping) bgColor = "bg-amber-600";
+            if (isInserted) bgColor = "bg-emerald-600";
+
             return (
-              <motion.path
-                key={`${edge.source.id}-${edge.target.id}`}
-                d={path}
-                fill="none"
-                strokeWidth="2"
-                className="stroke-slate-400 dark:stroke-slate-600"
-                initial={{ pathLength: 0, opacity: 0 }}
-                animate={{ pathLength: 1, opacity: 1 }}
-                transition={{ duration: 0.4 }}
-              />
+              <motion.div
+                key={node.id}
+                initial={{ scale: 0, opacity: 0 }}
+                animate={{
+                  scale: 1,
+                  opacity: 1,
+                  x: node.x + offsetX - 24,
+                  y: node.y + offsetY - 24,
+                }}
+                exit={{ scale: 0, opacity: 0 }}
+                transition={{ type: "spring", stiffness: 300, damping: 25 }}
+                className={`absolute w-12 h-12 rounded-full flex items-center justify-center text-white font-semibold text-lg shadow-md z-10 ${bgColor}`}
+                style={{ originX: 0.5, originY: 0.5 }}
+              >
+                {node.val}
+              </motion.div>
             );
           })}
-        </svg>
-
-        {/* NODES */}
-        {nodes.map(node => {
-          const isComparing = markers?.comparing?.includes(node.id);
-          const isSwapping = markers?.swapping?.includes(node.id);
-          const isInserted = markers?.inserted === node.id;
-          const isActive = markers?.active === node.id;
-          
-          let bgColor = "bg-slate-700 dark:bg-slate-600"; // Default dark circle
-          if (isActive || isComparing) bgColor = "bg-blue-600";
-          if (isSwapping) bgColor = "bg-amber-600";
-          if (isInserted) bgColor = "bg-emerald-600";
-
-          return (
-            <motion.div
-              key={node.id}
-              initial={{ scale: 0, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1, x: node.x + offsetX - 24, y: node.y + offsetY - 24 }}
-              exit={{ scale: 0, opacity: 0 }}
-              transition={{ type: "spring", stiffness: 300, damping: 25 }}
-              className={`absolute w-12 h-12 rounded-full flex items-center justify-center text-white font-semibold text-lg shadow-md z-10 ${bgColor}`}
-              style={{ originX: 0.5, originY: 0.5 }}
-            >
-              {node.val}
-            </motion.div>
-          );
-        })}
         </div>
       </div>
 
       {/* Controls Overlay */}
       <div className="absolute bottom-4 right-4 flex gap-2 z-20">
-         <button 
-           onClick={(e) => { e.stopPropagation(); setScale(s => Math.min(3, s + 0.2)); }}
-           className="w-8 h-8 flex items-center justify-center rounded-lg bg-white/90 dark:bg-slate-800/90 shadow-sm border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
-         >
-           +
-         </button>
-         <button 
-           onClick={(e) => { e.stopPropagation(); setScale(s => Math.min(0.2, s - 0.2)); }}
-           className="w-8 h-8 flex items-center justify-center rounded-lg bg-white/90 dark:bg-slate-800/90 shadow-sm border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
-         >
-           -
-         </button>
-         <button 
-           onClick={(e) => { e.stopPropagation(); setScale(1); setPan({x:0, y:0}); }}
-           className="px-3 h-8 flex items-center justify-center rounded-lg bg-white/90 dark:bg-slate-800/90 shadow-sm border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors text-xs font-bold"
-         >
-           Reset
-         </button>
+        <button
+          aria-label="Zoom in"
+          onClick={(e) => {
+            e.stopPropagation();
+            setScale((s) => Math.min(3, s + 0.2));
+          }}
+          className="w-8 h-8 flex items-center justify-center rounded-lg bg-white/90 dark:bg-slate-800/90 shadow-sm border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
+        >
+          +
+        </button>
+        <button
+          aria-label="Zoom out"
+          onClick={(e) => {
+            e.stopPropagation();
+            setScale((s) => Math.max(0.2, s - 0.2));
+          }}
+          className="w-8 h-8 flex items-center justify-center rounded-lg bg-white/90 dark:bg-slate-800/90 shadow-sm border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
+        >
+          -
+        </button>
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            setScale(1);
+            setPan({ x: 0, y: 0 });
+          }}
+          className="px-3 h-8 flex items-center justify-center rounded-lg bg-white/90 dark:bg-slate-800/90 shadow-sm border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors text-xs font-bold"
+        >
+          Reset
+        </button>
       </div>
     </div>
   );

@@ -1,7 +1,6 @@
 import { motion, useReducedMotion } from "framer-motion";
 import {
   ArrowUpDown,
-  ArrowUpRight,
   ChevronDown,
   ChevronUp,
   GitFork,
@@ -48,7 +47,15 @@ export default function Home() {
         } else if (selectedCategory === "Graph") {
           matchesCategory = algorithm.category === "Graphs";
         } else if (selectedCategory === "Other") {
-          const mainCategories = ["Sorting", "Searching", "Linked List", "Stack", "Queue", "Trees", "Graphs"];
+          const mainCategories = [
+            "Sorting",
+            "Searching",
+            "Linked List",
+            "Stack",
+            "Queue",
+            "Trees",
+            "Graphs",
+          ];
           matchesCategory = !mainCategories.includes(algorithm.category);
         } else {
           matchesCategory = algorithm.category === selectedCategory;
@@ -77,30 +84,35 @@ export default function Home() {
     return Array.from(uniqueSet);
   }, []);
 
+  const reduce = useReducedMotion();
   const [loopId, setLoopId] = useState(0);
-  const [previewArray, setPreviewArray] = useState(() => generateRandomPreview());
-  const previewSteps = useMemo(() => buildBubbleSortSteps(previewArray), [previewArray]);
+  const [previewArray, setPreviewArray] = useState(() =>
+    generateRandomPreview(),
+  );
+  const previewSteps = useMemo(
+    () => buildBubbleSortSteps(previewArray),
+    [previewArray],
+  );
   const [previewStepIdx, setPreviewStepIdx] = useState(0);
 
   useEffect(() => {
+    if (reduce) return;
     const isLastStep = previewStepIdx >= previewSteps.length - 1;
     const delay = isLastStep ? 2400 : 800;
     const timer = setTimeout(() => {
-      setPreviewStepIdx((prev) => {
-        if (prev >= previewSteps.length - 1) {
-          setPreviewArray(generateRandomPreview());
-          setLoopId((id) => id + 1);
-          return 0;
-        }
-        return prev + 1;
-      });
+      if (isLastStep) {
+        setPreviewArray(generateRandomPreview());
+        setLoopId((id) => id + 1);
+        setPreviewStepIdx(0);
+      } else {
+        setPreviewStepIdx((previous) => previous + 1);
+      }
     }, delay);
     return () => clearTimeout(timer);
-  }, [previewStepIdx, previewSteps, generateRandomPreview]);
+  }, [previewStepIdx, previewSteps, generateRandomPreview, reduce]);
 
   const currentPreviewStep = previewSteps[previewStepIdx] || previewSteps[0];
 
-  const reduce = useReducedMotion();
   const rise = (delay = 0) =>
     reduce
       ? {}
@@ -121,18 +133,25 @@ export default function Home() {
         >
           <div>
             <span className="inline-flex items-center gap-2 rounded-full bg-slate-100 dark:bg-slate-800/80 px-3 py-1 font-mono text-[10px] uppercase tracking-widest text-slate-500 dark:text-slate-400">
-              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" /> Live simulations
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />{" "}
+              Live simulations
             </span>
             <h1 className="mt-6 font-display text-[clamp(2.25rem,5.5vw,4.5rem)] font-black leading-[0.95] tracking-tight text-slate-900 dark:text-white">
-              SIMULATE<br />ALGORITHMS<br />
-              <span className="text-slate-400 dark:text-slate-600">IN REAL TIME.</span>
+              SIMULATE
+              <br />
+              ALGORITHMS
+              <br />
+              <span className="text-slate-400 dark:text-slate-600">
+                IN REAL TIME.
+              </span>
             </h1>
           </div>
           <div className="mt-6 flex items-center justify-between">
             <div className="flex items-center gap-4">
               <RotatingBadge />
               <p className="max-w-md text-xs leading-relaxed text-slate-500 dark:text-slate-400">
-                Interactive frontend lab for learning data structures & algorithms through beautiful step-by-step state animations.
+                Interactive frontend lab for learning data structures &
+                algorithms through beautiful step-by-step state animations.
               </p>
             </div>
           </div>
@@ -152,7 +171,10 @@ export default function Home() {
             </span>
           </div>
 
-          <div className="my-6 flex h-36 items-end justify-center gap-2.5 px-2">
+          <div
+            aria-label="Bubble sort preview"
+            className="my-6 flex h-36 items-end justify-center gap-2.5 px-2"
+          >
             {currentPreviewStep.array.map((value, index) => {
               const isComparing = currentPreviewStep.comparing?.includes(index);
               const isSwapping = currentPreviewStep.swapping?.includes(index);
@@ -171,7 +193,8 @@ export default function Home() {
                 <motion.div
                   key={`${loopId}-${value}`}
                   layout
-                  animate={{ height: `${value}%` }}
+                  initial={false}
+                  style={{ height: `${value}%` }}
                   transition={{ type: "spring", stiffness: 180, damping: 20 }}
                   className={`flex-1 min-w-[8px] max-w-[28px] rounded-t-lg shadow-md ${colorClass}`}
                 />
@@ -180,7 +203,9 @@ export default function Home() {
           </div>
 
           <p className="font-display text-xs uppercase tracking-[0.2em] text-white/70">
-            Build your<br />intuition
+            Build your
+            <br />
+            intuition
           </p>
         </motion.div>
 
@@ -194,7 +219,9 @@ export default function Home() {
               <Sparkles className="h-5 w-5 text-emerald-400" />
             </div>
             <p className="mt-3 font-mono text-[10px] uppercase tracking-[0.2em] text-slate-900 font-bold">
-              Algorithm<br />award 2026
+              Algorithm
+              <br />
+              award 2026
             </p>
           </div>
           <GraphOrb />
@@ -212,14 +239,18 @@ export default function Home() {
             <h2 className="font-display text-xs font-bold uppercase tracking-[0.25em] text-slate-500 dark:text-slate-400">
               Explore Topics
             </h2>
-            <span className="text-[10px] font-mono text-slate-450 dark:text-slate-500">
+            <span className="text-[10px] font-mono text-slate-400 dark:text-slate-500">
               Select category to filter
             </span>
           </div>
 
           {/* Search Console Input */}
           <div className="mb-4 w-full">
-            <SearchBar value={query} onChange={setQuery} placeholder="Search..." />
+            <SearchBar
+              value={query}
+              onChange={setQuery}
+              placeholder="Search..."
+            />
           </div>
 
           <div className="flex flex-wrap gap-2">
@@ -236,10 +267,17 @@ export default function Home() {
                   className={`flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-bold tracking-wide transition duration-200 ${
                     isActive
                       ? "bg-blue-600 text-white shadow-md shadow-blue-600/20 dark:bg-cyan-500 dark:text-slate-950"
-                      : "bg-slate-50 text-slate-600 border border-slate-200/50 hover:bg-slate-100 hover:text-blue-600 dark:bg-slate-800/40 dark:text-slate-350 dark:border-slate-800/30 dark:hover:bg-slate-800 dark:hover:text-cyan-300"
+                      : "bg-slate-50 text-slate-600 border border-slate-200/50 hover:bg-slate-100 hover:text-blue-600 dark:bg-slate-800/40 dark:text-slate-300 dark:border-slate-800/30 dark:hover:bg-slate-800 dark:hover:text-cyan-300"
                   }`}
                 >
-                  <Icon size={13} className={isActive ? "text-white dark:text-slate-950" : "text-blue-600 dark:text-cyan-400"} />
+                  <Icon
+                    size={13}
+                    className={
+                      isActive
+                        ? "text-white dark:text-slate-950"
+                        : "text-blue-600 dark:text-cyan-400"
+                    }
+                  />
                   <span>{opt.label}</span>
                 </button>
               );
@@ -257,14 +295,16 @@ export default function Home() {
             <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500">
               /graph-theory
             </span>
-            
+
             {/* Real Tree running In-Order Traversal */}
             <div className="my-2 flex justify-center items-center">
               <TreeTraversalSimulation />
             </div>
 
             <p className="font-display text-2xl font-bold leading-tight text-slate-900 dark:text-white">
-              Trace the<br />network flow.
+              Trace the
+              <br />
+              network flow.
             </p>
           </div>
         </motion.div>
@@ -272,14 +312,24 @@ export default function Home() {
         {/* Card 6: Stats Card (Right Side) */}
         <motion.div
           {...rise(0.3)}
-          className="rounded-3xl bg-slate-900 dark:bg-slate-950 border border-slate-850 p-6 text-white lg:col-span-2 min-h-[240px] flex flex-col justify-between shadow-lg"
+          className="rounded-3xl bg-slate-900 dark:bg-slate-950 border border-slate-800 p-6 text-white lg:col-span-2 min-h-[240px] flex flex-col justify-between shadow-lg"
         >
-          <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-white/50">/stats</span>
+          <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-white/50">
+            /stats
+          </span>
           <div>
             <p className="font-display text-5xl font-black">
-              <AnimatedCounter target={35} duration={2000} />+
+              <AnimatedCounter
+                target={
+                  algorithms.filter((algorithm) => !algorithm.comingSoon).length
+                }
+                duration={2000}
+              />
+              +
             </p>
-            <p className="mt-2 text-xs text-white/60 leading-relaxed">interactive simulations across 11 key computer science topics</p>
+            <p className="mt-2 text-xs text-white/60 leading-relaxed">
+              interactive simulations across 11 key computer science topics
+            </p>
           </div>
         </motion.div>
       </section>
@@ -288,9 +338,15 @@ export default function Home() {
       <section id="algorithms" className="mt-12">
         <div className="flex items-end justify-between gap-4">
           <div>
-            <p className="muted-label">{query || selectedCategory !== "All" ? "Search Results" : "Featured Algorithms"}</p>
+            <p className="muted-label">
+              {query || selectedCategory !== "All"
+                ? "Search Results"
+                : "Featured Algorithms"}
+            </p>
             <h2 className="mt-2 text-3xl font-black">
-              {query || selectedCategory !== "All" ? "Matching Visualizations" : "Start Learning"}
+              {query || selectedCategory !== "All"
+                ? "Matching Visualizations"
+                : "Start Learning"}
             </h2>
           </div>
         </div>
@@ -343,7 +399,15 @@ function GraphOrb() {
           [80, 100, 130, 105],
           [80, 100, 55, 130],
         ].map(([x1, y1, x2, y2], i) => (
-          <line key={i} x1={x1} y1={y1} x2={x2} y2={y2} stroke="url(#edge)" strokeWidth="1.5" />
+          <line
+            key={i}
+            x1={x1}
+            y1={y1}
+            x2={x2}
+            y2={y2}
+            stroke="url(#edge)"
+            strokeWidth="1.5"
+          />
         ))}
         {[
           [40, 55, "#3b82f6"],
@@ -358,9 +422,14 @@ function GraphOrb() {
             cy={cy}
             r={i === 2 ? 9 : 6}
             fill={c}
-            initial={{ scale: 0 }}
+            initial={false}
             animate={{ scale: 1 }}
-            transition={{ delay: 0.4 + i * 0.1, type: "spring", stiffness: 220, damping: 14 }}
+            transition={{
+              delay: 0.4 + i * 0.1,
+              type: "spring",
+              stiffness: 220,
+              damping: 14,
+            }}
           />
         ))}
       </svg>
@@ -391,19 +460,26 @@ function WavePattern() {
 }
 
 function RotatingBadge() {
-  const text = "EXPLORE ΓÇó SIMULATE ΓÇó LEARN ΓÇó ";
+  const reduce = useReducedMotion();
+  const text = "EXPLORE • SIMULATE • LEARN • ";
   return (
     <motion.div
       className="relative grid h-16 w-16 place-items-center shrink-0 select-none"
-      animate={{ rotate: 360 }}
+      animate={{ rotate: reduce ? 0 : 360 }}
       transition={{ duration: 22, ease: "linear", repeat: Infinity }}
       aria-hidden
     >
       <svg viewBox="0 0 100 100" className="absolute inset-0 h-full w-full">
         <defs>
-          <path id="circlePath" d="M50,50 m-38,0 a38,38 0 1,1 76,0 a38,38 0 1,1 -76,0" />
+          <path
+            id="circlePath"
+            d="M50,50 m-38,0 a38,38 0 1,1 76,0 a38,38 0 1,1 -76,0"
+          />
         </defs>
-        <text className="font-mono text-[8px] font-bold fill-slate-800 dark:fill-slate-300" letterSpacing="1.8">
+        <text
+          className="font-mono text-[8px] font-bold fill-slate-800 dark:fill-slate-300"
+          letterSpacing="1.8"
+        >
           <textPath href="#circlePath">{text.repeat(3)}</textPath>
         </text>
       </svg>
@@ -415,6 +491,7 @@ function RotatingBadge() {
 }
 
 function TreeTraversalSimulation() {
+  const reduce = useReducedMotion();
   const traversalOrder = [
     { id: 1, label: "1", x: 25, y: 65 },
     { id: 2, label: "2", x: 50, y: 40 },
@@ -428,11 +505,12 @@ function TreeTraversalSimulation() {
   const [activeIndex, setActiveIndex] = useState(0);
 
   useEffect(() => {
+    if (reduce) return;
     const timer = setInterval(() => {
-      setActiveIndex((prev) => (prev + 1) % traversalOrder.length);
+      setActiveIndex((prev) => (prev + 1) % 7);
     }, 1200);
     return () => clearInterval(timer);
-  }, []);
+  }, [reduce]);
 
   const activeNode = traversalOrder[activeIndex];
 
@@ -440,12 +518,54 @@ function TreeTraversalSimulation() {
     <div className="relative w-full max-w-[200px] h-20">
       <svg viewBox="0 0 200 80" className="w-full h-full">
         {/* Draw Edges */}
-        <line x1={100} y1={15} x2={50} y2={40} className="stroke-slate-200 dark:stroke-slate-800" strokeWidth="1.5" />
-        <line x1={100} y1={15} x2={150} y2={40} className="stroke-slate-200 dark:stroke-slate-800" strokeWidth="1.5" />
-        <line x1={50} y1={40} x2={25} y2={65} className="stroke-slate-200 dark:stroke-slate-800" strokeWidth="1.5" />
-        <line x1={50} y1={40} x2={75} y2={65} className="stroke-slate-200 dark:stroke-slate-800" strokeWidth="1.5" />
-        <line x1={150} y1={40} x2={125} y2={65} className="stroke-slate-200 dark:stroke-slate-800" strokeWidth="1.5" />
-        <line x1={150} y1={40} x2={175} y2={65} className="stroke-slate-200 dark:stroke-slate-800" strokeWidth="1.5" />
+        <line
+          x1={100}
+          y1={15}
+          x2={50}
+          y2={40}
+          className="stroke-slate-200 dark:stroke-slate-800"
+          strokeWidth="1.5"
+        />
+        <line
+          x1={100}
+          y1={15}
+          x2={150}
+          y2={40}
+          className="stroke-slate-200 dark:stroke-slate-800"
+          strokeWidth="1.5"
+        />
+        <line
+          x1={50}
+          y1={40}
+          x2={25}
+          y2={65}
+          className="stroke-slate-200 dark:stroke-slate-800"
+          strokeWidth="1.5"
+        />
+        <line
+          x1={50}
+          y1={40}
+          x2={75}
+          y2={65}
+          className="stroke-slate-200 dark:stroke-slate-800"
+          strokeWidth="1.5"
+        />
+        <line
+          x1={150}
+          y1={40}
+          x2={125}
+          y2={65}
+          className="stroke-slate-200 dark:stroke-slate-800"
+          strokeWidth="1.5"
+        />
+        <line
+          x1={150}
+          y1={40}
+          x2={175}
+          y2={65}
+          className="stroke-slate-200 dark:stroke-slate-800"
+          strokeWidth="1.5"
+        />
 
         {/* Draw Nodes */}
         {traversalOrder.map((node) => {
@@ -462,7 +582,11 @@ function TreeTraversalSimulation() {
                   strokeWidth="2"
                   initial={{ scale: 0.8, opacity: 0.5 }}
                   animate={{ scale: 1.3, opacity: 0 }}
-                  transition={{ repeat: Infinity, duration: 1.2, ease: "easeOut" }}
+                  transition={{
+                    repeat: Infinity,
+                    duration: 1.2,
+                    ease: "easeOut",
+                  }}
                 />
               )}
               <circle
@@ -498,9 +622,15 @@ function TreeTraversalSimulation() {
 }
 
 function AnimatedCounter({ target, duration = 2000 }) {
+  const reduce = useReducedMotion();
   const [count, setCount] = useState(0);
 
   useEffect(() => {
+    if (reduce) {
+      setCount(target);
+      return;
+    }
+    let frame;
     let startTimestamp = null;
     const step = (timestamp) => {
       if (!startTimestamp) startTimestamp = timestamp;
@@ -510,14 +640,14 @@ function AnimatedCounter({ target, duration = 2000 }) {
       const currentCount = Math.floor(easeProgress * target);
       setCount(currentCount);
       if (progress < 1) {
-        window.requestAnimationFrame(step);
+        frame = window.requestAnimationFrame(step);
       }
     };
-    window.requestAnimationFrame(step);
-  }, [target, duration]);
+    frame = window.requestAnimationFrame(step);
+    return () => cancelAnimationFrame(frame);
+  }, [target, duration, reduce]);
 
   const formattedCount = count < 10 ? `0${count}` : `${count}`;
 
   return <span>{formattedCount}</span>;
 }
-

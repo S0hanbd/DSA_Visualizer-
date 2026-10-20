@@ -3,22 +3,35 @@ import { createContext, useContext, useEffect, useMemo, useState } from "react";
 const ThemeContext = createContext(null);
 
 export function ThemeProvider({ children }) {
-  const [theme, setTheme] = useState(() => localStorage.getItem("dsa-theme") || "light");
+  const [theme, setTheme] = useState(() => {
+    try {
+      return localStorage.getItem("dsa-theme") === "dark" ? "dark" : "light";
+    } catch {
+      return "light";
+    }
+  });
 
   useEffect(() => {
     document.documentElement.classList.toggle("dark", theme === "dark");
-    localStorage.setItem("dsa-theme", theme);
+    try {
+      localStorage.setItem("dsa-theme", theme);
+    } catch {
+      /* Storage is optional; theme still works in memory. */
+    }
   }, [theme]);
 
   const value = useMemo(
     () => ({
       theme,
-      toggleTheme: () => setTheme((current) => (current === "dark" ? "light" : "dark")),
+      toggleTheme: () =>
+        setTheme((current) => (current === "dark" ? "light" : "dark")),
     }),
-    [theme]
+    [theme],
   );
 
-  return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
+  return (
+    <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>
+  );
 }
 
 export function useTheme() {

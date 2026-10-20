@@ -1,0 +1,136 @@
+{
+  "entry": [
+    {
+      "name": "index-D3KVfe5u.js",
+      "bytes": 355094,
+      "gzip": 114127
+    },
+    {
+      "name": "index-wHdetdhU.css",
+      "bytes": 99829,
+      "gzip": 15904
+    }
+  ],
+  "files": [
+    {
+      "name": "index-D3KVfe5u.js",
+      "bytes": 355094,
+      "gzip": 114127
+    },
+    {
+      "name": "index-wHdetdhU.css",
+      "bytes": 99829,
+      "gzip": 15904
+    },
+    {
+      "name": "CodeViewerContent-NMD3K3FL.js",
+      "bytes": 81535,
+      "gzip": 21989
+    },
+    {
+      "name": "StructurePage-Btf2X1G6.js",
+      "bytes": 33279,
+      "gzip": 10760
+    },
+    {
+      "name": "AlgorithmPage-Do0ReQq1.js",
+      "bytes": 29220,
+      "gzip": 8812
+    },
+    {
+      "name": "GraphPage-ko6Mn115.js",
+      "bytes": 23114,
+      "gzip": 6454
+    },
+    {
+      "name": "DesignPage-DWTN9A8b.js",
+      "bytes": 20330,
+      "gzip": 4400
+    },
+    {
+      "name": "Home-CDZ9cmKe.js",
+      "bytes": 18169,
+      "gzip": 5581
+    },
+    {
+      "name": "GraphColoringPage-DyWch7E5.js",
+      "bytes": 17755,
+      "gzip": 5792
+    },
+    {
+      "name": "TreeVisualization-DZW_9gHP.js",
+      "bytes": 14588,
+      "gzip": 4031
+    },
+    {
+      "name": "AdvancedPage-CUug_B0t.js",
+      "bytes": 14332,
+      "gzip": 5601
+    },
+    {
+      "name": "NQueensPage-CtQWaf-w.js",
+      "bytes": 12000,
+      "gzip": 3804
+    },
+    {
+      "name": "LinkedListVisualization-DgKtuYKo.js",
+      "bytes": 11029,
+      "gzip": 3308
+    },
+    {
+      "name": "VisualizationBars-DGK990W_.js",
+      "bytes": 9971,
+      "gzip": 2398
+    },
+    {
+      "name": "GraphVisualization-CeUNE0KA.js",
+      "bytes": 5753,
+      "gzip": 2279
+    },
+    {
+      "name": "Sidebar-I-ENnsFT.js",
+      "bytes": 5716,
+      "gzip": 2278
+    },
+    {
+      "name": "graphColoring.worker-Diaefnnj.js",
+      "bytes": 4538,
+      "gzip": 2091
+    },
+    {
+      "name": "usePlayback-Cc0bHPjv.js",
+      "bytes": 3237,
+      "gzip": 1295
+    },
+    {
+      "name": "GuidePage-4lamWvSg.js",
+      "bytes": 2966,
+      "gzip": 1416
+    },
+    {
+      "name": "index-BEYlGa1a.js",
+      "bytes": 2925,
+      "gzip": 1418
+    },
+    {
+      "name": "validation-JIXM8RnG.js",
+      "bytes": 2790,
+      "gzip": 1305
+    },
+    {
+      "name": "AlgorithmCard-E6tYGKiI.js",
+      "bytes": 2591,
+      "gzip": 994
+    },
+    {
+      "name": "bubbleSortSimulation-BPLDxcgQ.js",
+      "bytes": 1556,
+      "gzip": 630
+    },
+    {
+      "name": "chevron-down-vNrGHdU3.js",
+      "bytes": 296,
+      "gzip": 243
+    }
+  ]
+}

@@ -13,7 +13,11 @@ export default function StackVisualization({ step }) {
 
   // Detect when a new element has been pushed (array length grows)
   useEffect(() => {
-    if (markers.operation === "Push" && step.status === "Done" && array.length > 0) {
+    if (
+      markers.operation === "Push" &&
+      step.status === "Done" &&
+      array.length > 0
+    ) {
       const topIdx = array.length - 1;
       setNewlyPushedIdx(topIdx);
       const timer = setTimeout(() => setNewlyPushedIdx(null), 700);
@@ -24,7 +28,6 @@ export default function StackVisualization({ step }) {
   return (
     <div className="flex w-full items-center justify-center p-6">
       <div className="flex items-end gap-6">
-
         {/* Stack Container */}
         <div className="relative flex flex-col items-center">
           {/* Stack Overflow Banner */}
@@ -36,7 +39,8 @@ export default function StackVisualization({ step }) {
                 exit={{ opacity: 0, y: -10 }}
                 className="mb-2 flex items-center gap-2 rounded-full bg-red-500/20 border border-red-400 px-4 py-1.5 text-xs font-black text-red-400 tracking-widest uppercase"
               >
-                <span className="text-base">⚠</span> Stack Full ({STACK_MAX}/{STACK_MAX})
+                <span className="text-base">⚠</span> Stack Full ({STACK_MAX}/
+                {STACK_MAX})
               </motion.div>
             )}
           </AnimatePresence>
@@ -48,7 +52,7 @@ export default function StackVisualization({ step }) {
           >
             {/* Empty state */}
             {array.length === 0 && (
-              <div className="absolute inset-0 flex items-center justify-center text-slate-400 font-bold opacity-50 text-sm">
+              <div className="absolute inset-0 flex items-center justify-center text-slate-600 dark:text-slate-300 font-bold text-sm">
                 Stack is empty
               </div>
             )}
@@ -82,10 +86,12 @@ export default function StackVisualization({ step }) {
                   bgClass = "bg-emerald-500 text-white border-emerald-400";
                 } else if (isEntering) {
                   // Dark while sliding in
-                  bgClass = "bg-slate-800 text-white border-slate-700 dark:bg-slate-200 dark:text-slate-900 dark:border-slate-300";
+                  bgClass =
+                    "bg-slate-800 text-white border-slate-700 dark:bg-slate-200 dark:text-slate-900 dark:border-slate-300";
                 } else {
                   // All settled elements — uniform light style
-                  bgClass = "bg-slate-100 text-slate-800 border-slate-300 dark:bg-slate-800 dark:text-slate-200 dark:border-slate-600";
+                  bgClass =
+                    "bg-slate-100 text-slate-800 border-slate-300 dark:bg-slate-800 dark:text-slate-200 dark:border-slate-600";
                 }
 
                 return (
@@ -93,7 +99,12 @@ export default function StackVisualization({ step }) {
                     key={`item-${val}-${idx}`}
                     initial={{ y: -420, opacity: 0, scale: 0.85 }}
                     animate={{ y: 0, opacity: 1, scale: 1 }}
-                    exit={{ y: -420, opacity: 0, scale: 0.7, transition: { duration: 0.3 } }}
+                    exit={{
+                      y: -420,
+                      opacity: 0,
+                      scale: 0.7,
+                      transition: { duration: 0.3 },
+                    }}
                     transition={{ type: "spring", stiffness: 300, damping: 28 }}
                     className={`flex w-full flex-shrink-0 items-center justify-center border-t text-base font-bold transition-colors duration-500 ${bgClass}`}
                     style={{ height: "48px" }}
@@ -129,11 +140,10 @@ export default function StackVisualization({ step }) {
           </AnimatePresence>
 
           {/* Stack size counter */}
-          <div className="absolute -bottom-8 right-0 text-xs font-black text-slate-400 tabular-nums">
+          <div className="absolute -bottom-8 right-0 text-xs font-black text-slate-600 dark:text-slate-300 tabular-nums">
             {array.length}/{STACK_MAX}
           </div>
         </div>
-
       </div>
     </div>
   );
