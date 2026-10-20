@@ -1,95 +1,128 @@
-# 📊 DSA Visualizer
+# DSA Visualizer
 
-A premium, interactive, and visually stunning web application designed to help students, developers, and educators visualize and understand Data Structures and Algorithms (DSA) step-by-step. 
+An interactive React learning lab with **37 implemented algorithm/data-structure entries across 11 topics**, step-by-step playback, educational C++ source, live state explanations, graph editors, and light/dark themes.
 
-Featuring interactive control panels, step-by-step code line highlights in C++, live explanation logs, and dynamic speed configurations.
+[Usage guide](docs/usage.md) · [Remediation report](docs/remediation-status.md) · [Architecture](docs/architecture.md) · [Quality workflow](https://github.com/S0hanbd/DSA_Visualizer-/actions/workflows/quality.yml)
 
----
+## What you can do
 
-## 🚀 Features
+- Build and edit data structures, then follow individual operations with play, pause, step, Finish and Cancel controls.
+- Inspect algorithm-specific state: array bounds and temporary buffers, linked-list pointer changes, AVL rotations, graph distances, spanning forests and backtracking solutions.
+- Compare each simulation with educational C++ and highlights for executable events; presentation-only steps show a source overview.
+- Navigate on mobile or desktop, use keyboard graph controls and execution-step selection, and choose light/dark themes with reduced-motion support.
 
-* **Interactive Step-by-Step Executions:** Pause, play, step forward, step backward, or reset animations at your own pace.
-* **C++ Code Highlights:** Watch the logic execute line-by-line in real-time, side-by-side with the animation.
-* **Dynamic Animations:** Built using fluid HSL-tailored gradients and smooth spring physics animations via Framer Motion.
-* **Custom User Inputs:** Supply your own custom array or let the app generate random datasets for visualization.
-* **Dark & Light Mode:** Modern glassmorphism UI styled with clean Tailwind CSS utility classes.
-* **Live Explanation Log:** Detailed execution logs that explain the mathematical and logical operations happening in the background.
+The application runs entirely in the browser. No backend, database or account is required. The stack is React 18, Vite 6, React Router 7, Tailwind CSS 4 and Framer Motion.
 
----
+## Run locally
 
-## 💻 Tech Stack
+Use **Node 24 LTS** (or Node 22.13+; Node 25 is outside the tested range) and npm 10–12. The checked-in lockfile is the reproducible dependency source. On Windows PowerShell, use npm.cmd if execution policy blocks npm.ps1.
 
-* **Frontend Framework:** React 18
-* **Build Tool:** Vite 6 (Optimized for lightning-fast Hot Module Replacement)
-* **Styling:** Vanilla CSS & Tailwind CSS (Custom utility layers)
-* **Animations:** Framer Motion
-* **Syntax Highlighting:** React Syntax Highlighter (Prism Engine)
-* **Icons:** Lucide React
-
----
-
-## 🛠️ Getting Started
-
-### Prerequisites
-
-Make sure you have Node.js installed on your system.
-
-### Installation
-
-Clone the repository and install the dependencies:
-
-```bash
-# Clone the repository
+```sh
 git clone https://github.com/S0hanbd/DSA_Visualizer-.git
-
-# Navigate to the project directory
-cd "DSA Visualizer"
-
-# Install package dependencies
-npm install
-```
-
-### Running Locally
-
-To start the development server, run:
-
-```bash
+cd DSA_Visualizer-
+npm ci
 npm start
 ```
 
-Open your browser and navigate to **http://localhost:5173** to view the app!
+Open http://127.0.0.1:5173. The development server binds to loopback.
 
----
+To review the audit-remediation branch before it is merged:
 
-## 📊 Supported Data Structures & Algorithms
+```sh
+git switch remediation/diagnostic-audit
+npm ci
+```
 
-### 🔍 Searching Algorithms
-* **Linear Search:** Left-to-right sequential search highlighting matching and mismatch states.
-* **Binary Search:** Interval-halving search showing lower, upper, and midpoint bounds on sorted arrays.
+For a local production preview:
 
-### 🔀 Sorting Algorithms
-* **Bubble Sort:** Pairwise swapping of adjacent elements.
-* **Selection Sort:** Minimum value scanning and positioning.
-* **Insertion Sort:** Iterative placement of elements into a sorted sub-region.
-* *And placeholders ready for Merge, Quick, Heap, Shell, Counting, and Radix Sort.*
+```sh
+npm run build
+npm run preview
+```
 
-### ⛓️ Data Structures & Graphs
-* **Linked Lists:** Singly, Doubly, and Circular list traversals.
-* **Stacks & Queues:** Array implementation animations (push, pop, enqueue, dequeue).
-* **Trees & Graphs:** BFS, DFS, and MST concepts.
+## Available simulations
 
----
+- Sorting: bubble, selection, insertion, bottom-up merge, quick, heap, shell, counting, radix.
+- Searching: linear and binary (an explicitly explained sorted copy).
+- Structures: singly/doubly/circular linked lists, stack, linear/circular queues, min/max priority queue, two-stack queue.
+- Trees: binary tree using BST construction, BST, AVL, inorder/preorder/postorder/level-order traversal, max heap.
+- Undirected graphs: BFS, DFS, Dijkstra, Prim, Kruskal. Disconnected results are explained.
+- Greedy: fractional knapsack and deterministic unit-time profit/deadline scheduling.
+- Directed shortest paths: Bellman-Ford and Floyd-Warshall, including negative-cycle handling.
+- Strings: naive matching and Rabin-Karp, including overlaps, empty patterns and collision verification.
+- Backtracking: N-Queens and bounded graph coloring in a cancellable worker.
 
-## 👥 Project Builders
+## Playback rules
 
-This project was built and is maintained by:
+Operations commit their final model when playback reaches completion or **Finish operation** is selected. **Cancel operation** restores the previously committed model. Paused operations cannot start another mutation. Timeline selection, Previous, Next and Reset playback are read-only replay; use **Return to live** before changing the model. **Clear model** is distinct from resetting playback. Navigating to another route starts a fresh local workspace.
 
-* **Sohanur Rahman Sohan**
-* **Sifatul Islam**
-* **Robiul Haque Rhythm**
+## Inputs and limits
 
----
+| Input                     | Contract                                                                                                              |
+| ------------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| Sorting/search array      | 2–20 integers from 1 to 999                                                                                           |
+| List / tree values        | Integers 0–9999; at most 16 list nodes / 31 tree nodes                                                                |
+| Stack / array queues      | Capacity 10; linear queue does not reuse exhausted rear slots                                                         |
+| Two-stack queue           | Capacity six across both stacks                                                                                       |
+| Priority queue / max heap | Capacity 15; clear before switching min/max mode                                                                      |
+| Graph editor              | 1–16 unique IDs, up to 80 edges; simple undirected graph; weights within ±9999; Dijkstra requires nonnegative weights |
+| Graph coloring            | Up to ten nodes, four colors, 200 solutions, 12,000 steps, 1500ms; partial outcomes clearly marked                    |
+| Directed shortest paths   | Up to eight nodes and 32 directed edges; finite weights within ±9999                                                  |
+| Greedy inputs             | Up to 12 items/jobs; positive item weights, nonnegative capacity/value/profit, integer job deadlines 1–20             |
+| String matching           | ASCII text ≤200 / pattern ≤80 characters; empty pattern matches every boundary                                        |
 
-## 📄 License
+Malformed, fractional integer tokens and excessive inputs are rejected. Empty delimiter tokens never insert zero. Graph inputs reject self-loops, parallel edges and missing endpoints. Node coordinates do not invalidate a computed run; topology changes do.
 
-This project is licensed under the MIT License.
+## Validation commands
+
+```sh
+npm test                 # Algorithm, state-machine, regression and seeded invariant checks
+npm run lint             # ESLint, Hooks and unused-variable checks
+npm run typecheck        # Strict shared TypeScript playback contracts
+npm run build            # Production bundle in dist/
+npm run check            # Lint + types + tests + build
+npx playwright install chromium
+npm run test:e2e         # Chromium routes, playback, worker, responsive and axe checks
+npm run audit:check      # Full dependency tree; any advisory or registry error fails
+npm run check:cpp        # C++17 compilation/result checks; requires g++ or CXX
+node scripts/bundle-report.js
+```
+
+The UI/builders are primarily JavaScript; the type check covers the strict shared transaction contract, while tests cover runtime algorithm invariants. Chromium is the local browser target; Firefox/Safari have not been exercised. Tailwind 4 requires modern browsers (Chrome 111+, Safari 16.4+, Firefox 128+).
+
+The GitHub workflow runs reproducible installation, quality checks, C++ checks, dependency audit and browser tests. CI failures are not suppressed. A local C++ compiler is optional for running the app, but the compiler check must pass in CI.
+
+## Latest local verification
+
+Recorded on **21 October 2026** for the audit-remediation changes. These results describe the local checkout; consult the [GitHub workflow](https://github.com/S0hanbd/DSA_Visualizer-/actions/workflows/quality.yml) for remote CI results.
+
+| Check | Result |
+| --- | --- |
+| `npm run check` | Passed: lint, shared playback types, 30 Node tests and production build |
+| Algorithm/invariant coverage | 900 seeded sorting cases; 1,700 structure operations; sequential AVL height/balance checks; N-Queens counts 2/10/4 |
+| `npm run test:e2e` | 10 Chromium tests passed, including all 37 catalog routes and declared aliases, playback, workers, storage denial, responsive and accessibility smoke checks |
+| `npm run audit:check` | 0 dependency findings, down from 18 in the baseline audit |
+| Initial homepage JavaScript | 377.71 kB / 121.58 kB gzip, down from 1,269.48 / 402.37 kB |
+| Production CSS | 99.83 kB / 15.90 kB gzip, up from 81.94 / 13.53 kB |
+
+Local C++ compilation was **not verified** because no compiler was installed. The CI compiler gate compiles all 37 displayed sources and exercises result assertions for 19 variants. Remote CI has not been verified at the time of this local report. Browser checks cover Chromium; they are smoke checks rather than complete accessibility or cross-browser certification.
+
+See the [per-finding tracker](docs/remediation-status.md), [dependency migration notes](docs/security-and-migrations.md), [bundle measurements](docs/bundle-final.json) and [PR summary](docs/PR_SUMMARY.md) for scope, evidence and remaining verification.
+
+## Project layout
+
+- src/logic: pure validated builders and transaction reducer.
+- src/pages and src/components: route composition, controls and visualizations.
+- src/data: catalog and educational source/event anchors.
+- src/workers: cancellable bounded backtracking worker.
+- tests and e2e: deterministic logic/invariant and browser regressions.
+- docs: remediation tracker, architecture, dependency evidence and bundle measurements.
+- inspiration: archived standalone HTML references; not production routes.
+
+The Vercel configuration explicitly installs development dependencies, runs npm run build, and serves dist with SPA deep-link rewrites. Generated build output, installed packages and browser/cache artifacts are ignored by Git. Review and merge the remediation branch before deploying; publishing a branch does not merge it or authorize a manual deployment.
+
+Usage guidance is available at `/guide` in the running app and in the [usage guide](docs/usage.md). For design tokens/component demos, visit `/design`.
+
+## Builders and license
+
+Sohanur Rahman Sohan, Sifatul Islam, and Robiul Haque Rhythm. MIT license; see LICENSE.
