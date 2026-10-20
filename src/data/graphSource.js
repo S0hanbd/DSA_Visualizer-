@@ -8,8 +8,8 @@ vector<vector<pair<int,double>>> adjacency(int n,const vector<Edge>& edges) {
 // Simple undirected graphs: reject self-loops, parallel edges and missing endpoints.
 `;
 const path = `vector<int> pathTo(int start,int target,const vector<int>& parent) {
-    vector<int> path;set<int> seen;
-    for(int v=target;v!=-1 && !seen.count(v);v=parent[v]) {seen.insert(v);path.push_back(v);}
+    vector<int> path;vector<bool> seen(parent.size(),false);
+    for(int v=target;v!=-1 && !seen[v];v=parent[v]) {seen[v]=true;path.push_back(v);}
     reverse(path.begin(),path.end());
     return !path.empty() && path.front()==start ? path : vector<int>{}; // @path
 }

@@ -1,19 +1,19 @@
 {
   "scripts": [
     {
-      "name": "index-D3KVfe5u.js",
-      "bytes": 355094,
-      "gzip": 114127
+      "name": "index-xXay_Duy.js",
+      "bytes": 366993,
+      "gzip": 118604
     },
     {
-      "name": "Home-CDZ9cmKe.js",
+      "name": "Home-FXh7K-ck.js",
       "bytes": 18169,
-      "gzip": 5581
+      "gzip": 5580
     },
     {
-      "name": "AlgorithmCard-E6tYGKiI.js",
+      "name": "AlgorithmCard-CMq1aIov.js",
       "bytes": 2591,
-      "gzip": 994
+      "gzip": 993
     },
     {
       "name": "bubbleSortSimulation-BPLDxcgQ.js",
@@ -21,11 +21,11 @@
       "gzip": 630
     },
     {
-      "name": "chevron-down-vNrGHdU3.js",
+      "name": "chevron-down-B0q7zRTm.js",
       "bytes": 296,
       "gzip": 243
     }
   ],
-  "bytes": 377706,
-  "gzip": 121575
+  "bytes": 389605,
+  "gzip": 126050
 }

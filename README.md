@@ -9,6 +9,7 @@ An interactive React learning lab with **37 implemented algorithm/data-structure
 - Build and edit data structures, then follow individual operations with play, pause, step, Finish and Cancel controls.
 - Inspect algorithm-specific state: array bounds and temporary buffers, linked-list pointer changes, AVL rotations, graph distances, spanning forests and backtracking solutions.
 - Compare each simulation with educational C++ and highlights for executable events; presentation-only steps show a source overview.
+- Read worst-case **Time Complexity** and **Space Complexity** for every algorithm, with an explanation of both costs, the operation being measured and the meaning of each variable. Best/average-case cards are omitted.
 - Navigate on mobile or desktop, use keyboard graph controls and execution-step selection, and choose light/dark themes with reduced-motion support.
 
 The application runs entirely in the browser. No backend, database or account is required. The stack is React 18, Vite 6, React Router 7, Tailwind CSS 4 and Framer Motion.
@@ -100,14 +101,14 @@ Recorded on **21 October 2026** for the audit-remediation changes. These results
 | --- | --- |
 | `npm run check` | Passed: lint, shared playback types, 30 Node tests and production build |
 | Algorithm/invariant coverage | 900 seeded sorting cases; 1,700 structure operations; sequential AVL height/balance checks; N-Queens counts 2/10/4 |
-| `npm run test:e2e` | 10 Chromium tests passed, including all 37 catalog routes and declared aliases, playback, workers, storage denial, responsive and accessibility smoke checks |
+| `npm run test:e2e` | Initial full suite: 10 Chromium tests passed. Complexity follow-up: 3 focused tests passed, checking two explained cards on all 37 routes plus aliases, responsive layouts, storage denial and light/dark accessibility |
 | `npm run audit:check` | 0 dependency findings, down from 18 in the baseline audit |
-| Initial homepage JavaScript | 377.71 kB / 121.58 kB gzip, down from 1,269.48 / 402.37 kB |
-| Production CSS | 99.83 kB / 15.90 kB gzip, up from 81.94 / 13.53 kB |
+| Initial homepage JavaScript | 389.61 kB / 126.05 kB gzip including the new complexity explanations, down from 1,269.48 / 402.37 kB |
+| Production CSS | 99.81 kB / 15.92 kB gzip, up from 81.94 / 13.53 kB |
 
-Local C++ compilation was **not verified** because no compiler was installed. The CI compiler gate compiles all 37 displayed sources and exercises result assertions for 19 variants. Remote CI has not been verified at the time of this local report. Browser checks cover Chromium; they are smoke checks rather than complete accessibility or cross-browser certification.
+No C++ compiler is installed locally. The [published remediation workflow](https://github.com/S0hanbd/DSA_Visualizer-/actions/runs/39515738478) passed its C++ gate (37 displayed sources and result assertions for 19 variants), quality checks and browser suite. Follow-up revisions must pass their own workflow. Browser checks cover Chromium; they are smoke checks rather than complete accessibility or cross-browser certification.
 
-See the [per-finding tracker](docs/remediation-status.md), [dependency migration notes](docs/security-and-migrations.md), [bundle measurements](docs/bundle-final.json) and [PR summary](docs/PR_SUMMARY.md) for scope, evidence and remaining verification.
+See the [complexity guide](docs/complexity-guide.md), [per-finding tracker](docs/remediation-status.md), [dependency migration notes](docs/security-and-migrations.md), [bundle measurements](docs/bundle-final.json) and [PR summary](docs/PR_SUMMARY.md) for scope, evidence and remaining verification.
 
 ## Project layout
 

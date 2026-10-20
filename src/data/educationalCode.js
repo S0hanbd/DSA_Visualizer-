@@ -122,6 +122,7 @@ public:
 const stack = `class Stack {
     vector<int> values;
 public:
+    Stack() { values.reserve(10); }
     bool push(int value) {
         if(values.size()>=10) return false; // @start
         values.push_back(value); // @insert
@@ -153,6 +154,7 @@ const priority = (mode) => `class PriorityQueue {
     bool higher(int a,int b) { return a ${mode === "min" ? "<" : ">"} b; } // @compare
     void swapAt(int a,int b) { swap(heap[a],heap[b]); } // @swap
 public:
+    PriorityQueue() { heap.reserve(15); }
     void enqueue(int value) {
         if(heap.size()>=15) throw length_error("Heap full"); // @invalid
         heap.push_back(value); // @insert

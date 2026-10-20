@@ -69,7 +69,7 @@ export default function AlgorithmCard({ algorithm }) {
         </div>
         <div className="mt-auto flex flex-wrap gap-2 text-xs font-bold">
           <span className="rounded-full bg-slate-100 px-3 py-1 text-slate-600 dark:bg-slate-800/40 dark:text-slate-400">
-            Best {algorithm.complexities.best}
+            Time {algorithm.complexities.time}
           </span>
           <span className="rounded-full bg-slate-100 px-3 py-1 text-slate-600 dark:bg-slate-800/40 dark:text-slate-400">
             Space {algorithm.complexities.space}

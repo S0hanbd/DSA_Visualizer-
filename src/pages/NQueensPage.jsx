@@ -6,7 +6,7 @@ import ExecutionSteps from "../components/ExecutionSteps.jsx";
 import NQueensVisualization from "../components/NQueensVisualization.jsx";
 import { buildNQueensSteps } from "../logic/nQueensSimulation.js";
 import { algorithmMap } from "../data/algorithms.js";
-import ComplexityCard from "../components/ComplexityCard.jsx";
+import ComplexitySummary from "../components/ComplexitySummary.jsx";
 
 const SPEED_LABELS = { 900: "Slow", 480: "Normal", 200: "Fast", 80: "Turbo" };
 
@@ -215,36 +215,7 @@ export default function NQueensPage() {
           />
         </section>
 
-        <section className="grid gap-4 grid-cols-2 sm:grid-cols-4 mt-6">
-          {algorithm.complexities.best && (
-            <ComplexityCard
-              label="Best Case"
-              value={algorithm.complexities.best}
-              tone="green"
-            />
-          )}
-          {algorithm.complexities.average && (
-            <ComplexityCard
-              label="Average Case"
-              value={algorithm.complexities.average}
-              tone="orange"
-            />
-          )}
-          {algorithm.complexities.worst && (
-            <ComplexityCard
-              label="Worst Case"
-              value={algorithm.complexities.worst}
-              tone="red"
-            />
-          )}
-          {algorithm.complexities.space && (
-            <ComplexityCard
-              label="Space Complexity"
-              value={algorithm.complexities.space}
-              tone="blue"
-            />
-          )}
-        </section>
+        <ComplexitySummary algorithm={algorithm} />
       </div>
     </div>
   );

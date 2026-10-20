@@ -529,9 +529,7 @@ export default function DesignPage() {
                       category: "Sorting",
                       slug: "bubble-sort",
                       complexities: {
-                        best: "O(n)",
-                        average: "O(n²)",
-                        worst: "O(n²)",
+                        time: "O(n²)",
                         space: "O(1)",
                       },
                     }}
@@ -539,22 +537,30 @@ export default function DesignPage() {
                 </div>
               </div>
 
-              {/* Complexity Card Demo (Best) */}
+              {/* Complexity Card Demo (Time) */}
               <div className="space-y-4 flex flex-col">
                 <span className="muted-label">ComplexityCard</span>
                 <div className="flex-1">
-                  <ComplexityCard label="Best Case" value="O(1)" tone="green" />
+                  <ComplexityCard
+                    label="Time Complexity"
+                    context="Worst case"
+                    value="O(n²)"
+                    explanation="Bubble sort can compare adjacent values across n − 1 passes, requiring a quadratic number of comparisons."
+                    tone="green"
+                  />
                 </div>
               </div>
 
-              {/* Complexity Card Demo (Average) */}
+              {/* Complexity Card Demo (Space) */}
               <div className="space-y-4 flex flex-col">
-                <span className="muted-label">ComplexityCard (Orange)</span>
+                <span className="muted-label">ComplexityCard (Space)</span>
                 <div className="flex-1">
                   <ComplexityCard
-                    label="Average Case"
-                    value="O(log n)"
-                    tone="orange"
+                    label="Space Complexity"
+                    context="Memory required"
+                    value="O(1)"
+                    explanation="Bubble sort swaps values in place, keeping only a few indices, a flag and a temporary value."
+                    tone="blue"
                   />
                 </div>
               </div>

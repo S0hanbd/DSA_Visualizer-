@@ -3,7 +3,7 @@ import { useLocation } from "react-router-dom";
 import Sidebar from "../components/Sidebar.jsx";
 import CodeViewer from "../components/CodeViewer.jsx";
 import ExecutionSteps from "../components/ExecutionSteps.jsx";
-import ComplexityCard from "../components/ComplexityCard.jsx";
+import ComplexitySummary from "../components/ComplexitySummary.jsx";
 import PlaybackControls from "../components/PlaybackControls.jsx";
 import usePlayback from "../hooks/usePlayback.js";
 import {
@@ -266,11 +266,7 @@ function Workspace({ slug }) {
             onStepClick={playback.select}
           />
         </div>
-        <section className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-          {Object.entries(algorithm.complexities).map(([label, value]) => (
-            <ComplexityCard key={label} label={label} value={value} />
-          ))}
-        </section>
+        <ComplexitySummary algorithm={algorithm} />
       </div>
     </div>
   );

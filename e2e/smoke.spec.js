@@ -20,6 +20,24 @@ test("every catalog page and declared alias renders without a page exception", a
     await expect(
       page.getByText("This visualization could not continue"),
     ).toHaveCount(0);
+    const complexity = page.getByRole("region", {
+      name: "Algorithm complexity",
+      exact: true,
+    });
+    await expect(complexity.getByRole("article")).toHaveCount(2);
+    await expect(
+      complexity.getByRole("article", { name: "Time Complexity", exact: true }),
+    ).toContainText(algorithm.complexities.timeExplanation);
+    await expect(
+      complexity.getByRole("article", {
+        name: "Space Complexity",
+        exact: true,
+      }),
+    ).toContainText(algorithm.complexities.spaceExplanation);
+    await expect(complexity).toContainText("Worst case");
+    await expect(page.getByText(/^(?:Best|Average|Worst) Case$/)).toHaveCount(
+      0,
+    );
   }
   for (const [alias, target] of [
     ["/stack", "/algorithm/stack-array"],
