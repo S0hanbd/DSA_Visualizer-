@@ -1,16 +1,26 @@
 import { useEffect, useRef } from "react";
 
-export default function ExecutionSteps({ steps, currentStep, onStepClick }) {
+export default function ExecutionSteps({
+  steps,
+  currentStep,
+  onStepClick,
+  compact = false,
+  full = false,
+}) {
   const listRef = useRef(null),
     selectedRef = useRef(null);
-  const start = Math.max(0, Math.min(currentStep - 20, steps.length - 41));
-  const visible = steps.slice(start, start + 41);
+  const count = full ? steps.length : compact ? 9 : 41;
+  const start = Math.max(
+    0,
+    Math.min(currentStep - Math.floor(count / 2), steps.length - count),
+  );
+  const visible = steps.slice(start, start + count);
   useEffect(() => {
     const list = listRef.current,
       selected = selectedRef.current;
-    if (list && selected)
+    if (!compact && list && selected)
       list.scrollTop = Math.max(0, selected.offsetTop - list.offsetTop - 160);
-  }, [currentStep]);
+  }, [currentStep, compact]);
   return (
     <section className="neo-panel min-w-0 overflow-hidden">
       <div className="border-b border-white/70 px-5 py-4 dark:border-slate-800">
@@ -35,7 +45,11 @@ export default function ExecutionSteps({ steps, currentStep, onStepClick }) {
         ref={listRef}
         role="group"
         aria-label="Execution history"
-        className="relative max-h-[520px] space-y-3 overflow-auto p-4"
+        className={
+          compact
+            ? "compact-history"
+            : "relative max-h-[520px] space-y-3 overflow-auto p-4"
+        }
       >
         {start > 0 && (
           <p className="text-xs text-slate-500">

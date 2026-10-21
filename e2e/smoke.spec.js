@@ -20,6 +20,11 @@ test("every catalog page and declared alias renders without a page exception", a
     await expect(
       page.getByText("This visualization could not continue"),
     ).toHaveCount(0);
+    if (["sorting", "searching"].includes(algorithm.type)) {
+      await page
+        .getByText("Algorithm guide & complexity", { exact: true })
+        .click();
+    }
     const complexity = page.getByRole("region", {
       name: "Algorithm complexity",
       exact: true,
@@ -77,25 +82,35 @@ test("shared playback bar controls each algorithm family and speed changes playb
     const bar = page.getByRole("region", { name: "Playback controls" });
     await expect(bar).toBeVisible();
     await expect(bar.getByLabel("Playback speed")).toBeVisible();
-    await expect(bar.getByRole("button", { name: "Previous step" })).toBeVisible();
-    await expect(bar.getByRole("button", { name: "Play", exact: true })).toBeVisible();
+    await expect(
+      bar.getByRole("button", { name: "Previous step" }),
+    ).toBeVisible();
+    await expect(
+      bar.getByRole("button", { name: "Play", exact: true }),
+    ).toBeVisible();
     await expect(bar.getByRole("button", { name: "Next step" })).toBeVisible();
-    await expect(bar.getByRole("button", { name: "Reset playback" })).toBeVisible();
+    await expect(
+      bar.getByRole("button", { name: "Reset playback" }),
+    ).toBeVisible();
   }
 
   await page.goto("/algorithm/bubble-sort");
+  await page.getByRole("button", { name: "History", exact: true }).click();
   const bar = page.getByRole("region", { name: "Playback controls" });
   const speed = bar.getByLabel("Playback speed");
   await speed.focus();
-  await page.keyboard.press("Home");
-  await expect(speed).toHaveValue("80");
+  await page.keyboard.press("End");
+  await expect(speed).toHaveValue("3");
   await bar.getByRole("button", { name: "Play", exact: true }).click();
   const step = page.getByLabel("Select execution step");
-  await expect.poll(async () => Number(await step.inputValue())).toBeGreaterThan(0);
+  await expect
+    .poll(async () => Number(await step.inputValue()))
+    .toBeGreaterThan(0);
   await bar.getByRole("button", { name: "Pause", exact: true }).click();
   await bar.getByRole("button", { name: "Reset playback" }).click();
   await expect(step).toHaveValue("0");
-  await expect(bar.getByRole("button", { name: "Random Array" })).toBeVisible();
+  await page.getByText("Edit input", { exact: true }).click();
+  await expect(page.getByRole("button", { name: "Randomize" })).toBeVisible();
 });
 
 test("stack pause/cancel/finish/replay policy is atomic and keyboard step selection works", async ({
@@ -118,7 +133,9 @@ test("stack pause/cancel/finish/replay policy is atomic and keyboard step select
   await expect(
     page.getByText("Model size: 1/10.", { exact: false }),
   ).toBeVisible();
-  await page.getByRole("button", { name: "Reset playback", exact: true }).click();
+  await page
+    .getByRole("button", { name: "Reset playback", exact: true })
+    .click();
   await expect(
     page.getByRole("button", { name: "Pop", exact: true }),
   ).toBeDisabled();
@@ -183,8 +200,9 @@ test("integer input errors are recoverable and advanced algorithms execute", asy
   page,
 }) => {
   await page.goto("/algorithm/counting-sort");
+  await page.getByText("Edit input", { exact: true }).click();
   await page.getByLabel("Array values").fill("1.5,2.5");
-  await page.getByRole("button", { name: "Set array", exact: true }).click();
+  await page.getByRole("button", { name: "Apply input", exact: true }).click();
   await expect(page.getByRole("alert")).toContainText("integers");
   for (const slug of [
     "fractional-knapsack",
@@ -346,7 +364,9 @@ test("tree/list/priority bulk operations, step selection and route unmounts pres
     await page
       .getByRole("button", { name: "Finish operation", exact: true })
       .click();
-    await page.getByRole("button", { name: "Reset playback", exact: true }).click();
+    await page
+      .getByRole("button", { name: "Reset playback", exact: true })
+      .click();
     await expect(
       page.getByRole("button", { name: "Clear model", exact: true }),
     ).toBeDisabled();

@@ -1,4 +1,9 @@
-export default function StatsPanel({ step, totalSteps, currentStep }) {
+export default function StatsPanel({
+  step,
+  totalSteps,
+  currentStep,
+  showExplanation = true,
+}) {
   const progress = Math.round(
     (currentStep / Math.max(totalSteps - 1, 1)) * 100,
   );
@@ -16,7 +21,7 @@ export default function StatsPanel({ step, totalSteps, currentStep }) {
       ? [{ label: "Array writes", value: step.writes }]
       : []),
     { label: "Pass", value: step.pass ?? 0 },
-    { label: "Current Index", value: step.index ?? 0 },
+    { label: "Current Index", value: step.index >= 0 ? step.index : "—" },
     {
       label: "Current Comparison",
       value: step.comparing?.length ? step.comparing.join(" & ") : "None",
@@ -63,7 +68,7 @@ export default function StatsPanel({ step, totalSteps, currentStep }) {
       </div>
 
       {/* Step Explanation Text */}
-      {step.explanation && (
+      {showExplanation && step.explanation && (
         <p className="mt-5 rounded-3xl bg-blue-50 p-4 text-sm font-semibold leading-6 text-slate-700 dark:bg-cyan-400/10 dark:text-slate-200">
           {step.explanation}
         </p>

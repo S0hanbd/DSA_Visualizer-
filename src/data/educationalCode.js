@@ -323,6 +323,28 @@ export const sourceOverrides = {
     } // @complete
 }`,
   "merge-sort": merge,
+  "quick-sort": `int partition(int arr[], int low, int high) {
+    int pivot = arr[high]; // @pivot
+    int i = low - 1;
+    for (int j = low; j < high; ++j) {
+        if (arr[j] <= pivot) { // @compare
+            ++i; // @advance
+            if (i != j) swap(arr[i], arr[j]); // @swap
+        }
+    }
+    swap(arr[i + 1], arr[high]); // @placePivot
+    return i + 1;
+}
+void quickSort(int arr[], int low, int high) {
+    vector<pair<int, int>> pending = {{low, high}}; // @start
+    while (!pending.empty()) {
+        auto [left, right] = pending.back(); pending.pop_back();
+        if (left >= right) continue; // @base
+        int pivot = partition(arr, left, right);
+        pending.push_back({left, pivot - 1});
+        pending.push_back({pivot + 1, right}); // @queue
+    }
+}`,
   "n-queens": queens,
   "graph-coloring": coloring,
   avl: avl,
@@ -372,19 +394,13 @@ const patterns = {
     insert: /arr\[j \+ 1\] = key/,
     complete: /^}$/,
   },
-  "quick-sort": {
-    start: /void quickSort/,
-    pivot: /int pivot =/,
-    compare: /if \(arr\[j\]/,
-    advance: /i\+\+/,
-    swap: /arr\[j\] = temp/,
-    placePivot: /arr\[high\] = temp/,
-    complete: /^}$/,
-  },
+  "quick-sort": {},
   "heap-sort": {
     start: /void heapSort/,
     build: /for \(int i = n \/ 2/,
     compare: /if \(l </,
+    compareRight: /if \(r </,
+    sift: /int largest =/,
     swap: /arr\[largest\] = temp/,
     extract: /arr\[i\] = temp/,
     complete: /^}$/,
@@ -480,10 +496,13 @@ const statusEvents = {
   "Pivot Chosen": "pivot",
   Advancing: "advance",
   "Pivot Placed": "placePivot",
+  "Base Case": "base",
+  "Partition Complete": "queue",
   Heapifying: "compare",
   "Build Heap": "build",
   "Heap Ready": "build",
   "Extracting Max": "extract",
+  Extracted: "extract",
   "New Gap": "gap",
   Placed: "insert",
   Counting: "count",

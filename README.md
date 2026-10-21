@@ -4,6 +4,8 @@ An interactive React learning lab with **37 implemented algorithm/data-structure
 
 [Usage guide](docs/usage.md) · [Remediation report](docs/remediation-status.md) · [Architecture](docs/architecture.md) · [Quality workflow](https://github.com/S0hanbd/DSA_Visualizer-/actions/workflows/quality.yml)
 
+The saved [UI/UX design guide](docs/DSA_UI_UX_Design_Guide.md) informs the shared sorting and searching workspace. See [redesign notes](docs/array-redesign.md) for component reuse, algorithm-specific views, and verification.
+
 ## What you can do
 
 - Build and edit data structures, then follow individual operations with play, pause, step, Finish and Cancel controls.
@@ -44,7 +46,7 @@ npm run preview
 ## Available simulations
 
 - Sorting: bubble, selection, insertion, bottom-up merge, quick, heap, shell, counting, radix.
-- Searching: linear and binary (an explicitly explained sorted copy).
+- Searching: linear and binary (ascending input is required; **Sort and apply** explicitly prepares unsorted input).
 - Structures: singly/doubly/circular linked lists, stack, linear/circular queues, min/max priority queue, two-stack queue.
 - Trees: binary tree using BST construction, BST, AVL, inorder/preorder/postorder/level-order traversal, max heap.
 - Undirected graphs: BFS, DFS, Dijkstra, Prim, Kruskal. Disconnected results are explained.

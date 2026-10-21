@@ -9,6 +9,13 @@ export default function GuidePage() {
       </p>
       <h2 className="text-2xl font-black">Playback and live models</h2>
       <p>
+        Sorting and searching use a focused workspace. Edit input reveals draft
+        values and presets; Apply input starts a paused run. Binary Search needs
+        ascending input, with an explicit Sort and apply action. Code, History,
+        Details, and the algorithm guide open on demand. Playback offers 0.5× to
+        4× speed, Reset, and Replay on completion.
+      </p>
+      <p>
         An operation commits only when it finishes or you press Finish
         operation. Cancel operation restores the previous live model. Paused
         operations cannot start another mutation. Previous, Next, Reset playback

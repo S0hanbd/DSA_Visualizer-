@@ -26,6 +26,8 @@ export default function PlaybackBar({
   disabled = false,
   children,
   status,
+  variant = "default",
+  onReplay,
 }) {
   const atStart = currentStep <= 0;
   const atEnd = totalSteps > 0 && currentStep >= totalSteps - 1;
@@ -34,7 +36,7 @@ export default function PlaybackBar({
 
   return (
     <section
-      className="neo-panel flex flex-col gap-4 p-4 sm:p-5"
+      className={`neo-panel flex flex-col gap-4 p-4 sm:p-5 ${variant === "learning" ? "learning-playback" : ""}`}
       aria-label="Playback controls"
     >
       <div className="flex flex-wrap items-center gap-2">
@@ -51,15 +53,15 @@ export default function PlaybackBar({
         <button
           type="button"
           className="inline-flex min-h-11 items-center justify-center gap-2 rounded-2xl bg-blue-600 px-5 py-2.5 text-sm font-bold text-white shadow-md shadow-blue-600/25 transition hover:-translate-y-px hover:bg-blue-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-45 dark:bg-blue-500 dark:hover:bg-blue-400"
-          onClick={isPlaying ? onPause : onPlay}
-          disabled={disabled || (!isPlaying && atEnd)}
+          onClick={isPlaying ? onPause : atEnd && onReplay ? onReplay : onPlay}
+          disabled={disabled || (!isPlaying && atEnd && !onReplay)}
         >
           {isPlaying ? (
             <Pause size={17} aria-hidden="true" />
           ) : (
             <Play size={17} aria-hidden="true" />
           )}
-          {isPlaying ? "Pause" : "Play"}
+          {isPlaying ? "Pause" : atEnd && onReplay ? "Replay" : "Play"}
         </button>
         <button
           type="button"
@@ -101,17 +103,38 @@ export default function PlaybackBar({
           <input
             aria-label="Playback speed"
             type="range"
-            min={MIN_DELAY}
-            max={MAX_DELAY}
-            step="20"
-            value={Math.max(MIN_DELAY, Math.min(MAX_DELAY, speed))}
-            onChange={(event) => setSpeed(Number(event.target.value))}
+            min={variant === "learning" ? 0 : MIN_DELAY}
+            max={variant === "learning" ? 3 : MAX_DELAY}
+            step={variant === "learning" ? 1 : 20}
+            value={
+              variant === "learning"
+                ? [1200, 600, 300, 150].indexOf(speed)
+                : Math.max(MIN_DELAY, Math.min(MAX_DELAY, speed))
+            }
+            aria-valuetext={
+              variant === "learning"
+                ? `${600 / speed} times speed`
+                : `${speed} milliseconds per step`
+            }
+            onChange={(event) =>
+              setSpeed(
+                variant === "learning"
+                  ? [1200, 600, 300, 150][Number(event.target.value)]
+                  : Number(event.target.value),
+              )
+            }
             className="min-w-20 flex-1 accent-blue-600 dark:accent-cyan-400"
           />
-          <span className="min-w-14 text-right tabular-nums">{speed} ms</span>
+          <span className="min-w-14 text-right tabular-nums">
+            {variant === "learning" ? `${600 / speed}×` : `${speed} ms`}
+          </span>
         </label>
-        <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 sm:text-right" role="status">
-          {status ? `${status} · ` : ""}Step {totalSteps ? currentStep + 1 : 0} / {totalSteps}
+        <p
+          className="text-xs font-semibold text-slate-500 dark:text-slate-400 sm:text-right"
+          role={variant === "learning" ? undefined : "status"}
+        >
+          {status ? `${status} · ` : ""}Step {totalSteps ? currentStep + 1 : 0}{" "}
+          of {totalSteps}
         </p>
       </div>
     </section>

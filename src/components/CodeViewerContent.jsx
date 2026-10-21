@@ -66,6 +66,7 @@ export default function CodeViewer({
   algorithm,
   step,
   mode,
+  clean = false,
 }) {
   const { theme } = useTheme();
   const source = algorithm
@@ -75,6 +76,7 @@ export default function CodeViewer({
     code = source.code;
     activeLine = source.line;
   }
+  if (clean) code = code.replace(/[ \t]*\/\/[ \t]*@\w+[^\n]*/g, "");
 
   const isJS = language === "javascript" || language === "js";
   const title = isJS ? "JavaScript Source Code" : "C++ Source Code";
@@ -89,7 +91,7 @@ export default function CodeViewer({
           {badge}
         </span>
       </div>
-      {source && (
+      {source && !clean && (
         <p className="px-5 py-2 text-xs text-slate-600 dark:text-slate-300">
           {activeLine
             ? `Source event: ${source.event} · line ${activeLine}`

@@ -792,6 +792,9 @@ export function buildQuickSortSteps(input) {
   let comparisons = 0;
   let swaps = 0;
   let pass = 0;
+  const stack = [];
+  const partitions = [];
+  let activeRange = null;
 
   const pushStep = ({
     line,
@@ -799,7 +802,7 @@ export function buildQuickSortSteps(input) {
     status,
     comparing = [],
     swapping = [],
-    sorted = [],
+    sorted = [...sortedSet],
     markers = {},
   }) => {
     steps.push({
@@ -816,6 +819,9 @@ export function buildQuickSortSteps(input) {
       sorted,
       structure: "array",
       markers,
+      activeRange: activeRange ? [...activeRange] : null,
+      pendingRanges: stack.map((range) => [...range]),
+      partitions: partitions.map((range) => ({ ...range })),
     });
   };
 
@@ -889,16 +895,30 @@ export function buildQuickSortSteps(input) {
     return pivotFinal;
   }
 
-  const stack = [[0, arr.length - 1]];
+  stack.push([0, arr.length - 1]);
   while (stack.length) {
     const [low, high] = stack.pop();
+    activeRange = [low, high];
     if (low >= high) {
       if (low === high) sortedSet.add(low);
+      pushStep({
+        status: "Base Case",
+        explanation:
+          low === high
+            ? `Range [${low}…${high}] has one value and needs no partition.`
+            : "This subrange is empty; continue with the next pending range.",
+      });
       continue;
     }
     const pi = partition(low, high);
+    partitions.push({ low, high, pivot: pi });
     stack.push([low, pi - 1]);
     stack.push([pi + 1, high]);
+    pushStep({
+      status: "Partition Complete",
+      explanation: `Pivot is settled at ${pi}. Continue with the right subrange, then the left.`,
+      markers: { low, high, pivot: pi },
+    });
   }
 
   pushStep({
@@ -917,9 +937,11 @@ export function buildHeapSortSteps(input) {
   let comparisons = 0;
   let swaps = 0;
   let pass = 0;
+  let heapSize = n;
 
   const pushStep = ({
     line,
+    event,
     explanation,
     status,
     comparing = [],
@@ -929,6 +951,7 @@ export function buildHeapSortSteps(input) {
     steps.push({
       array: [...arr],
       line,
+      event,
       pass,
       index: comparing[0] ?? -1,
       comparisons,
@@ -939,7 +962,7 @@ export function buildHeapSortSteps(input) {
       swapping,
       sorted,
       structure: "array",
-      markers: {},
+      markers: { heapSize },
     });
   };
 
@@ -951,23 +974,39 @@ export function buildHeapSortSteps(input) {
   });
 
   function heapify(size, root) {
+    heapSize = size;
     let largest = root;
     const l = 2 * root + 1;
     const r = 2 * root + 2;
-    comparisons++;
     pushStep({
       line: 13,
-      explanation: `Heapify at root=${root}. Compare with children (l=${l}, r=${r}).`,
+      event: "sift",
+      explanation: `Start sift-down at index ${root}. Check each child that belongs to the active heap.`,
       status: "Heapifying",
       comparing: [root, ...(l < size ? [l] : []), ...(r < size ? [r] : [])],
       sorted: Array.from({ length: n - size }, (_, k) => size + k),
     });
     if (l < size) {
       comparisons++;
+      pushStep({
+        line: 13,
+        status: "Heapifying",
+        explanation: `Compare child ${arr[l]} at index ${l} with candidate ${arr[largest]} at index ${largest}.`,
+        comparing: [largest, l],
+        sorted: Array.from({ length: n - size }, (_, k) => size + k),
+      });
       if (arr[l] > arr[largest]) largest = l;
     }
     if (r < size) {
       comparisons++;
+      pushStep({
+        line: 13,
+        event: "compareRight",
+        status: "Heapifying",
+        explanation: `Compare child ${arr[r]} at index ${r} with candidate ${arr[largest]} at index ${largest}.`,
+        comparing: [largest, r],
+        sorted: Array.from({ length: n - size }, (_, k) => size + k),
+      });
       if (arr[r] > arr[largest]) largest = r;
     }
     if (largest !== root) {
@@ -1011,14 +1050,25 @@ export function buildHeapSortSteps(input) {
       line: 6,
       explanation: `Extract max: swap arr[0]=${arr[0]} with arr[${i}]=${arr[i]}. Place ${arr[0]} at its sorted position.`,
       status: "Extracting Max",
+      event: "extract",
       swapping: [0, i],
-      sorted: Array.from({ length: n - i }, (_, k) => i + k),
+      sorted: Array.from({ length: n - i - 1 }, (_, k) => i + 1 + k),
     });
     [arr[0], arr[i]] = [arr[i], arr[0]];
     swaps++;
+    heapSize = i;
+    pushStep({
+      line: 6,
+      status: "Extracted",
+      event: "extract",
+      explanation: `${arr[i]} is now at final index ${i}. Restore the remaining heap.`,
+      swapping: [0, i],
+      sorted: Array.from({ length: n - i }, (_, k) => i + k),
+    });
     heapify(i, 0);
   }
 
+  heapSize = 0;
   pushStep({
     line: 1,
     explanation: "Heap Sort complete. Array is fully sorted.",
@@ -1214,7 +1264,7 @@ export function buildCountingSortSteps(input) {
       explanation: `Count arr[${i}]=${arr[i]}. count[${arr[i]}] is now ${count[arr[i]]}.`,
       status: "Counting",
       comparing: [i],
-      markers: { phase: 1 },
+      markers: { phase: 1, countIndex: arr[i] },
     });
   }
 
@@ -1233,7 +1283,7 @@ export function buildCountingSortSteps(input) {
       line: 6,
       explanation: `count[${i}] += count[${i - 1}] → count[${i}] = ${count[i]}. (Cumulative frequency up to ${i})`,
       status: "Prefix Sum",
-      markers: { phase: 2 },
+      markers: { phase: 2, countIndex: i },
     });
   }
 
@@ -1260,7 +1310,7 @@ export function buildCountingSortSteps(input) {
       status: "Placing",
       comparing: [i],
       swapping: [pos],
-      markers: { phase: 3 },
+      markers: { phase: 3, countIndex: val, outputIndex: pos },
     });
   }
 
@@ -1342,6 +1392,8 @@ export function buildRadixSortSteps(input) {
   while (Math.floor(max / exp) > 0) {
     digitPass++;
     pass = digitPass;
+    output = new Array(n).fill(null);
+    count = new Array(10).fill(0);
     const digitName =
       exp === 1
         ? "units"
@@ -1357,9 +1409,6 @@ export function buildRadixSortSteps(input) {
       markers: { exp, digitPass },
     });
 
-    output = new Array(n).fill(null);
-    count = new Array(10).fill(0);
-
     // Count digit occurrences
     for (let i = 0; i < n; i++) {
       const digit = Math.floor(arr[i] / exp) % 10;
@@ -1371,7 +1420,7 @@ export function buildRadixSortSteps(input) {
         explanation: `arr[${i}]=${arr[i]} → ${digitName} digit = ${digit}. count[${digit}] = ${count[digit]}.`,
         status: "Counting",
         comparing: [i],
-        markers: { exp, digitPass },
+        markers: { exp, digitPass, countIndex: digit },
       });
     }
 
@@ -1402,7 +1451,7 @@ export function buildRadixSortSteps(input) {
         status: "Placing",
         comparing: [i],
         swapping: [pos],
-        markers: { exp, digitPass },
+        markers: { exp, digitPass, countIndex: digit, outputIndex: pos },
       });
     }
 

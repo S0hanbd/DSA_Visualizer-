@@ -16,7 +16,7 @@ The single content source is `src/data/complexities.js`; the shared `ComplexityS
 
 - **Heap sort:** recursive heapify adds O(log n) stack memory. The array itself is sorted in place, but that does not make this recursive implementation's auxiliary space O(1).
 - **Quick sort:** a last-element pivot can repeatedly leave an n − 1 partition, producing quadratic time and linear recursion depth.
-- **Binary search:** the O(log n) / O(1) cards describe iterative search on already-sorted input. The page's sorted-copy preparation is identified separately and is excluded from those search costs.
+- **Binary search:** the O(log n) / O(1) cards describe iterative search on already-sorted input. Optional preparation through **Sort and apply** is explicitly requested and excluded from those search costs.
 - **Queue using two stacks:** a single dequeue can transfer all n items. The card therefore shows O(n) time rather than substituting an amortized bound for the requested worst-case cost.
 - **Dijkstra and Prim:** these implementations scan vertex keys rather than using a heap, so their time bound is O(V² + E).
 - **Kruskal:** O(V + E log(E + 1)) includes disjoint-set initialization even if there are no edges. Space includes the sorted edge copy/buffer and the returned forest, rather than only the union-find arrays.

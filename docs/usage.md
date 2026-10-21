@@ -2,6 +2,14 @@
 
 Start with `npm start`, then open the local URL. Browse the catalog, filter/search by title or category, use the desktop sidebar, or choose an algorithm from the mobile navigation menu. The app's `/guide` route contains this guidance within the product.
 
+## Sorting and searching
+
+The shared workspace starts paused. **Edit input** reveals array values, a search target, Randomize, and presets. Draft changes take effect only through **Apply input**. Binary Search rejects unsorted input until you choose **Sort and apply**; returned indexes refer to that displayed sorted array.
+
+Previous, Play/Pause, Next, Reset, and speeds from 0.5× to 4× stay with the current explanation. Completion offers Replay. Reset rewinds the current input. Show code opens C++ with the current statement highlighted, or a pseudocode overview. History reveals step navigation; Details reveals additional metrics. The algorithm guide and complexity are expandable below the workspace.
+
+Merge Sort visualizes its actual bottom-up runs and writes, rather than recursive calls. Quick Sort displays its Lomuto partitions and optional pending-range overview. Heap Sort links the tree to array indexes. Insertion/Shell Sort hold a key beside a visible gap; Counting/Radix Sort expose count and output lanes.
+
 ## Stateful structures
 
 Enter a complete integer or a comma/space separated batch. Invalid tokens, out-of-range values and excessive model sizes are rejected. Lists provide insertion at head/tail/index, search, deletion and traversal; doubly linked lists also traverse backward. Trees provide insertion plus all four traversal orders. The Binary Tree route explicitly builds by BST rules.
