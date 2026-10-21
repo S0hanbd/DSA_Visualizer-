@@ -5,6 +5,7 @@ import GraphColoringVisualization from "../components/GraphColoringVisualization
 import CodeViewer from "../components/CodeViewer.jsx";
 import ComplexitySummary from "../components/ComplexitySummary.jsx";
 import ExecutionSteps from "../components/ExecutionSteps.jsx";
+import PlaybackBar from "../components/PlaybackBar.jsx";
 import { algorithmMap } from "../data/algorithms.js";
 import { COLORING_LIMITS } from "../logic/graphColoringSimulation.js";
 import { validateGraph, topologyKey } from "../logic/validation.js";
@@ -410,50 +411,7 @@ export default function GraphColoringPage() {
                         disabled={!generating}
                         className="soft-button"
                       />
-                      <ControlsButton
-                        label="Play"
-                        onClick={() => setIsPlaying(true)}
-                        disabled={isPlaying || currentStep >= steps.length - 1}
-                        className="flex-1 bg-emerald-500 hover:bg-emerald-600 text-white"
-                      />
-                      <ControlsButton
-                        label="Pause"
-                        onClick={() => setIsPlaying(false)}
-                        disabled={!isPlaying}
-                        className="flex-1 bg-amber-500 hover:bg-amber-600 text-white"
-                      />
-                      <ControlsButton
-                        label="Step"
-                        onClick={() =>
-                          setCurrentStep((s) =>
-                            Math.min(steps.length - 1, s + 1),
-                          )
-                        }
-                        disabled={isPlaying || currentStep >= steps.length - 1}
-                        className="flex-1 bg-blue-500 hover:bg-blue-600 text-white"
-                      />
                     </div>
-                  </div>
-
-                  <div className="p-4 border border-slate-200 dark:border-slate-800 rounded-lg bg-slate-50 dark:bg-slate-900/50">
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-xs font-bold text-slate-500">
-                        Speed
-                      </span>
-                      <span className="text-xs font-black text-slate-600 dark:text-slate-300">
-                        {1000 - speed}ms
-                      </span>
-                    </div>
-                    <input
-                      aria-label="Step delay"
-                      type="range"
-                      min="80"
-                      max="900"
-                      step="10"
-                      value={1000 - speed}
-                      onChange={(e) => setSpeed(1000 - Number(e.target.value))}
-                      className="w-full accent-emerald-500"
-                    />
                   </div>
 
                   {/* Solutions Snapshots */}
@@ -553,6 +511,30 @@ export default function GraphColoringPage() {
               step={step}
               onCanvasClick={handleCanvasClick}
               onNodePositionChange={handleNodePositionChange}
+            />
+
+            <PlaybackBar
+              isPlaying={isPlaying}
+              speed={speed}
+              setSpeed={setSpeed}
+              currentStep={currentStep}
+              totalSteps={steps.length}
+              disabled={generating}
+              status={generating ? "Generating coloring steps" : generation.outcome}
+              onPrevious={() => {
+                setIsPlaying(false);
+                setCurrentStep((value) => Math.max(0, value - 1));
+              }}
+              onPlay={() => setIsPlaying(true)}
+              onPause={() => setIsPlaying(false)}
+              onNext={() => {
+                setIsPlaying(false);
+                setCurrentStep((value) => Math.min(steps.length - 1, value + 1));
+              }}
+              onReset={() => {
+                setIsPlaying(false);
+                setCurrentStep(0);
+              }}
             />
 
             <ExecutionSteps

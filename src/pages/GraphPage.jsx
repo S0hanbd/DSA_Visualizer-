@@ -11,6 +11,7 @@ import GraphVisualization from "../components/GraphVisualization.jsx";
 import CodeViewer from "../components/CodeViewer.jsx";
 import ComplexitySummary from "../components/ComplexitySummary.jsx";
 import ExecutionSteps from "../components/ExecutionSteps.jsx";
+import PlaybackBar from "../components/PlaybackBar.jsx";
 import { algorithmMap } from "../data/algorithms.js";
 import {
   EXAMPLE_GRAPH,
@@ -78,6 +79,7 @@ export default function GraphPage({ overrideSlug }) {
   ]);
   const [currentStep, setCurrentStep] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [speed, setSpeed] = useState(480);
 
   const graphVersion = topologyKey(nodes, edges);
   const [error, setError] = useState("");
@@ -105,9 +107,9 @@ export default function GraphPage({ overrideSlug }) {
     }
     const timer = setTimeout(() => {
       setCurrentStep((s) => s + 1);
-    }, 1000);
+    }, speed);
     return () => clearTimeout(timer);
-  }, [isPlaying, currentStep, steps.length]);
+  }, [isPlaying, currentStep, steps.length, speed]);
 
   if (!algorithm) return <Navigate to="/" replace />;
 
@@ -578,6 +580,30 @@ export default function GraphPage({ overrideSlug }) {
               onCanvasClick={handleCanvasClick}
               onNodePositionChange={handleNodePositionChange}
             />
+
+            {activeTab === "Algorithm" && (
+              <PlaybackBar
+                isPlaying={isPlaying}
+                speed={speed}
+                setSpeed={setSpeed}
+                currentStep={currentStep}
+                totalSteps={steps.length}
+                onPrevious={() => {
+                  setIsPlaying(false);
+                  setCurrentStep((value) => Math.max(0, value - 1));
+                }}
+                onPlay={() => setIsPlaying(true)}
+                onPause={() => setIsPlaying(false)}
+                onNext={() => {
+                  setIsPlaying(false);
+                  setCurrentStep((value) => Math.min(steps.length - 1, value + 1));
+                }}
+                onReset={() => {
+                  setIsPlaying(false);
+                  setCurrentStep(0);
+                }}
+              />
+            )}
 
             <div className="neo-panel p-4 border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm rounded-xl">
               <p className="text-xs font-black uppercase tracking-widest text-slate-600 dark:text-slate-300 mb-1">

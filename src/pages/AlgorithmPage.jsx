@@ -3,7 +3,7 @@ import { Navigate, useParams, useLocation } from "react-router-dom";
 import { useIsPresent } from "framer-motion";
 import CodeViewer from "../components/CodeViewer.jsx";
 import ComplexitySummary from "../components/ComplexitySummary.jsx";
-import Controls from "../components/Controls.jsx";
+import PlaybackBar from "../components/PlaybackBar.jsx";
 import ExecutionSteps from "../components/ExecutionSteps.jsx";
 import Sidebar from "../components/Sidebar.jsx";
 import StatsPanel from "../components/StatsPanel.jsx";
@@ -148,26 +148,50 @@ export default function AlgorithmPage({ overrideSlug }) {
         ) : (
           <VisualizationBars step={step} algorithm={algorithm} />
         )}
-        <Controls
+        <PlaybackBar
           isPlaying={isPlaying}
+          speed={speed}
+          setSpeed={setSpeed}
+          currentStep={currentStep}
+          totalSteps={steps.length}
           onPlay={() => setIsPlaying(true)}
           onPause={() => setIsPlaying(false)}
-          onPrev={() => setCurrentStep((value) => Math.max(0, value - 1))}
-          onNext={() =>
-            setCurrentStep((value) => Math.min(steps.length - 1, value + 1))
-          }
+          onPrevious={() => {
+            setIsPlaying(false);
+            setCurrentStep((value) => Math.max(0, value - 1));
+          }}
+          onNext={() => {
+            setIsPlaying(false);
+            setCurrentStep((value) => Math.min(steps.length - 1, value + 1));
+          }}
           onReset={() => {
             setCurrentStep(0);
             setIsPlaying(false);
           }}
           onRandom={randomize}
-          input={input}
-          setInput={setInput}
-          onSetArray={setCustomArray}
-          speed={speed}
-          setSpeed={setSpeed}
-          inputError={inputError}
         />
+
+        <section className="neo-panel flex flex-col gap-3 p-4 sm:flex-row sm:items-center">
+          <label className="sr-only" htmlFor="algorithm-array-input">
+            Array values
+          </label>
+          <input
+            id="algorithm-array-input"
+            aria-label="Array values"
+            value={input}
+            onChange={(event) => setInput(event.target.value)}
+            placeholder="42, 18, 77, 9, 64"
+            className="capsule-input min-w-0 flex-1"
+          />
+          <button className="primary-button shrink-0" onClick={setCustomArray}>
+            Set array
+          </button>
+          {inputError && (
+            <p role="alert" className="text-sm font-bold text-red-500">
+              {inputError}
+            </p>
+          )}
+        </section>
 
         {algorithm.type === "searching" && (
           <section className="neo-panel p-5">
